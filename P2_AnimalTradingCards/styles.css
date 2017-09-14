@@ -12,6 +12,7 @@
   border: 1px solid #ccc;
   box-shadow: 2px 2px 5px 5px #ccc;
   width: 330px;
+  border-radius: 6px;
 }
 
 .animal-info {
@@ -26,7 +27,10 @@
 }
 
 .animal-name {
+  background-color: #00A5D2;
+  color: white;
   padding: 15px 15px 15px 15px;
+  margin: 15px 15px 15px 15px;
 }
 
 .animal-img {
