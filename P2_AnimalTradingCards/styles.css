@@ -1,1 +1,32 @@
 /* 添加 CSS */
+.animal-interest {
+  font-style: italic;
+}
+
+.animal-item {
+  font-weight: bold;
+}
+
+.animal-main {
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 5px 5px #ccc;
+}
+
+.animal-info {
+  border: 1px solid #ccc;
+  padding: 15px 15px 15px 15px;
+  margin: 10px 10px 10px 10px;
+}
+
+.list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.animal-name {
+  padding: 15px 15px 15px 15px;
+}
+
+.animal-img {
+  padding: 15px 15px 15px 15px;
+}
