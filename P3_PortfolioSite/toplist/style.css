@@ -20,3 +20,9 @@
   .app {
     display: flex;
   }
+
+.title{
+  color: white;
+  background-color: #33bebe;
+  text-transform: uppercase;
+}
