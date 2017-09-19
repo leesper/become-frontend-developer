@@ -4,35 +4,37 @@
 <head>
   <meta charset="utf-8">
   <title>My Portfolio</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <header class="banner">
-    <div class="udacity-logo">
-      udacity logo
-    </div>
-    <div class="developer-info">
-      <div class="developer-name">
-        李科君
+  <div class="grid">
+    <header class="row">
+      <div class="col-6">
+        <img src="http://placehold.it/100x100" alt="udacity logo">
       </div>
-      <div class="front-end-ninja">
-        front-end ninja
+      <div class="col-6">
+        <div class="developer-name">
+          <h1>李科君</h1>
+        </div>
+        <div class="front-end-ninja">
+          <h3>front-end ninja</h3>
+        </div>
+      </div>
+    </header>
+
+    <hr>
+
+    <div class="row">
+      <div class="col-12">
+        <img src="http://placehold.it/960x350" alt="place holder">
       </div>
     </div>
-  </header>
-
-  <hr>
-
-  <main>
-    <div class="main-pic">
-      main picture
+    <div class="row">
+      <h2>featured work</h2>
     </div>
-
-    <footer class="featured-work">
-      <div class="featured-work-title">
-        featured work
-      </div>
-      <div class="projects">
+    <div class="row">
+      <div class="col-4">
         <div class="project-one">
           <div class="project-image">
             project image
@@ -44,31 +46,31 @@
             https://github.com/leesper/tao
           </div>
         </div>
-        <div class="project-two">
-          <div class="project-image">
-            project image
-          </div>
-          <div class="project-name">
-            data analyst nanodegree
-          </div>
-          <div class="project-address">
-            https://github.com/leesper/become-data-analyst
-          </div>
+      </div>
+      <div class="col-4">
+        <div class="project-image">
+          project image
         </div>
-        <div class="project-three">
-          <div class="project-image">
-            project image
-          </div>
-          <div class="project-name">
-            CouchDB-Golang
-          </div>
-          <div class="project-address">
-            https://github.com/leesper/couchdb-golang
-          </div>
+        <div class="project-name">
+          data analyst nanodegree
+        </div>
+        <div class="project-address">
+          https://github.com/leesper/become-data-analyst
         </div>
       </div>
-    </footer>
-  </main>
+      <div class="col-4">
+        <div class="project-image">
+          project image
+        </div>
+        <div class="project-name">
+          CouchDB-Golang
+        </div>
+        <div class="project-address">
+          https://github.com/leesper/couchdb-golang
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

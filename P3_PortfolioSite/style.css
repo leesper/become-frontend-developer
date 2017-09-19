@@ -15,6 +15,14 @@
   }
 }
 
+.developer-name {
+  text-align: right;
+}
+
+.front-end-ninja {
+  text-align: right;
+}
+
 .grid {
   margin: 0 auto;
   max-width: 1200px;
