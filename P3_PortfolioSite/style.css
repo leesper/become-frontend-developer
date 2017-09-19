@@ -9,6 +9,10 @@
   box-sizing: border-box;
 }
 
+* {
+  font-family: 'Lato', sans-serif;
+}
+
 @media only screen and (max-width: 500px) {
   p {
     display: none;
@@ -17,10 +21,13 @@
 
 .developer-name {
   text-align: right;
+  text-transform: uppercase;
+  padding-right: 5px;
 }
 
-.front-end-ninja {
-  text-align: right;
+hr {
+  height: 5px;
+  background-color: #7d97ad;
 }
 
 .grid {
@@ -29,11 +36,42 @@
   width: 100%;
 }
 
+.project-name {
+  text-transform: uppercase;
+  text-align: center;
+}
+
+h3 {
+  margin: 10px auto;
+}
+
+.project-address {
+  text-align: center;
+}
+
 .row {
   width: 100%;
   margin-bottom: 20px;
   display: flex;
   flex-wrap: wrap;
+}
+
+.main-image {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.project-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.featured-work {
+  text-transform: capitalize;
+  margin-bottom: 0;
+  padding-left: 30px;
+  color: #757070;
 }
 
 .col-1 {
