@@ -2,46 +2,53 @@
 <html>
 
 <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bootstrap Structure</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:100,300" rel="stylesheet">
 </head>
 
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-md-6"><img class="img-responsive" src="http://placehold.it/100x100"></div>
-      <div class="col-md-6">
-        <h1>Jane Doette</h1>
+      <div class="title-logo col-md-6"><img class="img-responsive" src="http://placehold.it/100x100" alt="Udacity logo"></div>
+      <div class="col-md-6 text-right text-uppercase">
+        <h1 class="title-super text-thin">Jane Doette</h1>
         <h3>Front-end Ninja</h3>
       </div>
     </div>
     <div class="row">
-      <img class="img-responsive" src="http://placehold.it/1140x350">
+      <div class="col-md-12">
+        <hr>
+      </div>
     </div>
     <div class="row">
-      <h2>Featured Work</h2>
+      <div class="col-md-12">
+        <img class="img-responsive" src="http://placehold.it/1140x350">
+      </div>
     </div>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">
+        <h2 class="text-muted">Featured Work</h2>
+      </div>
+    </div>
+    <div class="row text-center">
+      <div class="col-md-4">
         <img class="img-responsive" src="http://placehold.it/555x300">
         <h3>Appify</h3>
         <p><a href="http://github.com">Link to project</a></p>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4">
         <img class="img-responsive" src="http://placehold.it/555x300">
-        <h3>Appify</h3>
+        <h3>Sunflower</h3>
         <p><a href="http://github.com">Link to project</a></p>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-4">
         <img class="img-responsive" src="http://placehold.it/555x300">
-        <h3>Appify</h3>
-        <p><a href="http://github.com">Link to project</a></p>
-      </div>
-      <div class="col-md-6">
-        <img class="img-responsive" src="http://placehold.it/555x300">
-        <h3>Appify</h3>
+        <h3>Bokeh</h3>
         <p><a href="http://github.com">Link to project</a></p>
       </div>
     </div>
