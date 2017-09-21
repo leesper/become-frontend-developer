@@ -13,6 +13,10 @@ hr {
   background-color: #7d97ad;
 }
 
+img, embed, object, video {
+  max-width: 100%;
+}
+
 .title-name {
   font-size: 60px;
 }
