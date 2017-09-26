@@ -33,3 +33,8 @@ img, embed, object, video {
   font-weight: 600;
   color: #7d97ad;
 }
+
+.main-holder {
+  max-width: 100%;
+  height: auto;
+}
