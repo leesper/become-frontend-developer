@@ -1,0 +1,96 @@
+body {
+  font-family: "Lato", sans-serif;
+  color: #2d3c49;
+  font-weight: 300;
+}
+
+img {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+hr {
+  background-color: #7d97ad;
+  height: 5px;
+  width: 100%;
+}
+
+p {
+  text-align: center;
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.title-logo {
+  margin-top: 20px;
+  width: 30%;
+}
+
+.title-info {
+  text-align: right;
+  text-transform: uppercase;
+  width: 70%;
+}
+
+.title-name {
+  font-size: 60px;
+  font-weight: 100;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.ninja {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.main-pic {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
+
+.featured-work {
+  font-size: 20px;
+  font-weight: 600;
+  color: #7d97ad;
+  text-transform: capitalize;
+  width: 100%;
+}
+
+.project {
+  width: 33.33%;
+}
+
+.project-image {
+  display: block;
+}
+
+.project-name {
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@media screen and (max-width: 990px) {
+  .project {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .flex-container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+  }
+}
