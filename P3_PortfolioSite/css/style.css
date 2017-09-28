@@ -13,7 +13,10 @@ hr {
   background-color: #7d97ad;
 }
 
-img, embed, object, video {
+img,
+embed,
+object,
+video {
   max-width: 100%;
 }
 
