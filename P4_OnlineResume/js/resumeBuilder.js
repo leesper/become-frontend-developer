@@ -34,31 +34,31 @@ var projects = {
       title: 'TAO Framework',
       dates: 'Apr 17, 2016 – Oct 8, 2017',
       description: 'Light-weight TCP Asynchronous Golang Framework',
-      images: ''
+      images: []
     },
     {
       title: 'go_rng',
       dates: 'Mar 23, 2014 – Oct 8, 2017',
       description: 'A pseudo-random number generator wriiten in Golang',
-      images: ''
+      images: []
     },
     {
       title: 'CouchDB-Golang',
       dates: 'Dec 4, 2016 – Oct 8, 2017',
       description: 'A Golang library for working with CouchDB 2.x',
-      images: ''
+      images: []
     },
     {
       title: 'Data Analyst Nanodegree',
       dates: 'Mar 26, 2017 – Oct 8, 2017',
       description: 'Udacity 数据分析纳米学位项目',
-      images: ''
+      images: []
     },
     {
       title: 'holmes',
       dates: 'Jul 3, 2016 – Oct 8, 2017',
       description: 'Golang logging package',
-      images: ''
+      images: []
     }
   ]
 };
@@ -126,9 +126,17 @@ function displayWork() {
 
 displayWork();
 
-function inName() {
-  var names = bio.name.split(' ');
-  var firstName = names[0][0].toUpperCase() + names[0].slice(1);
-  var lastName = names[1].toUpperCase();
-  return [firstName, lastName].join(' ');
+projects.display = function() {
+  projects.projects.forEach(function(val) {
+    $('#projects').append(HTMLprojectStart);
+    var formattedTitle = HTMLprojectTitle.replace('%data%', val.title);
+    var formattedDates = HTMLprojectDates.replace('%data%', val.dates);
+    var formattedDescription = HTMLprojectDescription.replace('%data%', val.description);
+    $('.project-entry:last').append([formattedTitle, formattedDates, formattedDescription]);
+    val.images.forEach(function(imgsrc) {
+      $('.project-entry:last').append(HTMLprojectImage.replace('%data%', imgsrc));
+    });
+  });
 }
+
+projects.display();
