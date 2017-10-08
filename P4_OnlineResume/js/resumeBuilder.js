@@ -75,7 +75,7 @@ var bio = {
     location: 'City of Guiyang, Gui Zhou Province, China'
   },
   welcomeMessage: '一个很浪的全栈工程师',
-  skills: ['Golang', 'Javascript', 'Python', 'R', 'Statistics'],
+  skills: ['Golang', 'Javascript', 'Python', 'R'],
   biopic: 'images/fry.jpg'
 };
 
@@ -99,3 +99,36 @@ var education = {
     }
   ]
 };
+
+var formattedName = HTMLheaderName.replace('%data%', bio.name);
+var formattedRole = HTMLheaderRole.replace('%data%', bio.role);
+$('#header').prepend([formattedName, formattedRole]);
+
+if (bio.skills.length > 0) {
+  $('#header').append([HTMLskillsStart]);
+  bio.skills.forEach(function(value) {
+    $('#skills').append([HTMLskills.replace('%data%', value)])
+  })
+}
+
+function displayWork() {
+  work.jobs.forEach(function(value) {
+    $('#workExperience').append(HTMLworkStart);
+    var formattedEmployer = HTMLworkEmployer.replace('%data%', value.employer);
+    var formattedTitle = HTMLworkTitle.replace('%data%', value.title);
+    var formattedDates = HTMLworkDates.replace('%data%', value.dates);
+    var formattedLocation = HTMLworkLocation.replace('%data%', value.location);
+    var formatedDescription = HTMLworkDescription.replace('%data%', value.description);
+    $('.work-entry:last').append([formattedEmployer + formattedTitle,
+      formattedDates, formattedLocation, formatedDescription]);
+  });
+}
+
+displayWork();
+
+function inName() {
+  var names = bio.name.split(' ');
+  var firstName = names[0][0].toUpperCase() + names[0].slice(1);
+  var lastName = names[1].toUpperCase();
+  return [firstName, lastName].join(' ');
+}
