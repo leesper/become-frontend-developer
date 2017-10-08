@@ -72,7 +72,7 @@ var bio = {
     email: '394683518@qq.com',
     github: 'https://github.com/leesper',
     twitter: 'http://weibo.com/u/3164852485/home',
-    location: 'City of Guiyang, Gui Zhou Province, China'
+    location: 'Guiyang'
   },
   welcomeMessage: '一个很浪的全栈工程师',
   skills: ['Golang', 'Javascript', 'Python', 'R'],
@@ -83,7 +83,7 @@ var education = {
   schools: [
     {
       name: 'University of Science and Technology of China',
-      location: 'Hefei, An Hui Province, China',
+      location: 'Su Zhou',
       degree: 'MA',
       dates: '2006-2010',
       url: 'http://ustc.edu.cn/',
@@ -91,7 +91,7 @@ var education = {
     },
     {
       name: 'Sichuan University',
-      location: 'Chengdu, Si Chuan Province, China',
+      location: 'Chengdu',
       degree: 'BA',
       dates: '2010-2013',
       url: 'http://www.scu.edu.cn/',
@@ -140,3 +140,5 @@ projects.display = function() {
 }
 
 projects.display();
+
+$('#mapDiv').append(googleMap);
