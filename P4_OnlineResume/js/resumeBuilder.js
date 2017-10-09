@@ -5,7 +5,7 @@ var bio = {
   name: '李科君',
   role: '全栈工程师',
   contacts: {
-    mobile: '18685118912',
+    mobile: '1234567890',
     email: '394683518@qq.com',
     github: 'https://github.com/leesper',
     twitter: 'http://weibo.com/u/3164852485/home',
