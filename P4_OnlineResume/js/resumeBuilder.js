@@ -57,8 +57,7 @@ var bio = {
 };
 
 var education = {
-  schools: [
-    {
+  schools: [{
       name: '中国科学技术大学（USTC）',
       location: 'Su Zhou',
       degree: 'MA',
@@ -75,14 +74,12 @@ var education = {
       url: 'http://www.scu.edu.cn/'
     }
   ],
-  onlineCourses: [
-    {
-      title: '优达学城数据分析纳米学位（DAND）',
-      school: 'Udacity',
-      dates: '2017-2017',
-      url: 'http://cn.udacity.com/dand/'
-    }
-  ],
+  onlineCourses: [{
+    title: '优达学城数据分析纳米学位（DAND）',
+    school: 'Udacity',
+    dates: '2017-2017',
+    url: 'http://cn.udacity.com/dand/'
+  }],
   display: function() {
     education.schools.forEach(function(school) {
       $('#education').append(HTMLschoolStart);
@@ -117,8 +114,7 @@ var education = {
 };
 
 var work = {
-  jobs: [
-    {
+  jobs: [{
       employer: 'M2MKey',
       title: 'Go语言服务器开发工程师',
       location: 'Guiyang',
@@ -159,42 +155,46 @@ var work = {
 };
 
 var projects = {
-  projects: [
-    {
+  projects: [{
       title: 'Tao 框架',
       dates: 'Apr 17, 2016 – Oct 8, 2017',
       description: 'Go语言实现的轻量级TCP网络编程框架，可用于连接智能设备终端',
-      images: ['images/tao.png']
+      images: ['images/tao.png'],
+      url: 'https://github.com/leesper/tao'
     },
     {
       title: 'go_rng',
       dates: 'Mar 23, 2014 – Oct 8, 2017',
       description: 'Go语言实现的伪随机数生成器库，支持10多种概率分布',
-      images: ['images/rng.png']
+      images: ['images/rng.png'],
+      url: 'https://github.com/leesper/go_rng'
     },
     {
       title: 'CouchDB-Golang',
       dates: 'Dec 4, 2016 – Oct 8, 2017',
       description: '专为CouchDB 2.x量身打造的Go语言库，支持将Go条件表达式转换成JSON query string',
-      images: ['images/couchdb.png']
+      images: ['images/couchdb.png'],
+      url: 'https://github.com/leesper/couchdb-golang'
     },
     {
       title: 'Data Analyst Nanodegree',
       dates: 'Mar 26, 2017 – Oct 8, 2017',
       description: 'Udacity 数据分析纳米学位项目，包含入门和进阶两个部分',
-      images: ['images/dand1.jpg', 'images/dand2.jpg']
+      images: ['images/dand1.jpg', 'images/dand2.jpg'],
+      url: 'https://github.com/leesper/become-data-analyst'
     },
     {
       title: 'holmes',
       dates: 'Jul 3, 2016 – Oct 8, 2017',
       description: 'Go语言日志库',
-      images: ['images/holmes.png']
+      images: ['images/holmes.png'],
+      url: 'https://github.com/leesper/holmes'
     }
   ],
   display: function() {
     projects.projects.forEach(function(val) {
       $('#projects').append(HTMLprojectStart);
-      var title = HTMLprojectTitle.replace('%data%', val.title);
+      var title = HTMLprojectTitle.replace('%data%', val.title).replace('#', val.url);
       var dates = HTMLprojectDates.replace('%data%', val.dates);
       var description = HTMLprojectDescription.replace('%data%', val.description);
       $('.project-entry:last').append([
