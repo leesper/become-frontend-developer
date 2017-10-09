@@ -41,6 +41,7 @@ var bio = {
       twitter,
       location
     ]);
+    $('#footerContacts').find('.dark-text').attr('class', 'white-text');
 
     var bioPic = HTMLbioPic.replace('%data%', bio.biopic);
     var welcome = HTMLwelcomeMsg.replace('%data%', bio.welcomeMessage);
@@ -58,25 +59,25 @@ var bio = {
 var education = {
   schools: [
     {
-      name: 'University of Science and Technology of China',
+      name: '中国科学技术大学（USTC）',
       location: 'Su Zhou',
       degree: 'MA',
       dates: '2006-2010',
-      majors: ['Software Engineering'],
+      majors: ['软件工程'],
       url: 'http://ustc.edu.cn/'
     },
     {
-      name: 'Sichuan University',
+      name: '四川大学（SCU）',
       location: 'Chengdu',
       degree: 'BA',
       dates: '2010-2013',
-      majors: ['Information Security Engineering'],
+      majors: ['信息安全工程'],
       url: 'http://www.scu.edu.cn/'
     }
   ],
   onlineCourses: [
     {
-      title: 'Udacity Data Analyst Nanodegree',
+      title: '优达学城数据分析纳米学位（DAND）',
       school: 'Udacity',
       dates: '2017-2017',
       url: 'http://cn.udacity.com/dand/'
@@ -85,7 +86,7 @@ var education = {
   display: function() {
     education.schools.forEach(function(school) {
       $('#education').append(HTMLschoolStart);
-      var schoolName = HTMLschoolName.replace('%data%', school.name);
+      var schoolName = HTMLschoolName.replace('%data%', school.name).replace('#', school.url);
       var schoolDegree = HTMLschoolDegree.replace('%data%', school.degree);
       var schoolDates = HTMLschoolDates.replace('%data%', school.dates);
       var schoolLocation = HTMLschoolLocation.replace('%data%', school.location);
@@ -102,10 +103,10 @@ var education = {
     $('#education').append(HTMLonlineClasses);
     education.onlineCourses.forEach(function(course) {
       $('#education').append(HTMLschoolStart);
-      var onlineTitle = HTMLonlineTitle.replace('%data%', course.title);
+      var onlineTitle = HTMLonlineTitle.replace('%data%', course.title).replace('#', course.url);
       var onlineSchool = HTMLonlineSchool.replace('%data%', course.school);
       var onlineDates = HTMLonlineDates.replace('%data%', course.dates);
-      var onlineURL = HTMLonlineURL.replace('%data%', course.url);
+      var onlineURL = HTMLonlineURL.replace('%data%', course.url).replace('#', course.url);
       $('.education-entry:last').append([
         onlineTitle + onlineSchool,
         onlineDates,
@@ -119,24 +120,24 @@ var work = {
   jobs: [
     {
       employer: 'M2MKey',
-      title: 'Golang Server Development Engineer',
+      title: 'Go语言服务器开发工程师',
       location: 'Guiyang',
       dates: '2016-now',
-      description: 'Server engineer for intelligent embedded devices'
+      description: '负责业务开发和维护智能硬件设备服务器'
     },
     {
       employer: 'Electronic Soul',
-      title: 'Java Server Development Engineer',
+      title: 'Java手游服务器开发工程师',
       location: 'Hang Zhou',
       dates: '2015',
-      description: 'Server engineer for a MOBA mobile game'
+      description: '负责梦三国MOBA手游的服务器开发，维护多个核心系统'
     },
     {
       employer: 'YY.com',
       title: 'C++ Server Development Engineer',
       location: 'Guang Zhou',
       dates: '2013-2014',
-      description: 'Server engineer in YY Music Live'
+      description: 'YY娱乐事业部C++服务器开发工程师，数据统计小组'
     }
   ],
   display: function() {
@@ -160,33 +161,33 @@ var work = {
 var projects = {
   projects: [
     {
-      title: 'TAO Framework',
+      title: 'Tao 框架',
       dates: 'Apr 17, 2016 – Oct 8, 2017',
-      description: 'Light-weight TCP Asynchronous Golang Framework',
+      description: 'Go语言实现的轻量级TCP网络编程框架，可用于连接智能设备终端',
       images: ['images/tao.png']
     },
     {
       title: 'go_rng',
       dates: 'Mar 23, 2014 – Oct 8, 2017',
-      description: 'A pseudo-random number generator wriiten in Golang',
+      description: 'Go语言实现的伪随机数生成器库，支持10多种概率分布',
       images: ['images/rng.png']
     },
     {
       title: 'CouchDB-Golang',
       dates: 'Dec 4, 2016 – Oct 8, 2017',
-      description: 'A Golang library for working with CouchDB 2.x',
+      description: '专为CouchDB 2.x量身打造的Go语言库，支持将Go条件表达式转换成JSON query string',
       images: ['images/couchdb.png']
     },
     {
       title: 'Data Analyst Nanodegree',
       dates: 'Mar 26, 2017 – Oct 8, 2017',
-      description: 'Udacity 数据分析纳米学位项目',
+      description: 'Udacity 数据分析纳米学位项目，包含入门和进阶两个部分',
       images: ['images/dand1.jpg', 'images/dand2.jpg']
     },
     {
       title: 'holmes',
       dates: 'Jul 3, 2016 – Oct 8, 2017',
-      description: 'Golang logging package',
+      description: 'Go语言日志库',
       images: ['images/holmes.png']
     }
   ],
