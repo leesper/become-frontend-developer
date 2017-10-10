@@ -1,6 +1,8 @@
 /*
 This is empty on purpose! Your code to build the resume will go here.
  */
+
+'use strict';
 var bio = {
   name: '李科君',
   role: '全栈工程师',
@@ -15,18 +17,18 @@ var bio = {
   skills: ['Golang', 'Javascript', 'Python', 'R'],
   biopic: 'images/me.jpg',
   display: function() {
-    var name = HTMLheaderName.replace('%data%', bio.name);
-    var role = HTMLheaderRole.replace('%data%', bio.role);
+    var name = HTMLheaderName.replace('%data%', this.name);
+    var role = HTMLheaderRole.replace('%data%', this.role);
     $('#header').prepend([
       name,
       role
     ]);
-    var mobile = HTMLmobile.replace('%data%', bio.contacts.mobile);
-    var email = HTMLemail.replace('%data%', bio.contacts.email);
-    var github = HTMLgithub.replace('%data%', bio.contacts.github);
-    var twitter = HTMLtwitter.replace('%data%', bio.contacts.twitter);
-    var location = HTMLlocation.replace('%data%', bio.contacts.location);
-    $('#topContacts').prepend([
+    var mobile = HTMLmobile.replace('%data%', this.contacts.mobile);
+    var email = HTMLemail.replace('%data%', this.contacts.email);
+    var github = HTMLgithub.replace('%data%', this.contacts.github);
+    var twitter = HTMLtwitter.replace('%data%', this.contacts.twitter);
+    var location = HTMLlocation.replace('%data%', this.contacts.location);
+    $('#topContacts, #footerContacts').prepend([
       mobile,
       email,
       github,
@@ -34,22 +36,15 @@ var bio = {
       location
     ]);
 
-    $('#footerContacts').prepend([
-      mobile,
-      email,
-      github,
-      twitter,
-      location
-    ]);
     $('#footerContacts').find('.dark-text').attr('class', 'white-text');
 
-    var bioPic = HTMLbioPic.replace('%data%', bio.biopic);
-    var welcome = HTMLwelcomeMsg.replace('%data%', bio.welcomeMessage);
+    var bioPic = HTMLbioPic.replace('%data%', this.biopic);
+    var welcome = HTMLwelcomeMsg.replace('%data%', this.welcomeMessage);
     $('#header').append([bioPic, welcome]);
 
-    if (bio.skills.length > 0) {
+    if (this.skills.length > 0) {
       $('#header').append([HTMLskillsStart]);
-      bio.skills.forEach(function(value) {
+      this.skills.forEach(function(value) {
         $('#skills').append([HTMLskills.replace('%data%', value)])
       })
     }
@@ -81,7 +76,7 @@ var education = {
     url: 'http://cn.udacity.com/dand/'
   }],
   display: function() {
-    education.schools.forEach(function(school) {
+    this.schools.forEach(function(school) {
       $('#education').append(HTMLschoolStart);
       var schoolName = HTMLschoolName.replace('%data%', school.name).replace('#', school.url);
       var schoolDegree = HTMLschoolDegree.replace('%data%', school.degree);
@@ -98,7 +93,7 @@ var education = {
       });
     });
     $('#education').append(HTMLonlineClasses);
-    education.onlineCourses.forEach(function(course) {
+    this.onlineCourses.forEach(function(course) {
       $('#education').append(HTMLschoolStart);
       var onlineTitle = HTMLonlineTitle.replace('%data%', course.title).replace('#', course.url);
       var onlineSchool = HTMLonlineSchool.replace('%data%', course.school);
@@ -137,7 +132,7 @@ var work = {
     }
   ],
   display: function() {
-    work.jobs.forEach(function(value) {
+    this.jobs.forEach(function(value) {
       $('#workExperience').append(HTMLworkStart);
       var employer = HTMLworkEmployer.replace('%data%', value.employer);
       var title = HTMLworkTitle.replace('%data%', value.title);
@@ -192,7 +187,7 @@ var projects = {
     }
   ],
   display: function() {
-    projects.projects.forEach(function(val) {
+    this.projects.forEach(function(val) {
       $('#projects').append(HTMLprojectStart);
       var title = HTMLprojectTitle.replace('%data%', val.title).replace('#', val.url);
       var dates = HTMLprojectDates.replace('%data%', val.dates);
