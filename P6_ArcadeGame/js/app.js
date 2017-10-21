@@ -25,6 +25,24 @@ Enemy.prototype.update = function(dt) {
       this.x = 0;
     }
     // TODO: handle collision
+
+};
+
+Enemy.prototype.height = function() {
+  return Resources.get(this.sprite).height;
+};
+
+Enemy.prototype.width = function() {
+  return Resources.get(this.sprite).width;
+};
+
+Enemy.prototype.checkCollisions = function(player) {
+  var deltaY = Math.abs(this.y - player.y);
+  var deltaX = Math.abs(this.x - player.x);
+  if (deltaY < this.height() && deltaX < this.width()) {
+    console.log('bug collision');
+    player.reset();
+  }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -33,12 +51,21 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.dealWithCollision = function() {
-  player.reset();  // TODO
-}
+  player.reset();
+};
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+var Player = function() {};
+
+Player.prototype.update = function() {};
+Player.prototype.render = function() {};
+Player.prototype.handleInput = function() {};
+Player.prototype.height = function() {};
+Player.prototype.width = function() {};
+Player.prototype.reset = function() {};
+
 
 
 // Now instantiate your objects.
