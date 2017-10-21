@@ -6,6 +6,11 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+    // x sticked to 0, y is a random number between 1~3, the "stone" rows
+    this.x = 0;
+    this.y = 1 + Math.floor(Math.random() * 3);
+    // a value between 0.0~1.0 represents the speed
+    this.speed = Math.random();
 };
 
 // Update the enemy's position, required method for game
@@ -14,12 +19,22 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    this.x += 1 * this.speed * dt;
+    // if enemy goes out of canvas set it back
+    if (this.x >= canvas.width) {
+      this.x = 0;
+    }
+    // TODO: handle collision
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
+Enemy.prototype.dealWithCollision = function() {
+  player.reset();  // TODO
+}
 
 // Now write your own player class
 // This class requires an update(), render() and
