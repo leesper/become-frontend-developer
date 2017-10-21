@@ -8,9 +8,9 @@ var Enemy = function() {
     this.sprite = 'images/enemy-bug.png';
     // x sticked to 0, y is a random number between 1~3, the "stone" rows
     this.x = 0;
-    this.y = 1 + Math.floor(Math.random() * 3);
+    this.y = (1 + Math.floor(Math.random() * 3)) * 74;
     // a value between 0.0~1.0 represents the speed
-    this.speed = Math.random();
+    this.speed = 50 + Math.random() * 200;
 };
 
 // Update the enemy's position, required method for game
@@ -27,18 +27,10 @@ Enemy.prototype.update = function(dt) {
     this.checkCollisions(player);
 };
 
-Enemy.prototype.height = function() {
-  return Resources.get(this.sprite).height;
-};
-
-Enemy.prototype.width = function() {
-  return Resources.get(this.sprite).width;
-};
-
 Enemy.prototype.checkCollisions = function(player) {
   var deltaY = Math.abs(this.y - player.y);
   var deltaX = Math.abs(this.x - player.x);
-  if (deltaY < this.height() && deltaX < this.width()) {
+  if (deltaY < 83 && deltaX < 101) {
     console.log('bug collision');
     player.reset();
   }
@@ -58,16 +50,16 @@ var Player = function() {
 };
 
 Player.prototype.update = function() {
-  if (this.x >= canvas.width) {
-    this.x = canvas.width - this.width();
+  if (this.x >= 505) {
+    this.x = 505 - this.width();
   }
 
   if (this.x <= 0) {
     this.x = 0;
   }
 
-  if (this.y >= canvas.height) {
-    this.y = canvas.height - this.height();
+  if (this.y >= 606) {
+    this.y = 606 - this.height();
   }
 
   if (this.y <= 0) {
@@ -82,39 +74,31 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(keyCode) {
   switch (keyCode) {
     case 'left':
-      this.x -= this.width();
+      this.x -= 101;
       break;
     case 'up':
-      this.y -= this.height();
+      this.y -= 83;
       break;
     case 'right':
-      this.x += this.width();
+      this.x += 101;
       break;
     case 'down':
-      this.y += this.height();
+      this.y += 83;
       break;
   }
-};
-
-Player.prototype.height = function() {
-  return Resources.get(this.sprite).height;
-};
-
-Player.prototype.width = function() {
-  return Resources.get(this.sprite).width;
+  console.log(this);
 };
 
 Player.prototype.reset = function() {
-  this.x = canvas.width / 2;
-  this.y = canvas.height - 40;
+  this.x = (505 - 101) / 2;
+  this.y = 5 * 75;
+  console.log(this);
 };
-
-
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [];
-for (var i = 0; i < 10; i++) {
+for (var i = 0; i < 3; i++) {
   allEnemies.push(new Enemy());
 }
 
