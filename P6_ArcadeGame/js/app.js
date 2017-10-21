@@ -30,9 +30,8 @@ Enemy.prototype.update = function(dt) {
 Enemy.prototype.checkCollisions = function(player) {
   var deltaY = Math.abs(this.y - player.y);
   var deltaX = Math.abs(this.x - player.x);
-  if (deltaY < 83 && deltaX < 101) {
-    console.log('bug collision');
-    player.reset();
+  if (deltaY < 50 && deltaX < 50) {
+    console.log('bug collision', deltaX, deltaY);
   }
 };
 
@@ -50,20 +49,22 @@ var Player = function() {
 };
 
 Player.prototype.update = function() {
-  if (this.x >= 505) {
-    this.x = 505 - this.width();
+  if (this.x >= 404) {
+    this.x = 404;
   }
 
   if (this.x <= 0) {
     this.x = 0;
   }
 
-  if (this.y >= 606) {
-    this.y = 606 - this.height();
+  if (this.y >= 375) {
+    this.y = 375;
   }
 
-  if (this.y <= 0) {
-    this.y = 0;
+  // reaches the water
+  if (this.y <= 40) {
+    console.log('reaches water');
+    this.reset();
   }
 };
 
