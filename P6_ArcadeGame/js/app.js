@@ -28,12 +28,20 @@ Enemy.prototype.update = function(dt) {
 };
 
 Enemy.prototype.checkCollisions = function(player) {
-  var deltaY = Math.abs(this.y - player.y);
-  var deltaX = Math.abs(this.x - player.x);
-  if (deltaY < 50 && deltaX < 50) {
-    player.reset(0);
+  if (isCollide(this.x, this.y, player.x, player.y)) {
+    player.score = 0;
+    player.reset();
   }
 };
+
+function isCollide(aX, aY, bX, bY) {
+  var deltaY = Math.abs(aY - bY);
+  var deltaX = Math.abs(aX - bX);
+  if (deltaY < 50 && deltaX < 50) {
+    return true;
+  }
+  return false;
+}
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -45,7 +53,9 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
   this.sprite = 'images/char-boy.png';
-  this.reset(0);
+  this.score = 0;
+  this.x = (505 - 101) / 2;
+  this.y = 5 * 75;
 };
 
 Player.prototype.update = function() {
@@ -64,7 +74,8 @@ Player.prototype.update = function() {
   // reaches the water
   if (this.y <= 40) {
     console.log('reaches water');
-    this.reset(10);
+    this.score += 10;
+    this.reset();
   }
 };
 
@@ -95,22 +106,78 @@ Player.prototype.handleInput = function(keyCode) {
   console.log(this);
 };
 
-Player.prototype.reset = function(score) {
+Player.prototype.reset = function() {
   this.x = (505 - 101) / 2;
   this.y = 5 * 75;
-  this.score = score;
+  initDiamonds();
+  initEnemies();
   console.log(this);
+};
+
+// Diamonds for bonus scores
+var Diamond = function(color) {
+  this.sprite = 'images/char-boy.png';
+  switch (color) {
+    case 'blue':
+      this.sprite = 'images/Gem Blue.png';
+      this.score = 15;
+      break;
+    case 'green':
+      this.sprite = 'images/Gem Green.png';
+      this.score = 10;
+      break;
+    case 'orange':
+      this.sprite = 'images/Gem Orange.png';
+      this.score = 5;
+      break;
+  }
+  this.x = Math.floor(Math.random() * 5) * 101;
+  this.y = (1 + Math.floor(Math.random() * 3)) * 74;
+  this.ok = true;
+};
+
+Diamond.prototype.update = function() {
+  this.checkCollisions(player);
+};
+
+Diamond.prototype.checkCollisions = function(player) {
+  if (this.ok && isCollide(this.x, this.y, player.x, player.y)) {
+    player.score += this.score;
+    this.ok = false;
+  }
+};
+
+Diamond.prototype.render = function() {
+  console.log(this);
+  if (this.ok) {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
 };
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [];
-for (var i = 0; i < 3; i++) {
-  allEnemies.push(new Enemy());
+function initEnemies() {
+  allEnemies = [];
+  for (var i = 0; i < 6; i++) {
+    allEnemies.push(new Enemy());
+  }
 }
+initEnemies();
 
 // Place the player object in a variable called player
 var player = new Player();
+
+// Place all diamond objects in an array called allDiamonds
+var allDiamonds = [];
+function initDiamonds() {
+  allDiamonds = [];
+  var colors = ['orange', 'blue', 'green', 'green', 'orange'];
+  colors.forEach(function(color) {
+    allDiamonds.push(new Diamond(color));
+  });
+}
+initDiamonds();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

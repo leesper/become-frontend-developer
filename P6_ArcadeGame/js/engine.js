@@ -93,6 +93,9 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        allDiamonds.forEach(function(diamond) {
+          diamond.update();
+        });
         player.update();
     }
 
@@ -150,6 +153,10 @@ var Engine = (function(global) {
             enemy.render();
         });
 
+        allDiamonds.forEach(function(diamond) {
+          diamond.render();
+        });
+
         player.render();
     }
 
@@ -170,7 +177,10 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
     ]);
     Resources.onReady(init);
 
