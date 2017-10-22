@@ -31,7 +31,7 @@ Enemy.prototype.checkCollisions = function(player) {
   var deltaY = Math.abs(this.y - player.y);
   var deltaX = Math.abs(this.x - player.x);
   if (deltaY < 50 && deltaX < 50) {
-    console.log('bug collision', deltaX, deltaY);
+    player.reset(0);
   }
 };
 
@@ -45,7 +45,7 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
   this.sprite = 'images/char-boy.png';
-  this.reset();
+  this.reset(0);
 };
 
 Player.prototype.update = function() {
@@ -64,12 +64,17 @@ Player.prototype.update = function() {
   // reaches the water
   if (this.y <= 40) {
     console.log('reaches water');
-    this.reset();
+    this.reset(10);
   }
 };
 
 Player.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  ctx.clearRect(0, 0, 505, 40);
+  ctx.font = '20pt Impact';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'blue';
+  ctx.fillText('SCORE: ' + this.score, 505 / 2, 40);
 };
 
 Player.prototype.handleInput = function(keyCode) {
@@ -90,9 +95,10 @@ Player.prototype.handleInput = function(keyCode) {
   console.log(this);
 };
 
-Player.prototype.reset = function() {
+Player.prototype.reset = function(score) {
   this.x = (505 - 101) / 2;
   this.y = 5 * 75;
+  this.score = score;
   console.log(this);
 };
 
