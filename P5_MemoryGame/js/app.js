@@ -35,6 +35,14 @@ HTMLcardListItem = '<li class="card"><i class="%data%"></i></li>';
    cards.forEach(function(card) {
      $('.deck').append(HTMLcardListItem.replace('%data%', card));
    });
+   counter = 0;
+   opens = [];
+   $('.moves').html(counter);
+   for (var i = $('.stars').children().length; i < 3; i++) {
+     $('.stars').append('<li><i class="fa fa-star"></i></li');
+   }
+   $('.success').hide();
+   setupClickListener();
  }
  displayCards();
 
@@ -64,9 +72,71 @@ function shuffle(array) {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+ var counter = 0;
  function setupClickListener() {
    $('.card').click(function(evt) {
      console.log('clicked', evt)
+     dealWithStarsAndCounter($(this));
+     displaySymbol($(this));
+     addToOpens($(this));
+     if (opens.length >= 2) {
+       checkMatch();
+     }
+     if ($('.match').length === $('.card').length) {
+       displayMessage();
+     }
+   });
+   $('.play').click(function(evt) {
+     console.log('clicked', evt)
+     $('header, section, .deck').show('slow');
+     displayCards();
+   });
+   $('.restart').click(function(evt) {
+     displayCards();
    });
  }
- setupClickListener();
+
+function displaySymbol(current) {
+  current.addClass('open').addClass('show');
+}
+
+var opens = [];
+function addToOpens(current) {
+  if (opens.length > 0 && opens[opens.length-1].is(current)) {
+    return;
+  }
+
+  if (!current.hasClass('match')) {
+    opens.push(current);
+  }
+  console.log(opens);
+}
+
+function checkMatch() {
+  var cardOne = opens[0];
+  cardOne.removeClass('open').removeClass('show');
+  var cardTwo = opens[1];
+  cardTwo.removeClass('open').removeClass('show');
+  if (cardOne.children().attr('class') === cardTwo.children().attr('class')) {
+    cardOne.addClass('match');
+    cardTwo.addClass('match');
+  }
+  opens = [];
+}
+
+function dealWithStarsAndCounter(current) {
+  if (!current.hasClass('match') && !current.hasClass('open')) {
+    counter++;
+  }
+  $('.moves').html(counter);
+  if (counter === 10 || counter === 20) {
+    $('.stars li:last').remove();
+  }
+}
+
+function displayMessage() {
+  console.log('YOU WIN!');
+  $('header, section, .deck').hide('slow');
+  $('.success').show();
+  $('.stars-count').html($('.stars').children().length);
+}

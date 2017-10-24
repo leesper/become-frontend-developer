@@ -107,3 +107,20 @@ h1 {
     float: right;
     cursor: pointer;
 }
+
+.success {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 200px;
+}
+
+.play {
+  background: #02b3e4;
+  border-radius: 5px;
+  box-shadow: 5px 2px 20px 0 rgba(46, 61, 73, 0.5);
+  padding: 0.5em 2.5em;
+  font-size: 20px;
+  color: white;
+}
