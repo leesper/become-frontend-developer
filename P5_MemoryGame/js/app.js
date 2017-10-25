@@ -153,6 +153,7 @@ Game.prototype.move = function(current) {
     this.stars--;
     this.displayStars();
   }
+  console.log('width', current.width());
 };
 
 Game.prototype.flipCard = function(current) {
@@ -170,6 +171,14 @@ Game.prototype.addToOpens = function(current) {
   }
 };
 
+Game.prototype.jelly = function(element) {
+  var width = element.width();
+  var height = element.height();
+  element.animate({"width": width + 15, "height": height - 15}, 100);
+  element.animate({"width": width - 15, "height": height + 15}, 100);
+  element.animate({"width": width, "height": height}, 100);
+};
+
 Game.prototype.checkMatch = function() {
   if (this.opens.length > 1) {
     var cardOne = this.opens[0];
@@ -179,6 +188,8 @@ Game.prototype.checkMatch = function() {
       cardTwo.removeClass('open').removeClass('show');
       cardOne.addClass('match');
       cardTwo.addClass('match');
+      this.jelly(cardOne);
+      this.jelly(cardTwo);
     } else {
       setTimeout(function() {
         console.log('timeout');
