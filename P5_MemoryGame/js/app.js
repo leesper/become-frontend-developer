@@ -139,7 +139,10 @@ Game.prototype.move = function(current) {
     this.moves++;
   }
   this.displayMoves();
-  if (this.moves === 10 || this.moves === 20) {
+  // finished within 16 moves: 3 stars
+  // finished within 32 moves: 2 stars
+  // finished within 48 moves: 1 star
+  if (this.moves === 17 || this.moves === 33 || this.moves == 49) {
     this.stars--;
     this.displayStars();
   }
@@ -161,6 +164,7 @@ Game.prototype.addToOpens = function(current) {
   }
 };
 
+// display a jelly-like animation when two cards match or mismatch
 Game.prototype.jelly = function(element, isMatch) {
   var width = element.width();
   var height = element.height();
