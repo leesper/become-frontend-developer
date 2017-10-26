@@ -34,6 +34,7 @@ var Game = function() {
  */
 Game.prototype.displayCards = function() {
   this.moves = 0;
+  this.timer = 0;
   this.stars = 3;
   this.opens = [];
   this.timestamp = new Date().getTime();
@@ -61,6 +62,15 @@ Game.prototype.displaySeconds = function() {
   var now = new Date().getTime();
   var duration = Math.round((now - this.timestamp) / 1000);
   $('.seconds').html(duration);
+};
+
+Game.prototype.displayTimer = function() {
+  this.timer++;
+  $('.timer').html(this.timer);
+  var self = this;
+  setTimeout(function() {
+    self.displayTimer();
+  }, 1000);
 };
 
 Game.prototype.toggleSuccessMessage = function(ok, slow) {
@@ -211,6 +221,7 @@ function gameInit() {
   game.displayCards();
   game.displayMoves();
   game.displayStars();
+  game.displayTimer();
   game.toggleSuccessMessage(false, false);
 }
 
