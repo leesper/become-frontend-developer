@@ -1,24 +1,6 @@
 /*
  * Create a list that holds all of your cards
  */
- var cards = [
-   'fa fa-diamond',
-   'fa fa-paper-plane-o',
-   'fa fa-anchor',
-   'fa fa-bolt',
-   'fa fa-cube',
-   'fa fa-anchor',
-   'fa fa-leaf',
-   'fa fa-bicycle',
-   'fa fa-diamond',
-   'fa fa-bomb',
-   'fa fa-leaf',
-   'fa fa-bomb',
-   'fa fa-bolt',
-   'fa fa-bicycle',
-   'fa fa-paper-plane-o',
-   'fa fa-cube',
- ];
 
 HTMLcardListItem = '<li class="card"><i class="%data%"></i></li>';
 
@@ -54,6 +36,7 @@ Game.prototype.displayCards = function() {
   this.moves = 0;
   this.stars = 3;
   this.opens = [];
+  this.timestamp = new Date().getTime();
   this.cards = shuffle(this.cards);
   $('.deck').empty();
   this.cards.forEach(function(card) {
@@ -74,6 +57,12 @@ Game.prototype.displayStars = function() {
   $('.stars-count').html(this.stars);
 };
 
+Game.prototype.displaySeconds = function() {
+  var now = new Date().getTime();
+  var duration = Math.round((now - this.timestamp) / 1000);
+  $('.seconds').html(duration);
+};
+
 Game.prototype.toggleSuccessMessage = function(ok, slow) {
   if (ok) {
     if (slow) {
@@ -83,6 +72,7 @@ Game.prototype.toggleSuccessMessage = function(ok, slow) {
     }
     this.displayMoves();
     this.displayStars();
+    this.displaySeconds();
   } else {
     if (slow) {
       $('.success').hide("slow");
@@ -171,12 +161,15 @@ Game.prototype.addToOpens = function(current) {
   }
 };
 
-Game.prototype.jelly = function(element) {
+Game.prototype.jelly = function(element, isMatch) {
   var width = element.width();
   var height = element.height();
-  element.animate({"width": width + 15, "height": height - 15}, 100);
-  element.animate({"width": width - 15, "height": height + 15}, 100);
-  element.animate({"width": width, "height": height}, 100);
+  var milli = isMatch ? 100 : 50;
+  element.animate({'width': width + 10, 'height': height - 10}, milli);
+  element.animate({'width': width - 10, 'height': height + 10}, milli);
+  element.animate({'width': width + 5, 'height': height - 5}, milli);
+  element.animate({'width': width - 5, 'height': height + 5}, milli);
+  element.animate({'width': width, 'height': height}, milli);
 };
 
 Game.prototype.checkMatch = function() {
@@ -188,13 +181,17 @@ Game.prototype.checkMatch = function() {
       cardTwo.removeClass('open').removeClass('show');
       cardOne.addClass('match');
       cardTwo.addClass('match');
-      this.jelly(cardOne);
-      this.jelly(cardTwo);
+      this.jelly(cardOne, true);
+      this.jelly(cardTwo, true);
     } else {
+      cardOne.addClass('mismatch');
+      cardTwo.addClass('mismatch');
+      this.jelly(cardOne, false);
+      this.jelly(cardTwo, false);
       setTimeout(function() {
         console.log('timeout');
-        cardOne.removeClass('open').removeClass('show');
-        cardTwo.removeClass('open').removeClass('show');
+        cardOne.removeClass('open').removeClass('show').removeClass('mismatch');
+        cardTwo.removeClass('open').removeClass('show').removeClass('mismatch');
       }, 500);
     }
     this.opens = [];
