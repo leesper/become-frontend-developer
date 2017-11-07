@@ -19,8 +19,15 @@
       </div>
     </div>
     <div class="row">
-      <div class="btn-group-vertical col-md-2 col-sm-2 col-2" data-bind="foreach: locations">
-        <button type="button" class="btn btn-secondary" data-bind="text: $data"></button>
+      <div class="col-md-2 col-sm-2 col-2">
+        <ul class="list-group">
+          <li class="list-group-item disabled">最忆是杭州</li>
+        </ul>
+        <ul class="list-group" data-bind="foreach: locations">
+          <div data-bind="if: visible">
+            <li class="list-group-item" data-bind="text: name"></li>
+          </div>
+        </ul>
       </div>
       <div class="col-md-10 col-sm-10 col-10">
         this is the Google map
