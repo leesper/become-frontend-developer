@@ -19,21 +19,8 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-2 col-sm-2 col-2">
-        <ul class="list-group">
-          <li class="list-group-item">灵隐寺</li>
-          <li class="list-group-item">北高峰</li>
-          <li class="list-group-item">云溪竹径</li>
-          <li class="list-group-item">钱江一桥</li>
-          <li class="list-group-item">断桥残雪</li>
-          <li class="list-group-item">台塑牛排</li>
-          <li class="list-group-item">千串屋</li>
-          <li class="list-group-item">柳浪闻莺</li>
-          <li class="list-group-item">南宋御街</li>
-          <li class="list-group-item">五云山</li>
-          <li class="list-group-item">梅家坞</li>
-          <li class="list-group-item">外婆家</li>
-        </ul>
+      <div class="btn-group-vertical col-md-2 col-sm-2 col-2" data-bind="foreach: locations">
+        <button type="button" class="btn btn-secondary" data-bind="text: $data"></button>
       </div>
       <div class="col-md-10 col-sm-10 col-10">
         this is the Google map
@@ -43,6 +30,9 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="js/knockout-3.4.2.js"></script>
+  <script type="text/javascript" src="js/app.js">
+  </script>
 </body>
 
 </html>
