@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>NeighborhoodMap</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -14,7 +15,7 @@
       <div class="col-md-12">
         <div class="input-group">
           <span class="input-group-addon" id="search-box">搜索</span>
-          <input type="text" class="form-control" placeholder="搜索地名">
+          <input type="text" class="form-control" data-bind="event: { input: filterLocations }" placeholder="搜索地名">
         </div>
       </div>
     </div>
@@ -30,7 +31,7 @@
         </ul>
       </div>
       <div class="col-md-10 col-sm-10 col-10">
-        this is the Google map
+        <div id="map"></div>
       </div>
     </div>
   </div>
@@ -38,8 +39,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
   <script type="text/javascript" src="js/knockout-3.4.2.js"></script>
-  <script type="text/javascript" src="js/app.js">
+  <script type="text/javascript" src="js/app.js"></script>
+  <script>
+    var map;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: {
+          lat: 30.16,
+          lng: 120.12
+        },
+        zoom: 12
+      });
+    }
   </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqKroCshxFO_T0WPX2Dhs2jhiWBfBKP1Q&callback=initMap" async defer></script>
 </body>
 
 </html>

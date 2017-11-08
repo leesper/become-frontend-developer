@@ -67,4 +67,23 @@ const AppViewModel = function() {
   ]);
 };
 
-ko.applyBindings(new AppViewModel());
+AppViewModel.prototype.filterLocations = function(data, evt) {
+  locations = this.locations.removeAll();
+  const self = this;
+  locations.forEach(function(loc) {
+    if (evt.target.value !== "") {
+      if (loc.name.indexOf(evt.target.value) === -1) {
+        loc.visible = false;
+      } else {
+        loc.visible = true;
+      }
+    } else {
+      loc.visible = true;
+    }
+    self.locations.push(loc);
+  });
+};
+
+const avm = new AppViewModel();
+
+ko.applyBindings(avm);
