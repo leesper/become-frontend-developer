@@ -1,3 +1,4 @@
+
 const AppViewModel = function() {
   this.locations = ko.observableArray([
     {
@@ -61,7 +62,7 @@ const AppViewModel = function() {
       visible: true,
     },
     {
-      name: '楼外楼',
+      name: '岳王庙',
       visible: true,
     }
   ]);
@@ -87,3 +88,37 @@ AppViewModel.prototype.filterLocations = function(data, evt) {
 const avm = new AppViewModel();
 
 ko.applyBindings(avm);
+
+let map;
+const markers = [];
+
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: {
+      lat: 30.2520798,
+      lng: 120.1344447
+    },
+    zoom: 13
+  });
+
+  displayMarkers();
+}
+
+function displayMarkers() {
+  const locations = avm.locations();
+  locations.forEach(function(loc) {
+    if (loc.visible) {
+      const geoCodeURL = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + loc.name + ',+杭州&key=AIzaSyDqKroCshxFO_T0WPX2Dhs2jhiWBfBKP1Q';
+      fetch(geoCodeURL).then(function(response) {
+        return response.json();
+      }).then(function(data) {
+        const marker = new google.maps.Marker({
+          position: data.results[0].geometry.location,
+          map: map,
+          title: loc.name
+        });
+        markers.push(marker);
+      });
+    }
+  });
+}
