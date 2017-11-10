@@ -83,6 +83,7 @@ AppViewModel.prototype.filterLocations = function(data, evt) {
     }
     self.locations.push(loc);
   });
+  updateMarkers();
 };
 
 AppViewModel.prototype.showLocationInfo = function(location) {
@@ -98,7 +99,6 @@ AppViewModel.prototype.startBounce = function(location) {
 };
 
 AppViewModel.prototype.stopBounce = function(location) {
-  console.log('stop', location);
   markers.forEach(function(marker) {
     if (marker.title === location.name) {
       marker.setAnimation(null);
@@ -137,10 +137,21 @@ function displayMarkers() {
           position: data.results[0].geometry.location,
           map: map,
           title: loc.name,
-          animation: google.maps.Animation.DROP,
+          animation: google.maps.Animation.DROP
         });
         markers.push(marker);
       });
     }
+  });
+}
+
+function updateMarkers() {
+  const locations = avm.locations();
+  locations.forEach(function(location) {
+    markers.forEach(function(marker) {
+      if (location.name === marker.title) {
+        location.visible ? marker.setMap(map) : marker.setMap(null);
+      }
+    });
   });
 }
