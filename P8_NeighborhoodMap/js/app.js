@@ -88,6 +88,7 @@ AppViewModel.prototype.filterLocations = function(data, evt) {
 
 AppViewModel.prototype.showLocationInfo = function(location) {
   console.log(location);
+  const wikiAPI = 'https://zh.wikipedia.org/w/api.php?action=opensearch&search=%E6%9D%AD%E5%B7%9E%E5%B2%B3%E7%8E%8B%E5%BA%99&format=json';
 };
 
 AppViewModel.prototype.startBounce = function(location) {
