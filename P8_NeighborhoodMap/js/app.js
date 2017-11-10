@@ -85,6 +85,27 @@ AppViewModel.prototype.filterLocations = function(data, evt) {
   });
 };
 
+AppViewModel.prototype.showLocationInfo = function(location) {
+  console.log(location);
+};
+
+AppViewModel.prototype.startBounce = function(location) {
+  markers.forEach(function(marker) {
+    if (marker.title === location.name) {
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+    }
+  });
+};
+
+AppViewModel.prototype.stopBounce = function(location) {
+  console.log('stop', location);
+  markers.forEach(function(marker) {
+    if (marker.title === location.name) {
+      marker.setAnimation(null);
+    }
+  });
+};
+
 const avm = new AppViewModel();
 
 ko.applyBindings(avm);
@@ -115,7 +136,8 @@ function displayMarkers() {
         const marker = new google.maps.Marker({
           position: data.results[0].geometry.location,
           map: map,
-          title: loc.name
+          title: loc.name,
+          animation: google.maps.Animation.DROP,
         });
         markers.push(marker);
       });

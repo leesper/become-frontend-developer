@@ -26,7 +26,7 @@
         </ul>
         <ul class="list-group" data-bind="foreach: locations">
           <div data-bind="if: visible">
-            <li class="list-group-item" data-bind="text: name"></li>
+            <li class="list-group-item" data-bind="text: name, click: $parent.showLocationInfo, event: { mouseover: $parent.startBounce, mouseout: $parent.stopBounce }"></li>
           </div>
         </ul>
       </div>
