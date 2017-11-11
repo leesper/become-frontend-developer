@@ -1,8 +1,8 @@
 "use strict";
 
 const AppViewModel = function() {
-  this.locations = ko.observableArray([
-    {
+  // hard-coded locations interested
+  this.locations = ko.observableArray([{
       name: '灵隐寺',
       visible: true,
     },
@@ -69,8 +69,9 @@ const AppViewModel = function() {
   ]);
 };
 
+// filterLocations shows all locations or those match the user input
 AppViewModel.prototype.filterLocations = function(data, evt) {
-  locations = this.locations.removeAll();
+  const locations = this.locations.removeAll();
   const self = this;
   locations.forEach(function(loc) {
     if (evt.target.value !== "") {
@@ -88,7 +89,6 @@ AppViewModel.prototype.filterLocations = function(data, evt) {
 };
 
 AppViewModel.prototype.showLocationInfo = function(location) {
-  console.log(location);
   markers.forEach(function(marker) {
     if (marker.title === location.name) {
       showInfoWindow(marker);
@@ -96,7 +96,9 @@ AppViewModel.prototype.showLocationInfo = function(location) {
   });
 };
 
-AppViewModel.prototype.startBounce = function(location) {
+// start bouncing the marker
+AppViewModel.prototype.startBounce = function(location, evt) {
+  evt.target.classList.add('active');
   markers.forEach(function(marker) {
     if (marker.title === location.name) {
       marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -104,7 +106,9 @@ AppViewModel.prototype.startBounce = function(location) {
   });
 };
 
-AppViewModel.prototype.stopBounce = function(location) {
+// stop bouncing the marker
+AppViewModel.prototype.stopBounce = function(location, evt) {
+  evt.target.classList.remove('active');
   markers.forEach(function(marker) {
     if (marker.title === location.name) {
       marker.setAnimation(null);
@@ -131,6 +135,8 @@ function initMap() {
   displayMarkers();
 }
 
+// displayMarkers shows all markers for locations above, it uses Google geo code
+// API to get the corresponding latitude/longitude data respectively
 function displayMarkers() {
   const locations = avm.locations();
   locations.forEach(function(loc) {
@@ -167,15 +173,16 @@ function updateMarkers() {
   });
 }
 
+// showInfoWindow shows some information for the location using He Feng Weather API
 function showInfoWindow(marker) {
   map.setCenter(marker.getPosition());
   const weatherAPI = 'https://free-api.heweather.com/s6/weather/lifestyle?location=%E6%9D%AD%E5%B7%9E&key=491604eb519d4a39a6fc678246d49a7f';
+  const infoWindow = new google.maps.InfoWindow();
   fetch(weatherAPI).then(function(response) {
     return response.json();
   }).then(function(weatherData) {
     console.log(weatherData);
     if (weatherData.HeWeather6[0].status === 'ok') {
-      // const nation = weatherData.HeWeather6[0].basic.cnty;
       const province = weatherData.HeWeather6[0].basic.admin_area;
       const city = weatherData.HeWeather6[0].basic.location;
       const updateTime = weatherData.HeWeather6[0].update.loc;
@@ -192,20 +199,16 @@ function showInfoWindow(marker) {
     <p class="card-text">旅游指数：${travelIndex}</p>
   </div>
 </div>`;
-      const infoWindow = new google.maps.InfoWindow({
-        content: contentString
-      });
+      infoWindow.setContent(contentString);
       infoWindow.open(map, marker);
     } else {
-      const errStatusWindow = new google.maps.InfoWindow({
-        content: `<p>Invalid status: ${weatherData.HeWeather6[0].status}</p>`
-      })
-      errStatusWindow.open(map, marker);
+      const invalid = `<p>Invalid status: ${weatherData.HeWeather6[0].status}</p>`;
+      infoWindow.setContent(invalid);
+      infoWindow.open(map, marker);
     }
   }).catch(function(e) {
-    const errWindow = new google.maps.InfoWindow({
-      content: `<p>Error: ${e}</p>`
-    });
-    errWindow.open(map, marker);
+    const err = `<p>Error: ${e}</p>`;
+    infoWindow.setContent(err);
+    infoWindow.open(map, marker);
   });
 }
