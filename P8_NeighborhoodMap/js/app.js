@@ -1,3 +1,4 @@
+"use strict";
 
 const AppViewModel = function() {
   this.locations = ko.observableArray([
@@ -88,7 +89,11 @@ AppViewModel.prototype.filterLocations = function(data, evt) {
 
 AppViewModel.prototype.showLocationInfo = function(location) {
   console.log(location);
-  const wikiAPI = 'https://zh.wikipedia.org/w/api.php?action=opensearch&search=%E6%9D%AD%E5%B7%9E%E5%B2%B3%E7%8E%8B%E5%BA%99&format=json';
+  markers.forEach(function(marker) {
+    if (marker.title === location.name) {
+      showInfoWindow(marker);
+    }
+  });
 };
 
 AppViewModel.prototype.startBounce = function(location) {
@@ -140,7 +145,12 @@ function displayMarkers() {
           title: loc.name,
           animation: google.maps.Animation.DROP
         });
+        marker.addListener('click', function() {
+          showInfoWindow(marker);
+        });
         markers.push(marker);
+      }).catch(function(e) {
+        alert(e);
       });
     }
   });
@@ -154,5 +164,48 @@ function updateMarkers() {
         location.visible ? marker.setMap(map) : marker.setMap(null);
       }
     });
+  });
+}
+
+function showInfoWindow(marker) {
+  map.setCenter(marker.getPosition());
+  const weatherAPI = 'https://free-api.heweather.com/s6/weather/lifestyle?location=%E6%9D%AD%E5%B7%9E&key=491604eb519d4a39a6fc678246d49a7f';
+  fetch(weatherAPI).then(function(response) {
+    return response.json();
+  }).then(function(weatherData) {
+    console.log(weatherData);
+    if (weatherData.HeWeather6[0].status === 'ok') {
+      // const nation = weatherData.HeWeather6[0].basic.cnty;
+      const province = weatherData.HeWeather6[0].basic.admin_area;
+      const city = weatherData.HeWeather6[0].basic.location;
+      const updateTime = weatherData.HeWeather6[0].update.loc;
+      const comfortIndex = weatherData.HeWeather6[0].lifestyle[0].brf;
+      const dressIndex = weatherData.HeWeather6[0].lifestyle[1].brf;
+      const travelIndex = weatherData.HeWeather6[0].lifestyle[4].brf;
+      const airIndex = weatherData.HeWeather6[0].lifestyle[7].brf;
+      const contentString = `<div class="card" style="width: 20rem;">
+  <div class="card-body">
+    <h4 class="card-title">${province}${city} - ${marker.title}</h4>
+    <p class="card-text">更新时间： ${updateTime}</p>
+    <p class="card-text">舒适指数：${comfortIndex}</p>
+    <p class="card-text">穿衣指数：${dressIndex}</p>
+    <p class="card-text">旅游指数：${travelIndex}</p>
+  </div>
+</div>`;
+      const infoWindow = new google.maps.InfoWindow({
+        content: contentString
+      });
+      infoWindow.open(map, marker);
+    } else {
+      const errStatusWindow = new google.maps.InfoWindow({
+        content: `<p>Invalid status: ${weatherData.HeWeather6[0].status}</p>`
+      })
+      errStatusWindow.open(map, marker);
+    }
+  }).catch(function(e) {
+    const errWindow = new google.maps.InfoWindow({
+      content: `<p>Error: ${e}</p>`
+    });
+    errWindow.open(map, marker);
   });
 }
