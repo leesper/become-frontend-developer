@@ -10,17 +10,19 @@
 </head>
 
 <body>
+
   <div class="container-fluid fill">
     <div class="row">
       <div class="col-md-12">
         <div class="input-group">
           <span class="input-group-addon" id="search-box">搜索</span>
+          <button type="submit" class="btn btn-light" data-bind="click: toggleLocationList">列表</button>
           <input type="text" class="form-control" data-bind="event: { input: filterLocations }" placeholder="搜索地名">
         </div>
       </div>
     </div>
     <div class="row fill">
-      <div class="col-md-2 col-sm-2 col-2">
+      <div class="col-md-2 col-sm-2 col-6 location-list" data-bind="style: {left: leftEdgeValue}">
         <ul class="list-group">
           <li class="list-group-item disabled">最忆是杭州</li>
         </ul>
@@ -30,11 +32,12 @@
           </div>
         </ul>
       </div>
-      <div class="col-md-10 col-sm-10 col-10">
+      <div class="col-md-10 col-sm-10 col-6">
         <div id="map"></div>
       </div>
     </div>
   </div>
+
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>

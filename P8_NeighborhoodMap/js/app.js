@@ -1,6 +1,10 @@
 "use strict";
 
+const hideValue = '-300px';
+const showValue = '0';
+
 const AppViewModel = function() {
+  this.leftEdgeValue = ko.observable(showValue);
   // hard-coded locations interested
   this.locations = ko.observableArray([{
       name: '灵隐寺',
@@ -110,6 +114,12 @@ AppViewModel.prototype.stopBounce = function(location, evt) {
       marker.setAnimation(null);
     }
   });
+};
+
+AppViewModel.prototype.toggleLocationList = function() {
+  console.log('toggle');
+  const val = this.leftEdgeValue();
+  val === hideValue ? this.leftEdgeValue(showValue) : this.leftEdgeValue(hideValue);
 };
 
 const avm = new AppViewModel();

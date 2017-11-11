@@ -10,3 +10,7 @@ html, body {
 .fill {
   height: 100%;
 }
+
+.location-list {
+  transition: 0.5s;
+}
