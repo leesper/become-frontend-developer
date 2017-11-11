@@ -145,16 +145,20 @@ function displayMarkers() {
       fetch(geoCodeURL).then(function(response) {
         return response.json();
       }).then(function(data) {
-        const marker = new google.maps.Marker({
-          position: data.results[0].geometry.location,
-          map: map,
-          title: loc.name,
-          animation: google.maps.Animation.DROP
-        });
-        marker.addListener('click', function() {
-          showInfoWindow(marker);
-        });
-        markers.push(marker);
+        if (data.status === 'OK') {
+          const marker = new google.maps.Marker({
+            position: data.results[0].geometry.location,
+            map: map,
+            title: loc.name,
+            animation: google.maps.Animation.DROP
+          });
+          marker.addListener('click', function() {
+            showInfoWindow(marker);
+          });
+          markers.push(marker);
+        } else {
+          alert(data.error_message);
+        }
       }).catch(function(e) {
         alert(e);
       });
