@@ -75,11 +75,7 @@ AppViewModel.prototype.filterLocations = function(data, evt) {
   const self = this;
   locations.forEach(function(loc) {
     if (evt.target.value !== "") {
-      if (loc.name.indexOf(evt.target.value) === -1) {
-        loc.visible = false;
-      } else {
-        loc.visible = true;
-      }
+      loc.name.indexOf(evt.target.value) === -1 ? loc.visible = false : loc.visible = true;
     } else {
       loc.visible = true;
     }
@@ -121,6 +117,7 @@ const avm = new AppViewModel();
 ko.applyBindings(avm);
 
 let map;
+let infoWindow;
 const markers = [];
 
 function initMap() {
@@ -131,6 +128,8 @@ function initMap() {
     },
     zoom: 13
   });
+
+  infoWindow = new google.maps.InfoWindow();
 
   displayMarkers();
 }
@@ -181,7 +180,8 @@ function updateMarkers() {
 function showInfoWindow(marker) {
   map.setCenter(marker.getPosition());
   const weatherAPI = 'https://free-api.heweather.com/s6/weather/lifestyle?location=%E6%9D%AD%E5%B7%9E&key=491604eb519d4a39a6fc678246d49a7f';
-  const infoWindow = new google.maps.InfoWindow();
+  infoWindow.setContent(`<h5>正在获取数据，请稍后...</h5>`);
+  infoWindow.open(map, marker);
   fetch(weatherAPI).then(function(response) {
     return response.json();
   }).then(function(weatherData) {
@@ -204,15 +204,12 @@ function showInfoWindow(marker) {
   </div>
 </div>`;
       infoWindow.setContent(contentString);
-      infoWindow.open(map, marker);
     } else {
       const invalid = `<p>Invalid status: ${weatherData.HeWeather6[0].status}</p>`;
       infoWindow.setContent(invalid);
-      infoWindow.open(map, marker);
     }
   }).catch(function(e) {
     const err = `<p>Error: ${e}</p>`;
     infoWindow.setContent(err);
-    infoWindow.open(map, marker);
   });
 }
