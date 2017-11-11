@@ -134,6 +134,16 @@ function initMap() {
   displayMarkers();
 }
 
+function mapLoadingError() {
+  console.log('error happened');
+  document.write(`<div class="alert alert-danger" role="alert">
+  <h4 class="alert-heading">Map Loading Error</h4>
+  <p>Error happened when loading Google map.</p>
+  <hr>
+  <p class="mb-0">Please check your network and refresh.</p>
+</div>`);
+}
+
 // displayMarkers shows all markers for locations above, it uses Google geo code
 // API to get the corresponding latitude/longitude data respectively
 function displayMarkers() {
