@@ -8,7 +8,7 @@ class BookItem extends React.Component {
       <li>
         <div className="book">
           <div className="book-top">
-            <div className="book-cover" style={this.props.styles} ></div>
+            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${this.props.image})` }} ></div>
             <Changer />
           </div>
           <div className="book-title">{this.props.title}</div>

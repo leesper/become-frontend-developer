@@ -10,7 +10,7 @@ class BookCollection extends React.Component {
           {this.props.items.map(item => (
             <BookItem
               key={item.title}
-              styles={item.styles}
+              image={item.image}
               title={item.title}
               authors={item.authors}
             />
