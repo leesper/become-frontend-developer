@@ -3,6 +3,7 @@ import * as BooksAPI from './BooksAPI'
 import './App.css'
 import BookList from './BookList'
 import BookSearch from './BookSearch'
+import {Shelf, Book} from './model'
 
 class BooksApp extends React.Component {
   constructor(props) {
@@ -43,54 +44,29 @@ class BooksApp extends React.Component {
   updateShelves() {
     BooksAPI.getAll().then(books => {
       console.log(books);
-      const currentReading = {
-        title: "Currently Reading",
-        items: []
-      };
-
-      const wantToRead = {
-        title: "Want To Read",
-        items: []
-      };
-
-      const read = {
-        title: "Read",
-        items: []
-      };
+      const shelves = ["Currently Reading", "Want To Read", "Read"].map(title => (
+        new Shelf(title)
+      ))
 
       books.forEach(function(book) {
+        const bookItem = new Book(
+          book.imageLinks.smallThumbnail,
+          book.title,
+          book.authors[0]);
         switch (book.shelf) {
           case "currentlyReading":
-            currentReading.items.push({
-              image: book.imageLinks.smallThumbnail,
-              title: book.title,
-              authors: book.authors[0]
-            });
+            shelves[0].addBook(bookItem);
             break;
           case "wantToRead":
-            wantToRead.items.push({
-              image: book.imageLinks.smallThumbnail,
-              title: book.title,
-              authors: book.authors[0]
-            });
+            shelves[1].addBook(bookItem);
             break;
           case "read":
-            read.items.push({
-              image: book.imageLinks.smallThumbnail,
-              title: book.title,
-              authors: book.authors[0]
-            });
+            shelves[2].addBook(bookItem);
             break;
           default:
             console.log("invalid shelf", book.shelf);
         }
       });
-
-      const shelves = [
-        currentReading,
-        wantToRead,
-        read
-      ];
 
       this.setState({shelves: shelves});
 

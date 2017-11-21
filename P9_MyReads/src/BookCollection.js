@@ -13,6 +13,7 @@ class BookCollection extends React.Component {
               image={item.image}
               title={item.title}
               authors={item.authors}
+              shelf={this.props.shelf}
             />
           ))}
         </ol>
