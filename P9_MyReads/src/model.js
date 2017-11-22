@@ -10,10 +10,12 @@ class Shelf {
 }
 
 class Book {
-  constructor(image, title, authors) {
+  constructor(id, image, title, authors, shelf) {
+    this.id = id;
     this.image = image;
     this.title = title;
     this.authors = authors;
+    this.shelf = shelf;
   }
 }
 

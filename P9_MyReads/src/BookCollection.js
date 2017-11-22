@@ -9,11 +9,13 @@ class BookCollection extends React.Component {
         <ol className="books-grid">
           {this.props.items.map(item => (
             <BookItem
-              key={item.title}
+              key={item.id}
               image={item.image}
               title={item.title}
               authors={item.authors}
-              shelf={this.props.shelf}
+              bookid={item.id}
+              shelf={item.shelf}
+              clickHandler={this.props.clickHandler}
             />
           ))}
         </ol>

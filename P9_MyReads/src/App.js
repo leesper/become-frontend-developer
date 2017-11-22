@@ -20,6 +20,11 @@ class BooksApp extends React.Component {
     };
   }
 
+  handleClick = (e, bookid, originShelf) => {
+    const targetShelf = e.target.value;
+    console.log(bookid, originShelf, targetShelf);
+  }
+
   render() {
     return (
       <div className="app">
@@ -31,6 +36,7 @@ class BooksApp extends React.Component {
           <BookList
             onClick={() => this.setState({ showSearchPage: true })}
             shelves={this.state.shelves}
+            clickHandler={this.handleClick}
           />
         )}
       </div>
@@ -50,9 +56,11 @@ class BooksApp extends React.Component {
 
       books.forEach(function(book) {
         const bookItem = new Book(
+          book.id,
           book.imageLinks.smallThumbnail,
           book.title,
-          book.authors[0]);
+          book.authors[0],
+          book.shelf);
         switch (book.shelf) {
           case "currentlyReading":
             shelves[0].addBook(bookItem);

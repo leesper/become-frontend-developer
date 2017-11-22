@@ -10,6 +10,7 @@ class BookShelf extends React.Component {
         <BookCollection
           items={this.props.items}
           shelf={this.props.title}
+          clickHandler={this.props.clickHandler}
         />
       </div>
     )
