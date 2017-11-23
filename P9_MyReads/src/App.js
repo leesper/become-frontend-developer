@@ -23,6 +23,57 @@ class BooksApp extends React.Component {
   handleClick = (e, bookid, originShelf) => {
     const targetShelf = e.target.value;
     console.log(bookid, originShelf, targetShelf);
+    if (originShelf !== targetShelf) {
+      BooksAPI.update({ id: bookid }, targetShelf).then(res => {
+        const shelves = this.state.shelves;
+        const book = this.deleteFromShelf(bookid, originShelf, shelves);
+        this.addToShelf(book, targetShelf, shelves);
+        this.setState({shelves: shelves});
+      }).catch(err => {
+        console.log('update error: ' + err);
+      });
+    }
+  }
+
+  deleteFromShelf(bookid, origin, shelves) {
+    const index = this.getShelfIndex(origin);
+
+    for (let i = 0; i < shelves[index].items.length; i++) {
+      console.log(shelves[index].items[i].id);
+      if (shelves[index].items[i].id === bookid) {
+        const book = shelves[index].items[i];
+        shelves[index].items.splice(i, 1);
+        return book;
+      }
+    }
+
+    return null;
+  }
+
+  addToShelf(book, target, shelves) {
+    const index = this.getShelfIndex(target);
+
+    if (index < 0) {
+      return;
+    }
+
+    if (book) {
+      book.shelf = target;
+      shelves[index].addBook(book);
+    }
+  }
+
+  getShelfIndex(name) {
+    switch (name) {
+      case "currentlyReading":
+        return 0;
+      case "wantToRead":
+        return 1;
+      case "read":
+        return 2;
+      default:
+        return -1;
+    }
   }
 
   render() {
@@ -52,7 +103,7 @@ class BooksApp extends React.Component {
       console.log(books);
       const shelves = ["Currently Reading", "Want To Read", "Read"].map(title => (
         new Shelf(title)
-      ))
+      ));
 
       books.forEach(function(book) {
         const bookItem = new Book(
@@ -78,7 +129,9 @@ class BooksApp extends React.Component {
 
       this.setState({shelves: shelves});
 
-      console.log(shelves);
+      // console.log(shelves);
+    }).catch(err => {
+      console.log("getAll error: " + err);
     });
   }
 }
