@@ -25,6 +25,9 @@ class BooksApp extends React.Component {
     console.log(bookid, originShelf, targetShelf);
     if (originShelf !== targetShelf) {
       BooksAPI.update({ id: bookid }, targetShelf).then(res => {
+        // alternatively we can just call updateShelves() to refresh the state
+        // from server, but this requires an extra request, so I just update the
+        // local state and call setState
         const shelves = this.state.shelves;
         const book = this.deleteFromShelf(bookid, originShelf, shelves);
         this.addToShelf(book, targetShelf, shelves);
