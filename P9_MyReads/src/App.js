@@ -10,67 +10,12 @@ class BooksApp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      shelves: []
+      results: [],
+      shelfReading: new Shelf("Currently Reading"),
+      shelfToRead: new Shelf("Want To Read"),
+      shelfRead: new Shelf("Read")
     };
-  }
-
-  handleClick = (e, bookid, originShelf) => {
-    const targetShelf = e.target.value;
-    console.log(bookid, originShelf, targetShelf);
-    if (originShelf !== targetShelf) {
-      BooksAPI.update({ id: bookid }, targetShelf).then(res => {
-        // alternatively we can just call updateShelves() to refresh the state
-        // from server, but this requires an extra request, so I just update the
-        // local state and call setState
-        const shelves = this.state.shelves;
-        const book = this.deleteFromShelf(bookid, originShelf, shelves);
-        this.addToShelf(book, targetShelf, shelves);
-        this.setState({shelves: shelves});
-      }).catch(err => {
-        console.log('update error: ' + err);
-      });
-    }
-  }
-
-  deleteFromShelf(bookid, origin, shelves) {
-    const index = this.getShelfIndex(origin);
-
-    for (let i = 0; i < shelves[index].items.length; i++) {
-      console.log(shelves[index].items[i].id);
-      if (shelves[index].items[i].id === bookid) {
-        const book = shelves[index].items[i];
-        shelves[index].items.splice(i, 1);
-        return book;
-      }
-    }
-
-    return null;
-  }
-
-  addToShelf(book, target, shelves) {
-    const index = this.getShelfIndex(target);
-
-    if (index < 0) {
-      return;
-    }
-
-    if (book) {
-      book.shelf = target;
-      shelves[index].addBook(book);
-    }
-  }
-
-  getShelfIndex(name) {
-    switch (name) {
-      case "currentlyReading":
-        return 0;
-      case "wantToRead":
-        return 1;
-      case "read":
-        return 2;
-      default:
-        return -1;
-    }
+    this.shelfMap = {};
   }
 
   render() {
@@ -78,53 +23,109 @@ class BooksApp extends React.Component {
       <div className="app">
         <Route path="/" exact render={() => (
           <BookList
-            shelves={this.state.shelves}
+            shelves={[
+              this.state.shelfReading,
+              this.state.shelfToRead,
+              this.state.shelfRead]}
             clickHandler={this.handleClick}
           />
         )}/>
         <Route path="/search" render={() => (
-          <BookSearch />
+          <BookSearch
+            onSearch={this.handleSearch}
+            results={this.state.results}
+            clickHandler={this.handleClick}
+          />
         )}/>
       </div>
     )
+  }
+
+  handleSearch = (query) => {
+    console.log("query", query);
+    const self = this;
+    BooksAPI.search(query, 20).then(books => {
+      console.log('books', books);
+      const results = books.map(book => (
+        new Book(
+          book.id,
+          book.imageLinks.smallThumbnail,
+          book.title,
+          book.authors ? book.authors[0] : '',
+          self.shelfMap[book.id])
+      ))
+
+      this.setState({ results: results })
+    }).catch(err => {
+      console.log('search error:' + err);
+    });
+  }
+
+  handleClick = (e, book) => {
+    const targetShelf = e.target.value;
+    console.log(book, book.shelf, targetShelf);
+    if (targetShelf === "none") {
+      this.shelfMap[book.id] = "";
+    }
+    if (book.shelf !== targetShelf) {
+      BooksAPI.update({ id: book.id }, targetShelf).then(res => {
+        this.updateShelves();
+        this.updateResults(book, targetShelf);
+      }).catch(err => {
+        console.log('update error: ' + err);
+      });
+    }
   }
 
   componentDidMount() {
     this.updateShelves();
   }
 
+  updateResults(book, target) {
+    const results = this.state.results;
+    results.forEach((result) => {
+      if (result.id === book.id) {
+        result.shelf = target;
+      }
+    });
+  }
+
   updateShelves() {
+    const self = this;
     BooksAPI.getAll().then(books => {
       console.log(books);
-      const shelves = ["Currently Reading", "Want To Read", "Read"].map(title => (
-        new Shelf(title)
-      ));
+      const shelfReading = new Shelf("Currently Reading");
+      const shelfToRead = new Shelf("Want To Read");
+      const shelfRead = new Shelf("Read");
 
       books.forEach(function(book) {
+        self.shelfMap[book.id] = book.shelf;
         const bookItem = new Book(
           book.id,
           book.imageLinks.smallThumbnail,
           book.title,
-          book.authors[0],
+          book.authors ? book.authors[0]: '',
           book.shelf);
         switch (book.shelf) {
           case "currentlyReading":
-            shelves[0].addBook(bookItem);
+            shelfReading.addBook(bookItem);
             break;
           case "wantToRead":
-            shelves[1].addBook(bookItem);
+            shelfToRead.addBook(bookItem);
             break;
           case "read":
-            shelves[2].addBook(bookItem);
+            shelfRead.addBook(bookItem);
             break;
           default:
             console.log("invalid shelf", book.shelf);
         }
       });
 
-      this.setState({shelves: shelves});
-
-      // console.log(shelves);
+      this.setState({
+        shelfReading: shelfReading,
+        shelfToRead: shelfToRead,
+        shelfRead: shelfRead
+      });
     }).catch(err => {
       console.log("getAll error: " + err);
     });

@@ -11,6 +11,7 @@ class BookShelf extends React.Component {
           items={this.props.items}
           shelf={this.props.title}
           clickHandler={this.props.clickHandler}
+          collectType="bookshelf-books"
         />
       </div>
     )

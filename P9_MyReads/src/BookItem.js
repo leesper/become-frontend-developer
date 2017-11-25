@@ -10,13 +10,13 @@ class BookItem extends React.Component {
           <div className="book-top">
             <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${this.props.image})` }} ></div>
             <Changer
-              bookid={this.props.bookid}
+              book={this.props.book}
               shelf={this.props.shelf}
               clickHandler={this.props.clickHandler}
             />
           </div>
-          <div className="book-title">{this.props.title}</div>
-          <div className="book-authors">{this.props.authors}</div>
+          <div className="book-title">{this.props.book.title}</div>
+          <div className="book-authors">{this.props.book.authors}</div>
         </div>
       </li>
     )

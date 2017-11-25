@@ -6,8 +6,13 @@ class BookSearch extends React.Component {
   render() {
     return (
       <div className="search-books">
-        <SearchBar />
-        <SearchResults />
+        <SearchBar
+          onSearch={this.props.onSearch}
+        />
+        <SearchResults
+          results={this.props.results}
+          clickHandler={this.props.clickHandler}
+        />
       </div>
     )
   }
