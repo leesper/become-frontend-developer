@@ -17,6 +17,7 @@ class BookList extends React.Component {
                 title={shelf.title}
                 items={shelf.items}
                 clickHandler={this.props.clickHandler}
+                batchHandler={this.props.batchHandler}
               />
             ))}
           </div>

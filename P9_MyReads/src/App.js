@@ -28,6 +28,7 @@ class BooksApp extends React.Component {
               this.state.shelfToRead,
               this.state.shelfRead]}
             clickHandler={this.handleClick}
+            batchHandler={this.handleBatch}
           />
         )}/>
         <Route path="/search" render={() => (
@@ -39,6 +40,38 @@ class BooksApp extends React.Component {
         )}/>
       </div>
     )
+  }
+
+  handleBatch = (e, title) => {
+    const target = e.target.value;
+    console.log("batch target", target);
+    let targetShelf;
+    switch (title) {
+      case "Currently Reading":
+        targetShelf = this.state.shelfReading;
+        break;
+      case "Want To Read":
+        targetShelf = this.state.shelfToRead;
+        break;
+      case "Read":
+        targetShelf = this.state.shelfRead;
+        break;
+      default:
+        console.log("target do nothing: " + target);
+    }
+
+    console.log("target items", targetShelf.items);
+    targetShelf.items.forEach(book => {
+      if (book.shelf !== target) {
+        BooksAPI.update({ id: book.id }, target).then(res => {
+          this.updateShelves();
+          this.updateResults(book, target);
+        }).catch(err => {
+          console.log('update error: ' + err);
+        });
+      }
+    });
+
   }
 
   handleSearch = (query) => {
@@ -88,6 +121,7 @@ class BooksApp extends React.Component {
         result.shelf = target;
       }
     });
+    this.setState({results: results});
   }
 
   updateShelves() {
