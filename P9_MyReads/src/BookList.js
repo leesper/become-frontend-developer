@@ -15,6 +15,7 @@ class BookList extends React.Component {
               <BookShelf
                 key={shelf.title}
                 title={shelf.title}
+                shelf={shelf.shelf}
                 items={shelf.items}
                 clickHandler={this.props.clickHandler}
                 batchHandler={this.props.batchHandler}

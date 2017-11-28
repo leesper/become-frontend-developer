@@ -6,6 +6,8 @@ import BookSearch from './BookSearch'
 import { Shelf, Book } from './model'
 import { Route } from 'react-router-dom'
 
+const MAX_RESULTS = 20;
+
 class BooksApp extends React.Component {
   constructor(props) {
     super(props);
@@ -42,18 +44,18 @@ class BooksApp extends React.Component {
     )
   }
 
-  handleBatch = (e, title) => {
+  handleBatch = (e, shelf) => {
     const target = e.target.value;
     console.log("batch target", target);
     let targetShelf;
-    switch (title) {
-      case "Currently Reading":
+    switch (shelf) {
+      case "currentlyReading":
         targetShelf = this.state.shelfReading;
         break;
-      case "Want To Read":
+      case "wantToRead":
         targetShelf = this.state.shelfToRead;
         break;
-      case "Read":
+      case "read":
         targetShelf = this.state.shelfRead;
         break;
       default:
@@ -77,7 +79,7 @@ class BooksApp extends React.Component {
   handleSearch = (query) => {
     console.log("query", query);
     const self = this;
-    BooksAPI.search(query, 20).then(books => {
+    BooksAPI.search(query, MAX_RESULTS).then(books => {
       console.log('books', books);
       const results = books.map(book => (
         new Book(
@@ -85,7 +87,7 @@ class BooksApp extends React.Component {
           book.imageLinks.smallThumbnail,
           book.title,
           book.authors ? book.authors[0] : '',
-          self.shelfMap[book.id])
+          self.shelfMap[book.id] ? self.shelfMap[book.id] : 'none')
       ))
 
       this.setState({ results: results })
@@ -128,9 +130,9 @@ class BooksApp extends React.Component {
     const self = this;
     BooksAPI.getAll().then(books => {
       console.log(books);
-      const shelfReading = new Shelf("Currently Reading");
-      const shelfToRead = new Shelf("Want To Read");
-      const shelfRead = new Shelf("Read");
+      const shelfReading = new Shelf("Currently Reading", "currentlyReading");
+      const shelfToRead = new Shelf("Want To Read", "wantToRead");
+      const shelfRead = new Shelf("Read", "read");
 
       books.forEach(function(book) {
         self.shelfMap[book.id] = book.shelf;

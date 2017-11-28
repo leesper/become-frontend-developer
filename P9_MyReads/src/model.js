@@ -1,6 +1,7 @@
 class Shelf {
-  constructor(title) {
+  constructor(title, shelf) {
     this.title = title;
+    this.shelf = shelf;
     this.items = [];
   }
 

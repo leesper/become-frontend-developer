@@ -10,7 +10,7 @@ class BookShelf extends React.Component {
         <h2 className="bookshelf-title">{this.props.title}</h2>
         <BatchChanger
           batchHandler={this.props.batchHandler}
-          title={this.props.title}
+          title={this.props.shelf}
         />
         <BookCollection
           items={this.props.items}
