@@ -157,11 +157,11 @@ CSS选择器有基于特异值的优先级规则，一般来说，特异值相�
 
 元素的样式属性特异值最高，然后是ID，再然后是类和伪类以及属性选择器，最后是标签选择器，具体的计算方法可以参考[这篇文章](https://css-tricks.com/specifics-on-css-specificity/)。
 			
-二.	CSS中的长度单位
+## 二.	CSS中的长度单位
 
 CSS中[表示长度的单位](https://developer.mozilla.org/zh-CN/docs/Web/CSS/length)分为两种。一种是相对长度，比如用于相对字体大小的有em，ex，ch，rem，lh和rlh。用于视口比例长度（视口是指文档可视部分）的有vh，vw，vi，vb，vmin和vmax，相对长度常用于响应式设计。绝对长度单位有px，mm，cm，in，pt和pc。
 			
-三.	CSS中的颜色
+## 三.	CSS中的颜色
 
 CSS中表示颜色有三种方式：RGB，HEX和字符串。RGB是用0-255的数值来分别表示Red，Green和Blue三种颜色配比，例如`rgb(255, 0, 255)`。HEX则用#号开头的16进制数来表示，比如上面的颜色也可以表示成`#FF00FF`，HEX表示法可以[简写](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Shorthand_properties)。最后一种是字符串，比如blue，但这种方式无法表达一些不常见的颜色。[在线颜色选择器](https://www.webfx.com/web-design/hex-to-rgb/)对确认颜色很有帮助。
 
