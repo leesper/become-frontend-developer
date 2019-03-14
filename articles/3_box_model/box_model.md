@@ -4,38 +4,19 @@
 
 一.显示属性
 
-HTML元素有两种类型：块元素（block）和内联元素（inline）。这两种元素的区别主要是：块元素
-		1.1 display:block
-			尽可能占据最大宽度
-			高度够用就好
-		1.2 display:inline
-			元素和内容一样宽
-			无法设置
-				height
-				width
-			可设置内外边距
-				水平扩展
-		1.3 display:inline-block
-			既可以像block元素一样设置宽高，又可以像inline元素一样行内显示
-	二.盒子模型4要素
-		2.1 inside
-			content
-			padding
-			border
-		2.2 outside
-			margin
-	三.box-sizing决定元素大小的计算方式
-		3.1 border-box
-			元素尺寸包含
-				content
-				padding
-				border
-			元素实际尺寸已包含padding和border尺寸
-		3.2 content-box
-			默认设置
-			元素尺寸
-				仅包含content
-			元素实际尺寸还要加上padding和border的尺寸
+HTML元素有两种类型：块元素（block）和内联元素（inline）。这两种元素的区别主要是：块元素尽可能占据最大宽度而高度够用就好，可以通过`display:block`将元素设置为按块级元素显示；内联元素和内容一样宽，无法设置高度和宽度，但是可设置内外边距进行水平扩展，可以通过`display:inline`将元素设置为按内联元素显示。还有一种`display:inline-block`可以将元素设置为“行内块元素”，这样既可以像block元素一样设置宽高，又可以像inline元素一样行内显示。
+
+二.盒子模型4要素
+
+盒子模型将每一个元素组织成文档布局内的一个矩形框，从内（inside）向外（outside）分为4个组成部分，如下图所示：
+
+![](./box_model.png)
+
+content表示元素显示的内容，它被内部填充padding包裹起来，然后是元素的边界border，这三个要素共同组成盒子模型的inside部分，表示元素的内部，而外边距margin则表示元素和其他元素之间的距离，属于盒子模型的outside部分。如果我们把一个元素看作是一个人体的化，其实对于盒子模型我们可以这么理解：content表示人的骨架，它由血肉（padding）填充，border好比人的皮肤，人和人之间的距离就是外边距margin。通过这样形象的比喻，就能理解盒子模型的4个要素了。
+
+三.决定元素大小的属性
+
+box-sizing是决定元素大小计算方式的属性，它有两个值：border-box和content-box。如果选择了border-box，那么元素尺寸的值为content+padding+border三个部分，即元素实际尺寸已包含padding和border尺寸。content-box是默认设置，元素尺寸仅包含content，元素实际尺寸还要加上padding和border的尺寸，
 		3.3 参考
 			https://css-tricks.com/international-box-sizing-awareness-day/
 			https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Box_Model/Introduction_to_the_CSS_box_model
