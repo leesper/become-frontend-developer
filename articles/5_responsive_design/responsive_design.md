@@ -10,7 +10,7 @@
 
 
 
-![](/Users/likejun/data/become-frontend-developer/articles/5_responsive_design/simulator.png)
+![](./simulator.png)
 
 
 
@@ -93,10 +93,6 @@
 }
 ```
 
-
-
-## 3.3 复杂媒体查询
-
 # 四. 弹性框布局揭秘
 
 # 五. 弹性框布局模式
@@ -105,6 +101,8 @@
 
 # 七. 响应式设计中的图片
 
-# 八. 参考文献
+# 八. 网格布局
 
-## 8.1 [在移动浏览器中使用viewport元标签控制布局](<https://developer.mozilla.org/zh-CN/docs/Mobile/Viewport_meta_tag>)
+# 九. 参考文献
+
+## 9.1 [在移动浏览器中使用viewport元标签控制布局](<https://developer.mozilla.org/zh-CN/docs/Mobile/Viewport_meta_tag>)
