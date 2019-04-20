@@ -278,9 +278,309 @@ small {
 
 ![](./column.png)
 
-弹性框布局揭秘
+# 四. 弹性框布局
 
-弹性框布局模式
+flex布局可以很轻松的实现以往需要各种复杂技巧才能实现的页面布局。开启flex布局的方式很简单，直接将元素的display属性设置为flex即可，此时其子元素的float，clear和vertical-align会失效。对块级元素可以设置flex，对行内元素同样可以使用inline-flex。下面先讲解基本概念和各种属性，然后我们通过实战来展示一下flex布局的强大。
+
+## 4.1 基本概念
+
+![](./flex-basic.png)
+
+采用flex布局的元素称为flex容器（以下简称容器）。容器中所有的子元素被称为flex项（item，以下简称项）。容器中有两个轴：主轴（main）和交叉轴（cross）。主轴的开始位置（与边框的交叉点）叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross end。项默认沿主轴排列。单个项占据的主轴空间叫做main size，占据的交叉轴空间叫做cross size。
+
+## 4.2 容器属性
+
+### 4.2.1 flex-direction
+
+![](./flex-direction.png)
+
+flex-direction属性决定main轴的方向，它有4个值：
+
+1. row：水平方向，起点左端
+2. row-reverse：水平方向，起点右端
+3. column：垂直方向，起点上端
+4. Column-reverse：垂直方向，起点下端
+
+### 4.2.2 flex-wrap
+
+![](flex-wrap.png)
+
+flex-wrap属性决定轴线排不下如何换行，nowrap表示不换行：
+
+![](./nowrap.png)
+
+wrap表示换行，第一行在上方：
+
+![](./wrap.png)
+
+wrap-reverse表示换行，第一行在下方：
+
+![](./wrap-reverse.png)
+
+### 4.2.3 flex-flow
+
+flex-flow属性是是flex-direction和flex-wrap的简写，默认值为row nowrap。
+
+### 4.2.4 justify-content
+
+justify-content属性决定项在主轴的对齐方式，有五个值：
+
+1. flex-start：左对齐（默认）
+2. flex-end：右对齐
+3. center：居中
+4. space-between：两端对齐，项之间间隔相等
+5. space-around：每个项两侧的间隔相等，所以项之间的间隔比项与边框的间隔大一倍
+
+![](./justify-content.png)
+
+
+
+### 4.2.5 align-items
+
+![](./align-items.png)
+
+align-items属性决定项在交叉轴如何对齐，有如下五个值：
+
+1. flex-start：交叉轴的起点对齐。
+
+2. flex-end：交叉轴的终点对齐。
+
+3. center：交叉轴的中点对齐。
+
+4. baseline: 项目的第一行文字的基线对齐。
+
+5. stretch（默认值）：如果项目未设置高度或设为auto，将占满整个容器的高度。
+
+### 4.2.6 align-content
+
+![](./align-content.png)
+
+align-content属性决定多根轴线的对齐方式，如果项只有一根轴线，该属性不起作用。
+
+1. flex-start：与交叉轴的起点对齐。
+
+2. flex-end：与交叉轴的终点对齐。
+
+3. center：与交叉轴的中点对齐。
+
+4. space-between：与交叉轴两端对齐，轴线之间的间隔平均分布。
+
+5. space-around：每根轴线两侧的间隔都相等。所以，轴线之间的间隔比轴线与边框的间隔大一倍。
+
+6. stretch（默认值）：轴线占满整个交叉轴。
+
+## 4.3 项属性
+
+## 4.4 布局实战
+
+## 4.5 布局模式
+
+### 4.5.1 掉落列模型
+
+```html
+<div class="container">
+  <div class="box dark_blue"></div>
+  <div class="box light_blue"></div>
+  <div class="box green"></div>
+</div>
+```
+
+```css
+.container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.box {
+  width: 100%;
+}
+```
+
+```css
+@media screen and (min-width: 450px) {
+  .dark_blue {
+    width: 25%;
+  }
+  .light_blue {
+    width: 75%;
+  }
+}
+```
+
+```css
+@media screen and (min-width: 550px) {
+  .dark_blue, .green {
+    width: 25%;
+  }
+  .light_blue {
+    width: 50%;
+  }
+}
+```
+
+### 4.5.2 大体流动模型
+
+```html
+<div class="container">
+  <div class="box dark_blue"></div>
+  <div class="box light_blue"></div>
+  <div class="box green"></div>
+  <div class="box red"></div>
+  <div class="box orange"></div>
+</div>
+```
+
+```css
+.container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.box {
+  width: 100%;
+}
+```
+
+```css
+@media screen and (min-width: 450px) {
+  .light_blue, .green {
+    width: 50%;
+  }
+}
+```
+
+```css
+@media screen and (min-width: 550px) {
+  .dark_blue, .light_blue {
+    width: 25%;
+  }
+  .green, .red, .orange {
+    width: 33.333333%;
+  }
+}
+```
+
+当视口宽度大于700px时，增加外边距
+
+```css
+@media screen and (min-width: 700px) {
+  .container {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+```
+
+### 4.5.3 活动布局模型
+
+```html
+<div class="container">
+  <div class="box dark_blue"></div>
+  <div class="container" id="container2">
+    <div class="box light_blue"></div>
+    <div class="box green"></div>
+  </div>
+  <div class="box red"></div>
+</div>
+```
+
+```css
+.container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+.box {
+  width: 100%;
+}
+```
+
+```css
+@media screen and (min-width: 500px) {
+  .dark_blue {
+    width: 50%;
+  }
+  #container2 {
+    width: 50%;
+  }
+}
+```
+
+```css
+@media screen and (min-width: 600px) {
+  .dark_blue {
+    width: 25%;
+    order: 1;
+  }
+  #container2 {
+    width: 50%;
+  }
+  .red {
+    width: 25%;
+    order: -1;
+  }
+}
+```
+
+### 4.5.4 画布溢出模型
+
+```html
+<nav id="drawer" class="dark_blue"></nav>
+<main class="light_blue"></main>
+```
+
+```css
+html, body, main {
+  height: 100%;
+  width: 100%; 
+}
+
+nav {
+  width: 300px;
+  height: 100%;
+  position: absolute;
+  /* 该变换将抽屉移出画布. */
+  transform: translate(-300px, 0);
+  /* 我们还可以为抽屉添加动画。 */
+  transition: transform 0.3s ease;
+}
+
+nav.open {
+  transform: translate(0, 0);
+}
+```
+
+```css
+@media screen and (min-width: 600px) {
+  nav {
+    position: relative;
+    transform: translate(0, 0);
+  }
+  
+  body {
+    display: flex;
+    flex-flow: row nowrap;
+  }
+  main {
+    width: auto;
+    flex-grow: 1;
+  }
+}
+```
+
+```javascript
+var menu = document.querySelector('#menu');
+var main = document.querySelector('main');
+var drawer = document.querySelector('#drawer');
+
+menu.addEventListener('click', function(e) {
+  drawer.classList.toggle('open');
+  e.stopPropagation();
+});
+
+main.addEventListener('click', function() {
+  drawer.classList.remove('open');
+});
+```
 
 网格布局
 
@@ -295,6 +595,16 @@ small {
 [响应式网页设计](<http://www.ruanyifeng.com/blog/2012/05/responsive_web_design.html>)
 
 [学习CSS布局](<http://zh.learnlayout.com/>)
+
+[Udacity前端工程师纳米学位](<https://cn.udacity.com/fend>)
+
+[Flex布局教程：语法篇](<http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html>)
+
+[Flex布局教程：实例篇](<http://www.ruanyifeng.com/blog/2015/07/flex-examples.html>)
+
+
+
+
 
 
 
