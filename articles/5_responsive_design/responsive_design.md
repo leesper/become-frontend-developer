@@ -45,10 +45,6 @@
 
 上面这行代码允许网页宽度自动调整：网页的默认宽度为屏幕宽度，原始缩放比例为1:1，即网页初始大小占屏幕面积100%。与此对应的，也有`height`和`device-height`属性，可以对视口高度进行调整，但不常用。只要把缩放比例控制到1:1，此后我们在页面布局时就只需要关心CSS像素即可。
 
-
-
-一种响应式设计的技巧是"从小处开始"。准备多套设计稿，先从最小屏幕开始设计，然后更大一点的，逐步加大。从最小屏幕开始设计，可以对页面内容优先级进行排序，在设计的时候就考虑需要对用户展示哪些重要信息，不容易漏掉重要的信息，这对优化性能也有帮助，最后，把针对多种屏幕尺寸的设计使用媒体查询联系起来即可。
-
 # 三. CSS布局初探
 
 在CSS中控制布局最重要的属性是`display`属性。各种各样的新式布局都从设置它开始，比如我们后面要讲到的弹性（flex）布局和网格（grid）布局。这里先不讨论这些 高大上的布局，我们先来打好基础。所有的元素都有一个默认的display值：block和inline。block表示该元素为块级元素，这类元素会重新开始一行并尽量撑满容器（即其父元素）；inline表示该元素为行内元素，它不打乱段落的布局，可以用来在段落中包裹一些内容。display属性有一些比较tricky的小技巧，比如如果设置为none则可以在不删除元素的情况下隐藏元素，这种隐藏是不占据显示空间的，即如果你不查看网页源代码你完全感觉不到这个元素的存在。
@@ -286,7 +282,7 @@ flex布局可以很轻松的实现以往需要各种复杂技巧才能实现的�
 
 ![](./flex-basic.png)
 
-采用flex布局的元素称为flex容器（以下简称容器）。容器中所有的子元素被称为flex项（item，以下简称项）。容器中有两个轴：主轴（main）和交叉轴（cross）。主轴的开始位置（与边框的交叉点）叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross end。项默认沿主轴排列。单个项占据的主轴空间叫做main size，占据的交叉轴空间叫做cross size。
+采用flex布局的元素称为flex容器（以下简称容器），它为容器的直接子元素提供了"弹性上下文"（注意display属性是不可继承的）。容器中所有的子元素被称为flex项（item，以下简称项）。容器中有两个轴：主轴（main）和交叉轴（cross）。主轴的开始位置（与边框的交叉点）叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross end。项默认沿主轴排列。单个项占据的主轴空间叫做main size，占据的交叉轴空间叫做cross size。
 
 ## 4.2 容器属性
 
@@ -294,7 +290,7 @@ flex布局可以很轻松的实现以往需要各种复杂技巧才能实现的�
 
 ![](./flex-direction.png)
 
-flex-direction属性决定main轴的方向，它有4个值：
+flex布局是一种单向的一维布局方法。flex-direction属性决定main轴的方向，它有4个值：
 
 1. row：水平方向，起点左端
 2. row-reverse：水平方向，起点右端
@@ -330,6 +326,7 @@ justify-content属性决定项在主轴的对齐方式，有五个值：
 3. center：居中
 4. space-between：两端对齐，项之间间隔相等
 5. space-around：每个项两侧的间隔相等，所以项之间的间隔比项与边框的间隔大一倍
+6. space-evenly：每个项以及项和边缘之间的间隔均匀分布
 
 ![](./justify-content.png)
 
@@ -371,11 +368,205 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 
 ## 4.3 项属性
 
+### 4.3.1 order
+
+![](./order.png)
+
+order属性定义项的排列顺序，数值越小排列越靠前，默认为0。
+
+### 4.3.2 flex-grow
+
+![](./flex-grow.png)
+
+flex-grow属性定义项的放大比例，默认为0，即便存在剩余空间也不放大。如果所有项目的flex-grow属性都为1，则它们将等分剩余空间（如果有的话）。如果一个项目的flex-grow属性为2，其他项目都为1，则前者占据的剩余空间将比其他项多一倍。
+
+### 4.3.3 flex-shrink
+
+![](flex-shrink.jpg)
+
+flex-shrink属性定义了项的缩小比例，默认为1，即如果空间不足，该项将缩小。如果所有项目的flex-shrink属性都为1，当空间不足时，都将等比例缩小。如果一个项目的flex-shrink属性为0，其他项目都为1，则空间不足时，前者不缩小，负值对该属性无效。
+
+###4.3.4 flex-basis
+
+flex-basis属性定义了在分配多余空间之前，项占据的主轴空间（main size）。浏览器根据这个属性，计算主轴是否有多余空间。它的默认值为auto，即项的本来大小。它可以设为跟width或height属性一样的值（比如350px，20%和5em等），则项将占据固定空间。
+
+### 4.3.5 flex
+
+flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。后两个属性可选。该属性有两个快捷值：auto (1 1 auto) 和 none (0 0 auto)。建议优先使用这个属性，而不是单独写三个分离的属性，因为浏览器会推算相关值。
+
+### 4.3.6 align-self
+
+![](align-self.png)
+
+align-self属性允许单个项有与其他项不一样的对齐方式，可覆盖align-items属性。默认值为auto，表示继承父元素的align-items属性，如果没有父元素，则等同于stretch。该属性可能取6个值，除了auto，其他都与align-items属性完全一致。
+
 ## 4.4 布局实战
+
+flex布局能够实现各种常见的布局，比如圣杯布局，输入框布局，媒体对象布局和固定的底栏。下面我们来看看这几种布局如何用flex布局实现。
+
+### 4.4.1 圣杯布局
+
+![](holy-grail.png)
+
+圣杯布局是一种很常见的布局，它分为三部分：header，body和footer，其中body又包含left，center和right三个部分。html代码如下：
+
+```html
+<body class="HolyGrail">
+  <header>...</header>
+  <div class="HolyGrail-body">
+    <main class="HolyGrail-content">...</main>
+    <nav class="HolyGrail-nav">...</nav>
+    <aside class="HolyGrail-ads">...</aside>
+  </div>
+  <footer>...</footer>
+</body>
+```
+
+css代码如下：
+
+```css
+.HolyGrail {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+header,
+footer {
+  flex: 1;
+}
+
+.HolyGrail-body {
+  display: flex;
+  flex: 1;
+}
+
+.HolyGrail-content {
+  flex: 1;
+}
+
+.HolyGrail-nav, .HolyGrail-ads {
+  /* 两个边栏的宽度设为12em */
+  flex: 0 0 12em;
+}
+
+.HolyGrail-nav {
+  /* 导航放到最左边 */
+  order: -1;
+}
+```
+
+如果屏幕尺寸比较小，则变为三栏垂直叠加：
+
+```css
+@media (max-width: 768px) {
+  .HolyGrail-body {
+    flex-direction: column;
+    flex: 1;
+  }
+  .HolyGrail-nav,
+  .HolyGrail-ads,
+  .HolyGrail-content {
+    flex: auto;
+  }
+}
+```
+
+### 4.4.2 输入框布局
+
+![](./input-box.png)
+
+主要是实现输入框前方添加提示，后方添加按钮，html代码如下：
+
+```html
+<div class="InputAddOn">
+  <span class="InputAddOn-item">...</span>
+  <input class="InputAddOn-field">
+  <button class="InputAddOn-item">...</button>
+</div>
+```
+
+css代码如下：
+
+```css
+.InputAddOn {
+  display: flex;
+}
+
+.InputAddOn-field {
+  flex: 1;
+}
+```
+
+### 4.4.3 媒体对象布局
+
+![](media-object.png)
+
+有时候需要在文字的左边或者右边增加一个图片栏，而且要避免文字对图片的环绕。用flex的方式实现要比其他方式简洁，html代码如下：
+
+```html
+<div class="Media">
+  <img class="Media-figure" src="" alt="">
+  <p class="Media-body">...</p>
+</div>
+```
+
+css代码如下：
+
+```css
+.Media {
+  display: flex;
+  align-items: flex-start;
+}
+
+.Media-figure {
+  margin-right: 1em;
+}
+
+.Media-body {
+  flex: 1;
+}
+```
+
+###4.4.4 固定的底栏
+
+![](sticky-footer.png)
+
+有时，页面内容太少，无法占满一屏的高度，底栏就会抬高到页面的中间。需要让底栏总是出现在页面的底部。html代码如下：
+
+```html
+<body class="Site">
+  <header>...</header>
+  <main class="Site-content">...</main>
+  <footer>...</footer>
+</body>
+```
+
+css代码如下：
+
+```css
+.Site {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.Site-content {
+  flex: 1;
+}
+```
+
+
 
 ## 4.5 布局模式
 
+一种响应式设计的技巧是"从小处开始"：准备多套设计稿，先从最小屏幕开始设计，然后更大一点的，逐步加大。从最小屏幕开始设计，可以对页面内容优先级进行排序，在设计的时候就考虑需要对用户展示哪些重要信息，不容易漏掉重要的信息，这对优化性能也有帮助，最后，把针对多种屏幕尺寸的设计使用媒体查询联系起来即可。flex布局和响应式设计相结合，有4种常见的布局模式：掉落列（column drop），大体流动（mostly fluid），活动布局（layout shifter）和画布溢出（off canvas）。
+
 ### 4.5.1 掉落列模型
+
+![](column-drop.png)
+
+掉落队列模型在视口最窄的时候每个元素纵向堆放，第一个断点处，前两个元素并排显示，第三个元素在下面。第二个断点处，重排成三列布局。当视口达到最大宽度，列也达到最大宽度，在两侧添加外边距。html代码如下：
 
 ```html
 <div class="container">
@@ -385,6 +576,8 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 </div>
 ```
 
+基础css代码如下：
+
 ```css
 .container {
   display: flex;
@@ -393,7 +586,11 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 .box {
   width: 100%;
 }
+
+
 ```
+
+第一个断点位于450px视口宽度：
 
 ```css
 @media screen and (min-width: 450px) {
@@ -405,6 +602,8 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
   }
 }
 ```
+
+第二个断点位于550px视口宽度：
 
 ```css
 @media screen and (min-width: 550px) {
@@ -419,6 +618,10 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 
 ### 4.5.2 大体流动模型
 
+![](./mostly-fluid.png)
+
+大体流动模型在视口最窄时仍然为竖直堆放布局。随着视口变宽，网格模型开始出现，当视窗达到最大宽度，两边出现外边距，内容不再延展。html代码如下：
+
 ```html
 <div class="container">
   <div class="box dark_blue"></div>
@@ -428,6 +631,8 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
   <div class="box orange"></div>
 </div>
 ```
+
+基础css代码如下：
 
 ```css
 .container {
@@ -439,6 +644,8 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 }
 ```
 
+第一个断点处的css代码：
+
 ```css
 @media screen and (min-width: 450px) {
   .light_blue, .green {
@@ -446,6 +653,8 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
   }
 }
 ```
+
+第二个断点处的css代码：
 
 ```css
 @media screen and (min-width: 550px) {
@@ -458,7 +667,7 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 }
 ```
 
-当视口宽度大于700px时，增加外边距
+当视口宽度大于700px时，增加外边距：
 
 ```css
 @media screen and (min-width: 700px) {
@@ -472,6 +681,10 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 
 ### 4.5.3 活动布局模型
 
+![](./layout-shifter.png)
+
+活动布局模型是最灵活的响应式模型，有很多适用于不同设备的断点。它的亮点在于利用了order属性重排元素顺序，每个布局可变化的地方比较多。html代码如下：
+
 ```html
 <div class="container">
   <div class="box dark_blue"></div>
@@ -482,6 +695,8 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
   <div class="box red"></div>
 </div>
 ```
+
+基本的css代码如下：
 
 ```css
 .container {
@@ -494,6 +709,8 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 }
 ```
 
+第一个断点设置在500px视口宽度：
+
 ```css
 @media screen and (min-width: 500px) {
   .dark_blue {
@@ -504,6 +721,8 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
   }
 }
 ```
+
+第二个断点设置在600px视口宽度：
 
 ```css
 @media screen and (min-width: 600px) {
@@ -523,10 +742,16 @@ align-content属性决定多根轴线的对齐方式，如果项只有一根轴�
 
 ### 4.5.4 画布溢出模型
 
+![](off-canvas.png)
+
+画布溢出模型是最复杂的。它的内容并不是竖直堆放的，诸如导航栏和应用菜单这样不常用内容需要放在屏幕之外，只有屏幕足够大的时候才显示出来。小尺寸屏幕上溢出画布的内容通常会在用户点击菜单按钮时出现。html代码如下：
+
 ```html
 <nav id="drawer" class="dark_blue"></nav>
 <main class="light_blue"></main>
 ```
+
+基本的css代码如下：
 
 ```css
 html, body, main {
@@ -549,6 +774,8 @@ nav.open {
 }
 ```
 
+断点只有一个，在600px视口处显示侧边的导航栏：
+
 ```css
 @media screen and (min-width: 600px) {
   nav {
@@ -560,6 +787,7 @@ nav.open {
     display: flex;
     flex-flow: row nowrap;
   }
+  
   main {
     width: auto;
     flex-grow: 1;
@@ -567,7 +795,9 @@ nav.open {
 }
 ```
 
-```javascript
+这个布局需要使用一点点js代码来实现动态效果：
+
+```css
 var menu = document.querySelector('#menu');
 var main = document.querySelector('main');
 var drawer = document.querySelector('#drawer');
@@ -582,7 +812,9 @@ main.addEventListener('click', function() {
 });
 ```
 
-网格布局
+以上就是flex布局的基本内容，我们需要在实践中多用多实践，熟练掌握这种强大的布局技术。flex布局适合小规模的布局，而更加强大的网格布局则适合大规模布局。
+
+# 五. 网格布局
 
 响应式设计中的表格和字体
 
@@ -594,15 +826,17 @@ main.addEventListener('click', function() {
 
 [响应式网页设计](<http://www.ruanyifeng.com/blog/2012/05/responsive_web_design.html>)
 
-[学习CSS布局](<http://zh.learnlayout.com/>)
-
 [Udacity前端工程师纳米学位](<https://cn.udacity.com/fend>)
 
 [Flex布局教程：语法篇](<http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html>)
 
 [Flex布局教程：实例篇](<http://www.ruanyifeng.com/blog/2015/07/flex-examples.html>)
 
+[A Complete Guide to Flexbox](<https://css-tricks.com/snippets/css/a-guide-to-flexbox/>)
 
+交互式css布局教程：[学习CSS布局](<http://zh.learnlayout.com/>)
+
+交互式flex布局教程：[Learn Flexbox for free](<https://scrimba.com/g/gflexbox>)
 
 
 
