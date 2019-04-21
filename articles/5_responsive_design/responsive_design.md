@@ -816,6 +816,56 @@ main.addEventListener('click', function() {
 
 # 五. 网格布局
 
+CSS的网格布局是一种二维的，基于网格的前端布局技术，完全改变了设计用户界面的方式。从布局发展的过程来看，从一开始基于tables，到float，再到positioning和inline-block，这些方法中充斥着大量的奇技淫巧，但连最基本的居中定位都做的不好。flex布局是一种很强大的基于轴线布局的一维布局方式，而网格布局则真正做到了基于行列单元格的二维布局，实际上flex搭配grid能工作的很好。网格布局与media query相结合同样也能通过寥寥数行代码实现响应式设计。
+
+网格布局将网页划分为不同的网格，通过组合不同网格做出各种各样的布局。以前通过复杂css框架达成的效果现在浏览器内置了，所以称它为2019年必学的新布局方法，但目前浏览器的支持还存在一定问题，但以后会越来越好。
+
+## 5.1 基本概念
+
+同样地，在网格布局中只要给html元素增加了相应的display属性，该元素就变成**网格容器**：
+
+```css
+.container {
+  display: grid | inline-grid
+}
+```
+
+而容器的直接子元素被称为**项**（item），注意是直接子元素，因为display属性不可继承。网格布局还有一些专门的术语：行和列，网格线，网格轨道（track）和网格区域，下面来一一介绍。
+
+### 5.1.1 行和列
+
+在网格布局中，水平区域称之为**行**，垂直区域称之为**列**。**单元格**是行和列的交叉区域。
+
+![](./row-and-col.png)
+
+### 5.1.2 网格线
+
+网格布局中的重要概念，分为水平网格线和垂直网格线，用于根据网格线定位位置。
+
+![](./grid-lines.png)
+
+### 5.1.3 网格轨道（grid track）
+
+网格轨道是两相邻网格线之间的区域。
+
+![](./grid-track.png)
+
+### 5.1.4 网格区域
+
+网格区域是4条网格线之间包围的区域，由1个或多个单元格构成。
+
+![](./grid-area.png)
+
+## 5.2 容器属性
+
+## 5.3 项属性
+
+
+
+
+
+
+
 响应式设计中的表格和字体
 
 响应式设计中的图片
@@ -838,7 +888,9 @@ main.addEventListener('click', function() {
 
 交互式flex布局教程：[Learn Flexbox for free](<https://scrimba.com/g/gflexbox>)
 
+[CSS Grid 网格布局教程](<http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html>)
 
+[A Complete Guide to Grid](<https://css-tricks.com/snippets/css/complete-guide-grid/>)
 
 
 
