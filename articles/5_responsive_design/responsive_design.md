@@ -1101,25 +1101,433 @@ grid-template属性是grid-template-rows，grid-template-columns和grid-template
 
 ### 5.2.5 新增网格的列宽和行高
 
+有时候，一些项目的指定位置，在现有网格的外部。比如网格只有3列，但是某一个项目指定在第5行。这时，浏览器会自动生成多余的网格（称为隐式网格轨道）以便放置项目，如果不指定grid-auto-columns和grid-auto-rows这两个属性，浏览器会完全根据单元格内容的大小，决定新增网格的列宽和行高。
+
+grid-auto-columns属性指定浏览器自动创建的多余网格的列宽，grid-auto-rows属性指定浏览器自动创建的多余网格的行高。可以使用长度，百分比和fr作为单位。比如有如下的2*2网格：
+
+```css
+.container {
+  grid-template-columns: 60px 60px;
+  grid-template-rows: 90px 90px
+}
+```
+
+![](./grid-auto-rc.png)
+
+现在有一个网格的位置被放置在了这个2*2的网格外面：
+
+```css
+.item-a {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+.item-b {
+  grid-column: 5 / 6;
+  grid-row: 2 / 3;
+}
+```
+
+这些自动生成的网格轨道的大小会完全根据所放置的项的大小来决定（注意第3列和第4列）：
+
+![](./grid-auto-rc2.png)
+
+我们可以给这些隐式网格轨道指定列宽或者行高：
+
+```css
+.container {
+  grid-auto-columns: 60px;
+}
+```
+
+![](./grid-auto-rc3.png)
+
 ### 5.2.6 grid属性
 
 grid属性是grid-template-rows，grid-template-columns，grid-template-areas，grid-auto-rows，grid-auto-columns和grid-auto-flow五个属性的简写形式。
 
-单元格对齐方式
+取值：
 
-内容区域对齐方式
+1. **none**：设置所有的5个属性为默认值
+2. **<grid-template>**：与grid-template简写属性相同
+3. **<grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>?**：设置grid-template-rows的值；如果auto-flow出现在反斜杠的右边，则表示先列后行；如果再加上dense关键字则表示紧凑模式；如果不设置grid-auto-columns，则默认为auto
+4. **[ auto-flow && dense? ] <grid-auto-rows>? / <grid-template-columns>**：设置grid-template-columns的值；如果auto-flow出现在反斜杠的左边，则表示先行后列；如果再加上dense关键字则表示紧凑模式；如果不设置grid-auto-rows，则默认为auto
 
+下面的css是等价的：
 
+```css
+.container {
+    grid: 100px 300px / 3fr 1fr;
+}
 
-grid-template 属性
+.container {
+    grid-template-rows: 100px 300px;
+    grid-template-columns: 3fr 1fr;
+}
+```
 
-grid属性
+下面这段css也是等价的：
+
+```css
+.container {
+    grid: auto-flow / 200px 1fr;
+}
+
+.container {
+    grid-auto-flow: row;
+    grid-template-columns: 200px 1fr;
+}
+```
+
+以及：
+
+```css
+.container {
+    grid: auto-flow dense 100px / 1fr 2fr;
+}
+
+.container {
+    grid-auto-flow: row dense;
+    grid-auto-rows: 100px;
+    grid-template-columns: 1fr 2fr;
+}
+```
+
+还有：
+
+```css
+.container {
+    grid: 100px 300px / auto-flow 200px;
+}
+
+.container {
+    grid-template-rows: 100px 300px;
+    grid-auto-flow: column;
+    grid-auto-columns: 200px;
+}
+```
+
+grid属性还有一种更复杂的写法：一次性把grid-template-areas，grid-template-rows和grid-template-columns的设置都搞定，所有其他的设置都保持默认值，比如下面这两段css是等价的：
+
+```css
+.container {
+    grid: [row1-start] "header header header" 1fr [row1-end]
+          [row2-start] "footer footer footer" 25px [row2-end]
+          / auto 50px auto;
+}
+
+.container {
+    grid-template-areas: 
+      "header header header"
+      "footer footer footer";
+    grid-template-rows: [row1-start] 1fr [row1-end row2-start] 25px [row2-end];
+    grid-template-columns: auto 50px auto;    
+}
+```
+
+这个属性的用法比较灵活，需要多实践才能熟练掌握。
+
+### 5.2.7 单元格对齐方式
+
+单元格的对齐有垂直和水平两个方向。水平方向的单元格对齐使用justify-items属性，垂直方向的单元格对齐使用align-items属性。
+
+它们都有4种取值：
+
+* start：对齐单元格的起始边缘。
+
+* end：对齐单元格的结束边缘。
+
+* center：单元格内部居中。
+
+* stretch：拉伸，占满单元格的整个宽度（默认值）
+
+start对齐单元格的起始边缘（对于水平方向来说是左边缘，对于垂直方向来说是上边缘）：
+
+```css
+.container {
+  justify-items: start;
+}
+```
+
+![](./start1.png)
+
+```css
+.container {
+  align-items: start;
+}
+```
+
+![](./start2.png)
+
+end对齐单元格的结束边缘（对于水平方向来说是右边缘，对于垂直方向来说是下边缘）：
+
+```css
+.container {
+  justify-items: end;
+}
+```
+
+![](./end1.png)
+
+```css
+.container {
+  align-items: end;
+}
+```
+
+![](./end2.png)
+
+center将单元格内部居中：
+
+```css
+.container {
+  justify-items: center;
+}
+```
+
+![](./center1.png)
+
+```css
+.container {
+  align-items: center;
+}
+```
+
+![](./center2.png)
+
+stretch将单元格拉伸，占满单元格整个宽度（默认值）：
+
+```css
+.container {
+  justify-items: stretch;
+}
+
+.container {
+  align-items: stretch;
+}
+```
+
+![](./stretch.png)
+
+place-items属性是align-items属性和justify-items属性的合并简写形式，如果省略第二个值，则浏览器认为与第一个值相等。
+
+### 5.2.8 内容区域对齐方式
+
+如果所有的网格项的大小都是用固定的单位比如px指定的，那么网格本身的尺寸就有可能比容纳网格的容器尺寸更小，这个时候我们可以通过一些属性来设置网格容器中的网格如何对齐，对齐的方式仍然包含水平和垂直两个方向。
+
+justify-content属性用于水平方向对齐，而align-content属性用于垂直方向对齐。它们都可以选择如下取值：
+
+1. start：对齐容器的起始边框
+2. end：对齐容器的结束边框
+3. center：容器内部居中
+4. stretch：项的大小没有指定时，拉伸占据整个网格容器
+5. space-around：每个项两侧的间隔相等。所以，项之间的间隔比项与容器边框的间隔大一倍
+6. space-between：项与项的间隔相等，项与容器边框之间没有间隔
+7. space-evenly：项与项的间隔相等，项与容器边框之间也是同样长度的间隔
+
+start对齐容器的起始边框（水平方向上是左边框，垂直方向上是上边框）：
+
+```css
+.container {
+  justify-content: start;
+}
+```
+
+![](content-start.png)
+
+```css
+.container {
+  align-content: start;	
+}
+```
+
+![](./content-start2.png)
+
+end对齐容器的结束边框（水平方向上是右边框，垂直方向上是下边框）：
+
+```css
+.container {
+  justify-content: end;	
+}
+```
+
+![](./content-end.png)
+
+```css
+.container {
+  align-content: end;	
+}
+```
+
+![](./content-end2.png)
+
+center将网格在容器内居中显示：
+
+```css
+.container {
+  justify-content: center;	
+}
+```
+
+![](./content-center.png)
+
+```css
+.container {
+  align-content: center;	
+}
+```
+
+![](./content-center2.png)
+
+stretch使得网格拉伸占据整个容器：
+
+```css
+.container {
+  justify-content: stretch;	
+}
+```
+
+![](./content-stretch.png)
+
+```css
+.container {
+  align-content: stretch;	
+}
+```
+
+![](./content-stretch2.png)
+
+space-around使得两侧的间隔相等，因此中间部分的要比两边的间隔大一倍：
+
+```css
+.container {
+  justify-content: space-around;	
+}
+```
+
+![](./content-space-around.png)
+
+```css
+.container {
+  align-content: space-around;	
+}
+```
+
+![](./content-space-around2.png)
+
+space-between使得项与项之间间隔相等：
+
+```css
+.container {
+  justify-content: space-between;	
+}
+```
+
+![](./content-space-between.png)
+
+```css
+.container {
+  align-content: space-between;	
+}
+```
+
+![](./content-space-between2.png)
+
+space-evenly使得项与项之间间隔相等，也包括项与边框之间的间隔：
+
+```css
+.container {
+  justify-content: space-evenly;	
+}
+```
+
+![](./content-space-evenly.png)
+
+```css
+.container {
+  align-content: space-evenly;	
+}
+```
+
+![](./content-space-evenly2.png)
 
 ## 5.3 项属性
 
+对于一个网格项而言，`float`，`display: inline-block`，`display: table-cell`，`vertical-align` 和 `column-*`属性都将失效。
 
+### 5.3.1 根据网格线定位项的位置
 
+网格布局是通过网格线来定位网格项的位置的。grid-column-start属性定位左边框所在的垂直网格线，grid-column-end属性定位右边框所在的垂直网格线，有一个grid-column属性能够提供同时定义这两个属性的简写形式。grid-row-start属性定义上边框所在的水平网格线，grid-row-end属性定义下边框所在的水平网格线，有一个grid-row属性能够提供同时定义这两个属性的简写形式。这四个属性的值，除了指定为第几个网格线，还可以指定为网格线的名字。这四个属性的值还可以使用span关键字，表示"跨越"，即左右边框（上下边框）之间跨越多少个网格。四个属性都可以使用auto关键字表示自动放置/跨越/默认单位为1的跨越。使用这四个属性，如果产生了项目的重叠，则使用z-index属性指定项目的重叠顺序。
 
+举例1:
+
+```css
+.item-a {
+  grid-column-start: 2;
+  grid-column-end: five;
+  grid-row-start: row1-start
+  grid-row-end: 3;
+}
+```
+
+![](./grid-rc1.png)
+
+```css
+.item-b {
+  grid-column-start: 1;
+  grid-column-end: span col4-start;
+  grid-row-start: 2
+  grid-row-end: span 2
+}
+```
+
+![](./grid-rc2.png)
+
+使用简写形式：
+
+```css
+.item-c {
+  grid-column: 3 / span 2;
+  grid-row: third-line / 4;
+}
+```
+
+![](./grid-rc.png)
+
+### 5.3.2 grid-area属性
+
+grid-area属性用于给项命名，该名称可以在grid-template-areas中被引用到。或者用作grid-row-start、grid-column-start、grid-row-end、grid-column-end的合并简写形式，直接指定项目的位置。
+
+举例，第一种用法是给网格项命名：
+
+```css
+.item-d {
+  grid-area: header;
+}
+```
+
+第二种用法：
+
+```css
+.item-d {
+  grid-area: 1 / col4-start / last-line / 6;
+}
+```
+
+![](./grid-area.png)
+
+### 5.3.3 设置单元格内容位置
+
+设置单元格内容位置跟设置单元格对齐方式很像，都分为水平方向和垂直方向。区别在于前者是针对单个的项，而后者针对的是全部的项。
+
+justify-self属性在一个单元格中对齐项的水平位置，align-self属性在一个单元格中对齐项的垂直位置。这两个属性都可以取4个值：
+
+* start：对齐单元格的起始边缘。
+
+* end：对齐单元格的结束边缘。
+
+* center：单元格内部居中。
+
+* stretch：拉伸，占满单元格的整个宽度（默认值）
 
 
 
