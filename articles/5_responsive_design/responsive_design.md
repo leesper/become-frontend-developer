@@ -1529,7 +1529,77 @@ justify-self属性在一个单元格中对齐项的水平位置，align-self属�
 
 * stretch：拉伸，占满单元格的整个宽度（默认值）
 
+start对齐单元格的起始边缘（水平方向上的左边缘和垂直方向上的上边缘）：
 
+```css
+.item-a {
+  justify-self: start;
+}
+```
+
+![](./self-start.png)
+
+```css
+.item-a {
+  align-self: start;
+}
+```
+
+![](./self-start2.png)
+
+end对齐单元格的结束边缘（水平方向的右边缘和垂直方向的下边缘）：
+
+```css
+.item-a {
+  justify-self: end;
+}
+```
+
+![](./self-end.png)
+
+```css
+.item-a {
+  align-self: end;
+}
+```
+
+![](./self-end2.png)
+
+center在单元格内部居中：
+
+```css
+.item-a {
+  justify-self: center;
+}
+```
+
+![](./self-center.png)
+
+```css
+.item-a {
+  align-self: center;
+}
+```
+
+![](./self-center2.png)
+
+stretch拉伸并占满单元格的整个宽度：
+
+```css
+.item-a {
+  justify-self: stretch;
+}
+```
+
+![](./self-stretch.png)
+
+```CSS
+.item-a {
+  align-self: stretch;
+}
+```
+
+![](./self-stretch2.png)
 
 响应式设计中的表格和字体
 
