@@ -1833,6 +1833,44 @@ Grunt:
 
 除了用来调整样式属性，CSS还可以用来实现其他图形效果，比如渐变，阴影，圆角或动画效果。但是要注意使用CSS生成这些视觉效果是有处理和渲染成本的，这在移动设备上尤其明显，要谨慎使用。
 
+关于如何提升网站在移动设备上的响应速度，可以参考[这篇文章](<https://www.smashingmagazine.com/2013/04/build-fast-loading-mobile-website/>)。
+
+### 7.2.3 使用符号字符和图标字体
+
+还有一种方法可以避免使用图片并保持网站的响应性。如果要使用一些图形标志，比如箭头，星星或者桃心，可以从unicode字符集中找到这样的字符。
+
+* [Unicode 字符集](https://unicode-table.com/cn/sets/)
+
+* [Unicode 符号集合](http://en.wikipedia.org/wiki/List_of_Unicode_characters)
+
+另外，图标字体让修饰网站的常用图片和图标使用起来更方便。图标字体相比图片有很多优点，它们是矢量图形，可以无限缩放，整套图像可以以一套字体的形式下载，而只消耗很小的下载量。
+
+* [Zocial](http://zocial.smcllns.com/)
+
+* [Font Awesome](http://fontawesome.io/)
+
+* [We Love Icon Fonts!](http://weloveiconfonts.com/)
+
+* [Icon fonts on CSS-Tricks](https://css-tricks.com/examples/IconFont/)
+
+### 7.2.4 内嵌图片
+
+如果想要减少网页的文件请求数量，还可以利用代码实现内嵌图片，有两种实现方式：SVG或者数据URI。内嵌的SVG具有很好的移动端和PC端浏览器支持，优化工具还能极大减少SVG的字节。数据URI提供了一种将文件（比如图片）内嵌为base64编码的字符串的机制，它也具有很好的浏览器支持。它们也可以嵌入到CSS里。
+
+一些参考资料：
+
+* [行内 SVG 浏览器支持](http://caniuse.com/#feat=svg-html5)
+
+* [数据 URI 浏览器支持](http://caniuse.com/datauri)
+
+* [SVG 优化工具](http://petercollingridge.appspot.com/svg-optimiser)
+
+* [Trajan 的 Column SVG 例子](http://upload.wikimedia.org/wikipedia/commons/6/6c/Trajans-Column-lower-animated.svg)
+
+* [20 个让你惊艳不已的 SVG 例子](http://www.creativebloq.com/design/examples-svg-7112785)
+
+* [SVG 动画示例](http://codepen.io/chrisgannon/)
+
 ## 7.3 完全响应式图片加载
 
 
