@@ -22,7 +22,7 @@
 
 # 二. 像素与视口
 
-在移动设备上访问网页时，我们常常会遇到一种很不愉快的用户体验：整个网页被缩放以适应较小的设备屏幕，一切都变小了，字变小了，图片变小了，最要命的是连按钮都变小了，虽然看上去页面和PC端一样，但什么都看不清点不了，这是因为没有遵循响应式页面设计：窄屏幕设备（比如移动设备）在一个虚拟视口中渲染页面，这个虚拟视口通常比屏幕要宽，例如，如果移动设备的屏幕宽度为640`px`，那么如果以980`px`的虚拟视口来渲染网页，就需要缩小页面来适应640`px`的窗口大小，这就是页面看起来小的原因。要想理解响应式设计，我们先要来重新认识一下像素与视口的概念。
+在移动设备上访问网页时，我们常常会遇到一种很不愉快的用户体验：整个网页被缩放以适应较小的设备屏幕，一切都变小了，字变小了，图片变小了，最要命的是连按钮都变小了，虽然看上去页面和PC端一样，但什么都看不清点不了，这是因为没有遵循响应式页面设计：窄屏幕设备（比如移动设备）在一个虚拟视口中渲染页面，这个虚拟视口通常比屏幕要宽，例如，如果移动设备的屏幕宽度为640px，那么如果以980px的虚拟视口来渲染网页，就需要缩小页面来适应640px的窗口大小，这就是页面看起来小的原因。要想理解响应式设计，我们先要来重新认识一下像素与视口的概念。
 
 ## 2.1 像素
 
@@ -1871,37 +1871,107 @@ Grunt:
 
 * [SVG 动画示例](http://codepen.io/chrisgannon/)
 
-## 7.3 完全响应式图片加载
+## 7.3 完全响应式
 
+在不同的上下文环境中都使用同一张图片可能不是一个好的做法。使用媒体查询有它自身的一些局限性，首先它不一定能支持未来出现的一些平台，其次媒体查询只参考了视窗的大小而不是图片的实际尺寸。下面介绍的一些方法采用了另一种截然不同的新思路：给浏览器提供信息以让它在多张图片中做出最好的选择。
 
+### 7.3.1 srcset属性
 
-# 参考文献
+img元素的src属性只能提供一个图片文件，而srcset属性给同一张图片提供可选择的多个文件，可以为更高DPI显示器选择更高分辨率的图片文件，否则使用低分辨率图片文件。这样浏览器可以根据视口尺寸和设备性能做出最合适的选择。`srcset` 有两种自定义方式，一种使用 `x` 来区分设备像素比 (DPR)，另一种使用 `w` 来描述图像的宽度。对设备像素比的反应：
 
-[在移动浏览器中使用viewport元标签控制布局](<https://developer.mozilla.org/zh-CN/docs/Mobile/Viewport_meta_tag>)
+```html
+<img src="image_2x.jpg" srcset="image_2x.jpg 2x, image_1x.jpg 1x" alt="a cool image">
+```
 
-[响应式网页设计](<http://www.ruanyifeng.com/blog/2012/05/responsive_web_design.html>)
+将 `srcset` 设置为与逗号分隔的一连串 `filename multiplier` 对相等，其中每个 `multiplier` 必须是后跟 `x` 的整数。例如，`1x` 表示 1 倍显示屏，`2x` 表示像素密度为两倍的显示屏，如 Apple 的 Retina 显示屏。浏览器会下载与其 DPR 对应的最佳图片。另请注意，有一个作为备用的 `src` 属性。对图片宽度的反应：
 
-[Udacity前端工程师纳米学位](<https://cn.udacity.com/fend>)
+```html
+<img src="image_200.jpg" srcset="image_200.jpg 200w, image_100.jpg 100w" alt="a cool image">
+```
 
-[Flex布局教程：语法篇](<http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html>)
+将 `srcset` 设置为与逗号分隔的一连串 `filename widthDescriptor` 对相等，其中每个 `widthDescriptor` 都以像素为测量单位， 并且必须是后跟 `w` 的整数。在这里，`widthDescriptor` 指定每个图片文件的自然宽度，使浏览器能够根据窗口大小和 DPR 选择要请求的最适当的图片。（如果没有 `widthDescriptor`，浏览器需要下载图片才能知道其宽度！）
 
-[Flex布局教程：实例篇](<http://www.ruanyifeng.com/blog/2015/07/flex-examples.html>)
+* [一篇关于 srcset 的有趣文章](http://ericportis.com/posts/2014/srcset-sizes/)
 
-[A Complete Guide to Flexbox](<https://css-tricks.com/snippets/css/a-guide-to-flexbox/>)
+* [设备像素密度列表](http://pixensity.com/list/phone)
 
-交互式css布局教程：[学习CSS布局](<http://zh.learnlayout.com/>)
+* [关于像素密度的更多信息](http://www.html5rocks.com/en/mobile/high-dpi/)
 
-交互式flex布局教程：[Learn Flexbox for free](<https://scrimba.com/g/gflexbox>)
+* [Working with h units](https://github.com/ResponsiveImagesCG/picture-element/issues/86)
 
-[CSS Grid 网格布局教程](<http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html>)
+### 7.3.2 sizes属性
 
-[A Complete Guide to Grid](<https://css-tricks.com/snippets/css/complete-guide-grid/>)
+有一点要说明的是，在 JavaScript 中，可以通过 `currentSrc` 获得 `img` 元素的来源。`sizes` 属性为浏览器提供了有关图片元素显示大小的信息，它实际上不会导致图片大小调整。该操作是在 CSS 中执行的！
 
-[How I stopped using Bootstrap’s layout thanks to CSS Grid](<https://blog.theodo.fr/2018/03/stop-using-bootstrap-layout-thanks-to-css-grid/>)
+包含大小的图片宽度
 
+如果图片不以全窗口宽度显示会怎样？那么解析完HTML后，在解析CSS前浏览器就会预加载图片。问题是浏览器对图片尺寸一无所知，我们需要告诉浏览器图片的实际显示尺寸。除了 `srcset` 外，还需要sizes属性。向包含媒体查询的图片添加一个 `sizes` 属性和一个 `vw` 值。`srcset` 和 `sizes` 合起来可让浏览器知道图片的自然宽度以及图片相对于窗口宽度的显示宽度。 知道图片的显示宽度和可用图片文件的宽度后，浏览器在解析HTML时将获得下载具有满足其需求的适当分辨率且尽可能小的图片所需的信息。 这里是一个srcset与sizes配合使用的语法示例：
 
+```html
+<img  src="images/great_pic_800.jpg"
+      sizes="(max-width: 400px) 100vw, (min-width: 401px) 50vw"
+      srcset="images/great_pic_400.jpg 400w, images/great_pic_800.jpg 800w"
+      alt="great picture">
+```
 
+`sizes` 由以逗号分隔的 `mediaQuery width` 对组成。`sizes` 会在加载流程初期告诉浏览器，该图片会在点击 `mediaQuery` 时以某个 `width` 显示。实际上，如果 `sizes` 缺失，浏览器会将 `sizes` 默认为 `100vw`，表示它预计图片将以全窗口宽度显示。`sizes` 会为浏览器额外提供一条信息，以确保它根据图片的最终显示宽度下载正确的图片文件。说明一下，它实际上*不会*调整图片的大小 - 这是 CSS 的工作。在本示例中，如果浏览器的窗口宽度等于或小于 400 像素，浏览器知道图片将为全窗口宽度；如果窗口宽度大于 400 像素，则为一半窗口宽度。浏览器知道它具有两个图片选项：一个具有 400 像素的自然宽度，另一个具有 800 像素。
 
+### 7.3.3 picture元素
 
+新增的picture元素可以通过source元素提供可选择的源文件：
 
+```html
+<picture>
+  <source srcset="kittens.webp" type="image/webp">
+  <source srcset="kittens.jpeg" type="image/jpeg">
+  <img src="kittens.jpeg" alt="Two grey tabby kittens">
+</picture>
+```
 
+如果浏览器可以使用第一个资源，则使用它。否则就沿着列表查询下去。浏览器可以根据设备性能选择文件。上面这个HTML文件为支持[webp](https://developers.google.com/speed/webp/?csw=1)的浏览器选择webp文件，jpeg作为备选资源。这种方式使得支持webp的平台充分利用高性能webp格式。为不支持它的平台提供替代方案。
+
+值得注意的是，我们一定要为image元素增加alt属性，这是一种**无障碍性承诺**，这是一种对于视觉障碍者友好的方式。关于 alt 属性的一般建议：
+
+* 对于重要图片来说，`alt` 属性应该具有描述性；
+
+* 对于纯装饰性的图片，`alt` 属性应该为空；
+
+* 应该为每张图片设置 `alt` 属性。
+
+# 八. 参考文献
+
+1. 特别鸣谢：[Udacity前端工程师纳米学位](<https://cn.udacity.com/fend>)
+
+2. 视口相关基础知识：
+
+   [在移动浏览器中使用viewport元标签控制布局](<https://developer.mozilla.org/zh-CN/docs/Mobile/Viewport_meta_tag>)
+
+   [A tale of two viewports - part one](<https://www.quirksmode.org/mobile/viewports.html>)
+
+   [两个viewport的故事-第一部分(桌面版)](<https://www.zcfy.cc/article/a-tale-of-two-viewports-part-one-2375.html>)
+
+3. CSS布局基础：
+
+   [学习CSS布局](<http://zh.learnlayout.com/>)
+
+4. [响应式网页设计](<http://www.ruanyifeng.com/blog/2012/05/responsive_web_design.html>)
+
+5. Flex布局相关：
+
+   [Flex布局教程：语法篇](<http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html>)
+
+   [Flex布局教程：实例篇](<http://www.ruanyifeng.com/blog/2015/07/flex-examples.html>)
+
+   [A Complete Guide to Flexbox](<https://css-tricks.com/snippets/css/a-guide-to-flexbox/>)
+
+   [交互式Flex布局教程](https://scrimba.com/g/gflexbox)
+
+6. Grid布局相关：
+
+   [CSS Grid 网格布局教程](<http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html>)
+
+   [A Complete Guide to Grid](<https://css-tricks.com/snippets/css/complete-guide-grid/>)
+
+   [How I stopped using Bootstrap’s layout thanks to CSS Grid](<https://blog.theodo.fr/2018/03/stop-using-bootstrap-layout-thanks-to-css-grid/>)
+
+   [交互式Grid布局教程](<https://scrimba.com/g/gR8PTE>)
