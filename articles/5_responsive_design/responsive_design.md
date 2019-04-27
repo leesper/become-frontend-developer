@@ -1601,9 +1601,241 @@ stretch拉伸并占满单元格的整个宽度：
 
 ![](./self-stretch2.png)
 
-响应式设计中的表格和字体
+place-self属性是align-self属性和justify-self属性的合并简写形式，如果省略第二个值，place-self属性会认为这两个值相等。以上就是网格布局所有的属性，要熟练掌握网格布局，还是需要在实践中多加练习。有了网格布局，原来我们要实现的很多复杂的响应式布局就能够得到极大的简化，[这篇文章](<https://blog.theodo.fr/2018/03/stop-using-bootstrap-layout-thanks-to-css-grid/>)介绍了如何用网格布局来完全替代Bootstrap框架。
 
-响应式设计中的图片
+# 	六. 表格和字体的响应式设计
+
+响应式设计中表格，字体和图片也是要讨论的重要主题。这里简单介绍下响应式设计中如何处理表格和字体。下一部分会介绍响应式设计中的图片。
+
+## 6.1 响应式表格
+
+对于网页中出现的表格而言，如果列数超出一定的范围，那么可能需要两个方向的滚动条左右上下拖动来查看，这是一种很不好的用户体验。要尽量避免出现两个方向上的滚动条，不同的情况有不同的解决方案。对于表格有三种响应式设计的技巧：隐藏列（hidden columns），无表格设计（no more tables）以及表格内滚动（contained tables）。
+
+### 6.1.1 隐藏列
+
+隐藏列的设计技巧是当视口尺寸缩小时，根据信息的重要性选择隐藏一些列。沿着"从小处开始"的设计技巧，先思考什么信息最重要，对这部分信息进行保留，然后用display: none隐藏其他相对不那么重要的信息。这个技巧最大的问题是它向用户隐瞒了一些信息，所以使用时要谨慎。如果有可能的话，尽量使用缩写，而不是隐藏它。
+
+比如下面这个表格：
+
+```html
+<table class="scores__table">
+  <thead>
+  </thead>
+</table>
+```
+
+
+
+我们可以设计当视口宽度小于等于499px时隐藏gametime列：
+
+```css
+@media screen and (max-width: 499px) {
+  .gametime {
+    display: none;
+  }
+}
+```
+
+### 6.1.2 无表格设计
+
+当视口宽度小于一定值时，表格将使用CSS重组成长列表而不是数据表。这种解决方案的好处在于所有数据都是可见的。以下面这个棒球得分表为例：
+
+![](./team-table.png)
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th>Team</th>
+      <th>1st</th>
+      <th>2nd</th>
+      <th>3rd</th>
+      <th>4th</th>
+      <th>5th</th>
+      <th>6th</th>
+      <th>7th</th>
+      <th>8th</th>
+      <th>9th</th>
+      <th>Final</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-th="Team">Toronto</td>
+      <td data-th="1st">0</td>
+      <td data-th="2nd">0</td>
+      <td data-th="3rd">0</td>
+      <td data-th="4th">4</td>
+      <td data-th="5th">0</td>
+      <td data-th="6th">1</td>
+      <td data-th="7th">0</td>
+      <td data-th="8th">0</td>
+      <td data-th="9th">0</td>
+      <td data-th="Final">5</td>
+    </tr>
+    <tr>
+      <td data-th="Team">San Francisco</td>
+      <td data-th="1st">0</td>
+      <td data-th="2nd">0</td>
+      <td data-th="3rd">0</td>
+      <td data-th="4th">4</td>
+      <td data-th="5th">0</td>
+      <td data-th="6th">0</td>
+      <td data-th="7th">0</td>
+      <td data-th="8th">0</td>
+      <td data-th="9th">0</td>
+      <td data-th="Final">4</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+当视口宽度小于500px时变成长列表：
+
+![](./team-table2.png)
+
+```css
+table {
+  border: 1px solid #ddd;
+}
+
+tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+      
+@media screen and (max-width: 500px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  td { 
+    position: relative;
+    padding-left: 50%; 
+  }
+  td:before { 
+    position: absolute;
+    left: 6px;
+    content: attr(data-th);
+    font-weight: bold;
+  }
+  td:first-of-type {
+    font-weight: bold;
+  }
+}
+```
+
+### 6.1.3 表格内滚动
+
+表格内滚动是一种为超出视口宽度的表格添加水平滚动条的方法。首先将表格包括在div中，然后使用CSS将这个div设置成100%宽并设置`overflow-x: auto`即可。
+
+```css
+div {
+  width: 100%;
+  overflow-x: auto;
+}
+```
+
+## 6.2 响应式字体
+
+网页上每一行文字的字数不能太长也不能太短。太短的话人为割裂了词组会导致句子含义难以理解；太长的话不容易定位下一行，用户读着读着就没耐心开始略读了。一个好的建议是网页上每行大约65个字符，字体足够大：至少16像素，行高至少1.2em。我们可以设置一些次要的断点媒体查询来改善字体的响应式设计，比如当视口宽度增加时给一些内容增加字号，增加内边距并增大图标的尺寸。
+
+# 七. 图片的响应式设计
+
+在打开网页所需的平均字节数中，图片的加载要耗去60%。所以我们在设计网页时对图片的使用一定要注意。响应式图片设计的目的是用最少的字节传输最高质量的图片，因为对于移动设备以及不太好的网络环境而言，图片精度太高容易增加页面的加载延迟。我们要避免出现图片放大后像素失真，图片无法加载和裁剪后看不到图像全貌等问题，使得图片在各种尺寸设备上表现良好，从而提升用户体验。
+
+> Create a product, don't re-imagine one for small screens, great mobile products are created, never ported.   --Brian Fling
+
+## 7.1 图片加载的性能优化
+
+我们通常要考虑图片的质量和大小。然而对于网页上的图片而言，我们只需要考虑大小就可以了，即图片的压缩等级和实际的分辨率。图片文件的大小往往取决于像素数和每个像素所占的比特数量。所以为了提高网站的性能，我们要使用尽可能小的图片尺寸和尽可能高的图片压缩率。常见的错误是使用了过大的图片尺寸和过高的图片质量。有人统计过，平均每个网页要发出56个左右的请求来加载图片，每次请求对页面加载来说都是一项成本，一个小的页面加载延迟都可能造成明显的流量和经济损失。Google页面加载每增加0.4到0.9秒，将导致流量和广告收入降低20%；Amazon页面加载延迟每增加100ms就意味着1%销售额损失。
+
+### 7.1.1 不使用固定大小图片
+
+不要使用固定大小的图片，因为它无法根据视口的尺寸来改变自身大小，应该使用百分比相对大小，比如max-wdith: 100%。对于台式机或笔记本电脑而言，不要假设视口尺寸和屏幕尺寸相同，也不要假设视口会一直保持相同的大小。使用max-width是一种优雅地响应视图区域变化的方法。如果想要两张图片并列对齐，使每个图像为可用宽度的一半，并留有10px的间隔，那么就可以使用calc()函数：
+
+```css
+img {
+  width: calc((100% - 10px) / 2);
+}
+
+img: last-of-type {
+  margin-right: 0;
+}
+```
+
+### 7.1.2 使用特殊的CSS单位
+
+vh和vw两种单位分别用来表示视口的高度和宽度。一个vh单位对应1%视口高度，一个vw单位对应1%视口宽度，所以100vh表示100%视口高度，100vw表示100%视口宽度。另一种常见的响应式用例是调整图片尺寸来适应视口宽度或者高度的较小者或较大者，就可以分别使用vmin和vmax。
+
+### 7.1.3 栅格图和矢量图
+
+有两种不同的基础方法创建和存储图片，一种叫栅格图，另一种叫矢量图。前者是一种点阵图片，我们平时从照相机，扫描仪中得到的图片都是栅格图。而后者是用特殊格式描述的线条组成的矢量图形。矢量图片优于栅格图片的一点是浏览器可以渲染任意尺寸的矢量图片，当视口尺寸增加时，矢量图不会失真而产生锯齿。为了提升性能，建议为照片使用jpeg格式，为矢量图使用svg格式，如果是商标等logo图案，如果不能使用svg，则使用png。
+
+### 7.1.4 使用专业工具优化图片
+
+有一些专业的工具可以提供对图片的批量处理。使用ImageMagick可以转换图片格式，裁剪或者应用滤镜。可以生成同一幅图片的多种版本或不同的尺寸和格式。还可以使用Grunt任务来使用ImageMagick，比如Grunt的响应式图片插件，能够一次性得到许多不同质量的图片。还有其他一些工具可以使用，ImageOptim可以利用很多开源工具来生成无损图片。
+
+ImageMagick:
+
+* [ImageMagick](http://www.imagemagick.org/)
+
+* [Mac 上的一个简单的 ImageMagick 安装包](http://cactuslab.com/imagemagick/)
+
+* [GraphicsMagick](http://www.graphicsmagick.org/) (ImageMagick 的一个分叉)
+
+Grunt:
+
+* [Grunt 简介](http://gruntjs.com/getting-started)
+
+* [Grunt 使用入门](http://24ways.org/2013/grunt-is-not-weird-and-hard/)
+
+* [用 Grunt 生成不同分辨率的图片](http://addyosmani.com/blog/generate-multi-resolution-images-for-srcset-with-grunt/)
+
+* [用于生成多张图片的 grunt-responsive-images 插件](https://github.com/andismith/grunt-responsive-images)
+
+* [用于响应式图片工作流的 grunt-respimg 插件](https://www.npmjs.com/package/grunt-respimg)
+
+图片处理工具：
+
+* [ImageOptim](http://imageoptim.com/) (Mac)
+
+* [Trimage](http://trimage.org/) - 和 ImageOptim 类似 (Windows, Mac, Linux)
+
+* [ImageAlpha](https://github.com/pornel/ImageAlpha)
+
+### 7.1.5 对页面进行优化检查
+
+怎样才能检查页面上所有的图片都被优化了呢？有一个在线检查图片优化情况的工具叫PageSpeed Insights。可以用它的网页办来检查网站，还可以在开发者工具中使用它。最厉害的是它还有API接口，可以在终端下通过curl命令来检查。也可以把这个检查过程写入到推送代码到仓库时的构建测试中，使用grunt task runner来实现。grunt有PageSpeed Insights插件可供使用，参考资料：
+
+* [PageSpeed Insights 示例](https://developers.google.com/speed/pagespeed/insights/?url=simpl.info%2Fcssfilters)
+
+* [Grunt PageSpeed 插件](https://www.npmjs.com/package/grunt-pagespeed)
+
+* [PageSpeed Node module](https://github.com/addyosmani/psi/)
+
+* [cURL 示例](http://www.thegeekstuff.com/2012/04/curl-examples/)
+
+* [PageSpeed Insights Node module](https://github.com/addyosmani/psi/)
+
+## 7.2 标记图片的技巧
+
+对移动网络而言，文件请求次数和请求文件的大小同样重要。我们还需要进一步优化减少请求图片的次数，而不仅仅是关注图片的大小。**性能**是真正响应式设计的基本组成部分，既要压缩图片，又要减少图片的数量。这一节我们将介绍一些减少图片请求次数的技巧。
+
+### 7.2.1 不要将文字保存成图片
+
+首先，不要将文字保存成图片，因为放大后会失真，还会使网页文件变大，造成延迟。使用图片形式的文字还有一个问题就是无法被搜索引擎找到，也不能被屏幕阅读器读取。正确的做法应该是直接把文本覆盖在图片上面，这样图片和文字就有更好的显示和放大效果，文本也可以被选中，并且这样还能更方便的使用CSS来添加效果，文件尺寸也更小。
+
+### 7.2.2 使用CSS技巧
+
+除了用来调整样式属性，CSS还可以用来实现其他图形效果，比如渐变，阴影，圆角或动画效果。但是要注意使用CSS生成这些视觉效果是有处理和渲染成本的，这在移动设备上尤其明显，要谨慎使用。
+
+## 7.3 完全响应式图片加载
+
+
 
 # 参考文献
 
@@ -1626,6 +1858,12 @@ stretch拉伸并占满单元格的整个宽度：
 [CSS Grid 网格布局教程](<http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html>)
 
 [A Complete Guide to Grid](<https://css-tricks.com/snippets/css/complete-guide-grid/>)
+
+[How I stopped using Bootstrap’s layout thanks to CSS Grid](<https://blog.theodo.fr/2018/03/stop-using-bootstrap-layout-thanks-to-css-grid/>)
+
+
+
+
 
 
 
