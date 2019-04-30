@@ -6,111 +6,130 @@
 
 # 一. JavaScript入门
 
-​	入门
-​		诞生
-​			1995年
-​			Brendan Eich
-​		版本
-​			ES2016
-​			ES2017
-​		控制台
-​			console.log
-​	数据类型和变量
-​		数值
-​		字符串
-​			+
-​			索引
-​			转义
-​			比较
-​			方法
-​				replace
-​		Boolean
-​		特殊
-​			null
-​				value of nothing
-​			undefined
-​				absence of value
-​			NaN
-​		隐式类型转换
-​			===
-​	条件语句
-​		if语句
-​			逻辑运算
-​				AND
-​				OR
-​				NOT
-​			真值
-​				true
-​				-42
-​				"pizza"
-​				{}
-​				[]
-​			假值
-​				false
-​				null
-​				undefined
-​				0
-​				NaN
-​				""
-​			特殊形式
-​				三元运算
-​		switch语句
-​			fall through 问题
-​	循环
-​		while
-​		for
-​			for..in
-​			forEach
-​	函数
-​		用途
-​			封装重复代码
-​		参数
-​			parameter
-​				变量
-​			argument
-​				值
-​		返回值
-​			return
-​		作用域
-​			全局
-​			函数
-​			从内向外
-​				覆盖
-​			var关键字
-​			提升
-​				函数声明
-​					但函数赋值不会提升
-​				变量声明
-​					但变量赋值不会提升
-​				最佳实践
-​					在脚本顶部声明函数和变量
-​		一等公民
-​			高阶函数
-​				函数作为参数
-​			匿名函数
-​	数组
-​		创建
-​			数组字面量
-​		访问
-​			索引
-​		特殊对象
-​			属性
-​				length
-​			方法
-​				push
-​				pop
-​				splice
-​				forEach
-​				map
-​		多维数组
-​	对象
-​		创建
-​			对象字面量
-​				键值对
-​			封装
-​				不同数据类型
-​		命名
-​			camelCase
+JavaScript语言诞生于1995年，Brendan Eich仅用了10天时间就创造了它，这门语言最初的目的是为网页添加交互式和动态特性。现在这门语言已经可以用在后端开发甚至嵌入式领域了。现代JavaScript语言的发展已经加入ECMA标准化，按照年份来命名，比如ES2016和ES2017等等。
+
+所有的浏览器都内置了JavaScript引擎。我们可以通过各大浏览器的开发者工具中的控制台(console)来运行JS程序，可以通过`console.log()`在控制台打印信息。
+
+## 1.1 不同浏览器上的开发工具
+
+### 1.1.1 Google Chrome
+
+Chrome 开发者工具是 Google Chrome 中内置的网页编辑和调试工具。[这篇文章](https://developers.google.cn/web/tools/chrome-devtools/)是介绍开发者工具的官方文档。
+
+要打开 Chrome 开发者工具，右键单击任意页面元素，并选择检查（Inspect），或者打开浏览器窗口右上角的 Chrome 菜单并选择"更多工具 (More Tools)" --"开发者工具（Developer Tools）"。或者你可以使用快捷方式 `⌘ + ⌥ + I` （Mac） 或 `Ctrl + ⇧ + I` （Linux）。
+
+### 1.1.2 Mozilla Firefox
+
+Firefox 开发者工具让你可以在台式机和手机上检查、编辑及调试 HTML、CSS 和 JavaScript。你也可以下载 Firefox Developer Edition 版的 Firefox，它专为开发者定制，具有最新的 Firefox 功能和开发者试验工具。
+
+要学习更多内容，请查看[官方文档](https://developer.mozilla.org/zh-CN/docs/Tools)。要打开 Firefox 开发者工具，右键单击任意页面 元素并选择“检查元素（Inspect Element）”，或者打开浏览器窗口右上角的 Firefox 菜单并选择“开发者（Developer）”。 或者，你可以使用快捷方式 `⌘ + ⌥ + I`（Mac）或 `Ctrl + ⇧ + I`（Windows/Linux）。
+
+### 1.1.3 Safari
+
+对于 Mac 用户，Safari 自带有 Web Inspector，这是一个强大的工具，能够轻松地修改、调试和优化网站，以便在两个平台上同时获得最佳的性能和兼容性。要学习更多内容，请查看[官方文档](https://developer.apple.com/safari/tools/)。
+
+要访问 Safari 的网页开发工具，请在 Safari 的高级首选项中启用"开发（Develop）菜单"。启用后，可右键单击任意页面元素并选择"检查元素（Inspect Element）"以打开 Web 开发工具，或者使用快捷方式 `⌘ + ⌥ + I`。
+
+
+
+入门
+		
+	数据类型和变量
+		数值
+		字符串
+			+
+			索引
+			转义
+			比较
+			方法
+				replace
+		Boolean
+		特殊
+			null
+				value of nothing
+			undefined
+				absence of value
+			NaN
+		隐式类型转换
+			===
+	条件语句
+		if语句
+			逻辑运算
+				AND
+				OR
+				NOT
+			真值
+				true
+				-42
+				"pizza"
+				{}
+				[]
+			假值
+				false
+				null
+				undefined
+				0
+				NaN
+				""
+			特殊形式
+				三元运算
+		switch语句
+			fall through 问题
+	循环
+		while
+		for
+			for..in
+			forEach
+	函数
+		用途
+			封装重复代码
+		参数
+			parameter
+				变量
+			argument
+				值
+		返回值
+			return
+		作用域
+			全局
+			函数
+			从内向外
+				覆盖
+			var关键字
+			提升
+				函数声明
+					但函数赋值不会提升
+				变量声明
+					但变量赋值不会提升
+				最佳实践
+					在脚本顶部声明函数和变量
+		一等公民
+			高阶函数
+				函数作为参数
+			匿名函数
+	数组
+		创建
+			数组字面量
+		访问
+			索引
+		特殊对象
+			属性
+				length
+			方法
+				push
+				pop
+				splice
+				forEach
+				map
+		多维数组
+	对象
+		创建
+			对象字面量
+				键值对
+			封装
+				不同数据类型
+		命名
+			camelCase
 
 # 二. jQuery入门
 
