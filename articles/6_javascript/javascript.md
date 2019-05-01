@@ -710,14 +710,44 @@ for (var row = 0; row < donutBox.length; row++) {
 
 ## 1.7 对象
 
-对象
-	创建
-		对象字面量
-			键值对
-		封装
-			不同数据类型
-	命名
-		camelCase
+对象是JS中强大的特性，它允许将相关属性和方法封装到一个被称为"类"的容器中使用。实际上在JS中万物皆对象，函数也不过是一个callable的对象。可以使用typeof运算符来返回后面数据类型的名称：
+
+```javascript
+typeof "hello" // 返回 "string"
+typeof true // 返回 "boolean"
+typeof [1, 2, 3] // 返回 "object"（数组是一种对象类型）
+typeof function hello() { } // 返回 "function"
+```
+
+对象的创建可以采用字面值记法：
+
+```javascript
+var sister = {
+  name: "Sarah", 
+  age: 23,
+  parents: [ "alice", "andy" ],
+  siblings: ["julia"],
+  favoriteColor: "purple",
+  pets: true,
+  paintPicture: function() { return "Sarah paints!"; }
+};
+```
+
+注意：
+
+* “键”（表示**属性**或**方法**名称）和它的“值”用**冒号**隔开了
+
+* 键值对用**逗号**隔开
+
+* 整个对象包含在花括号 `{ }` 里。
+
+访问属性可以使用括号记法：`sister["parents"]`也可以使用点记法：`sister.parents`。点记法更符合面向对象的使用习惯。创建对象的时候要遵守命名约定，否则会出现错误，要避免的做法：
+
+1. 不要使用引号包围属性名称；
+2. 不要使用数字作为属性名称的第1个字符；
+3. 不要在属性名称中使用空格和连字符；
+
+最好是使用驼峰命名法。
 
 # 二. jQuery入门
 
