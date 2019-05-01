@@ -32,49 +32,267 @@ Firefox 开发者工具让你可以在台式机和手机上检查、编辑及调
 
 
 
+## 1.2 数据类型与变量
+
+JavaScript中的数据类型包含数值，字符串，布尔类型和特殊类型，有时候类型之间还会有隐式类型转换。
+
+### 1.2.1 基本数据类型
+
+JavaScript中的数值类型包含各种正负整数和小数，可以进行各种常见的加减乘除算术运算：
+
+| 运算符 |       含义       |
+| :----: | :--------------: |
+|   +    |        加        |
+|   -    |        减        |
+|   *    |        乘        |
+|   /    |        除        |
+|   %    | 求余数(保留整数) |
+|   ++   |       累加       |
+|   --   |       递减       |
+
+可以对数字进行各种大于，小于或等于的比较：
+
+| **运算符** |  **含义**  |
+| :--------: | :--------: |
+|     <      |    小于    |
+|     >      |    大于    |
+|     <=     | 小于或等于 |
+|     >=     | 大于或等于 |
+|     ==     |    等于    |
+|     !=     |   不等于   |
+
+JS中的注释语句有两种：单行注释和多行注释。
+
+```javascript
+// 这是一条单行注释
+
+/*
+这是
+一条多行
+注释
+*/
+```
+
+JS中的字符串要用单引号或者双引号引起来。很多开发指南都建议字符串使用单引号。字符串有很多运算，比如加法运算符`+`表示字符串连接，如果字符串和数值数据之间用`+`号连接，那么得到的结果会自动转换成字符串。
+
+字符串还可以像数组一样被索引，比如`James[0]`返回字符"J"，这种索引是从0开始的，如果字符串的长度为n，那么最后一个字符的索引为n-1。可以使用length来获得字符串的长度，可以使用replace函数替换其中一部分字符。
+
+和其他编程语言一样，有一些特殊字符在使用时需要转义，比如在字符串中带入双引号，就需要使用反斜杠\进行转义：
+
+```javascript
+console.log("The man whispered, \"please speak to me.\"");
+```
+
+一些需要转义的特殊字符：
+
+| **代码** |  **字符**   |
+| :------: | :---------: |
+|    \     | \ (反斜杠)  |
+|    \"    | '' (双引号) |
+|    \'    | ' (单引号)  |
+|    \n    |   newline   |
+|    \t    |     tab     |
+
+字符串之间是可以进行比较的，这种比较是区分大小写的：
+
+```javascript
+"Yes" == "yes" // false
+'Y' != 'y' // true
+```
+
+比较的结果只能是true或者false，这也是一种重要的基本数据类型：布尔型。
+
+有三种特殊的类型是需要注意的：null，undefined和NaN。null是一种表示"value of nothing"的数据类型，即”空值“。undefined是一种表示"absence of value"的数据类型，即"缺少值"。NaN表示"not a number"，即"非数字"，这在数字运算存在错误时被返回，比如试图给负数求平方根运算。
+
+类型之间可能会有些你看不见的"隐式类型转换"：
+
+```javascript
+"1" == 1; // true
+0 == false; // true
+```
+
+在其他编程语言中也会有这种现象的发生。JS引擎解析代码的时候会自动转换相应的数据类型，比如上面提到的字符串类型与数值相加，数值就会被自动转换成字符串。使用==或者!=运算时也会发生这样的转换，所以如果要比较值是否相等，最好使用**绝对相等**运算符===和!==，举例：
+
+```javascript
+"1" === 1 // false
+0 === false // false
+```
+
+### 1.2.2 变量
+
+对于JS这样的弱类型语言而言，它的变量可以被赋值为任何类型，包括基础类型和后面要提到的类类型，甚至也可以是函数。JS的变量命名遵循驼峰规则，并使用var来定义：
+
+```javascript
+var name = 'Richard';
+```
+
+这只是基本的定义变量的方式，然而var定义的变量有一些微妙的地方，现代JavaScript语言推荐使用let来定义具有块级作用于的变量。
+
+## 1.3 条件语句
+
+JavaScript中的条件语句就两种：if和switch，搭配各种逻辑运算符使用更佳。
+
+### 1.3.1 if语句
+
+if语句可以根据条件是否成立来决定是否执行某段代码：
+
+```javascript
+if (/* 这个表达式为真 */) {
+  // 运行这段代码
+} else {
+  // 运行这段代码
+}
+```
+
+else代码块是可以不要的，可以根据表达式是否为真来决定该运行哪段代码：
+
+```javascript
+var a = 1;
+var b = 2;
+
+if (a > b) {
+  console.log("a大于b");
+} else {
+  console.log("a小于或等于b");
+}
+```
+
+> 输出："a小于或等于b"。
+
+如果一次判断不够，还可以多写几个else if：
+
+```javascript
+var weather = "sunny";
+
+if (weather === "snow") {
+  console.log("Bring a coat.");
+} else if (weather === "rain") {
+  console.log("Bring a rain jacket.");
+} else {
+  console.log("Wear what you have on.");
+}
+```
+
+> **输出：** Wear what you have on.
+
+### 1.3.2 逻辑运算符
+
+JavaScript中的基本逻辑运算符有三种：AND，OR和NOT。分别使用`&&`，`||`和`!`表示。其实就是离散数学中的"真值表"：
+
+1. value1 && value2：如果 `value1` **和** `value2` 都为 `true`，则返回 `true`
+2. value1 || value2：如果 `value1` **或** `value2`为 `true`，则返回 `true`
+3. !value1：返回 `value1` 的**相反值**。如果 `value1` 为 `true`，则 `!value1` 为 `false`
+
+一定注意逻辑运算符遵循**短路求值**原则：只要逻辑运算符会尽可能快的返回真值，比如对于value1 || value2而言，如果value1求值为true，那么value2就不会再求值了，因为此时该表达式的值一定是true，不需要再判断了。
+
+另外一个要注意的问题是JS中的有些值放在布尔表达式中求值时会被固定的求值为真或假，下面的值都会被求值为真：
+
+* true
+* -42
+* "pizza"
+* {}
+* []
+
+下面的值都会被求值为假：
+
+* false
+* null
+* undefined
+* 0
+* NaN
+* ""
+
+JS还衍生出了一种运算符叫三元运算符，可以帮助避免写出冗长的if else语句：
+
+```javascript
+conditional ? (if condition is true) : (if condition is false)
+```
+
+如果条件为真则执行冒号前面的语句，否则执行冒号后面的语句。
+
+```javascript
+var isGoing = true;
+var color = isGoing ? "green" : "red";
+console.log(color);
+```
+
+> **输出**：green
+
+### 1.3.3 switch语句
+
+如果代码中重复出现大量的if语句，每个条件都给予相同的值，那么用switch语句改写好了：
+
+```javascript
+if (option === 1) {
+  console.log("You selected option 1.");
+} else if (option === 2) {
+  console.log("You selected option 2.");
+} else if (option === 3) {
+  console.log("You selected option 3.");
+} else if (option === 4) {
+  console.log("You selected option 4.");
+} else if (option === 5) {
+  console.log("You selected option 5.");
+} else if (option === 6) {
+  console.log("You selected option 6.");
+}
+```
+
+改写成：
+
+```javascript
+switch (option) {
+  case 1:
+    console.log("You selected option 1.");
+    break;
+  case 2:
+    console.log("You selected option 2.");
+    break;
+  case 3:
+    console.log("You selected option 3.");
+    break;
+  case 4:
+    console.log("You selected option 4.");
+    break;
+  case 5:
+    console.log("You selected option 5.");
+    break;
+  case 6:
+    console.log("You selected option 6.");
+    break; // technically, not needed
+}
+```
+
+注意这里每个分支都要有break语句，否则当表达式的值满足某个分支时，该分支下面的语句都会被执行一遍（fall through问题）。当没有任何与switch表达式相符的值时，可以默认执行default分支：
+
+```javascript
+var prize = "";
+
+switch (winner) {
+  case 1:
+    prize += "a trip for two to the Bahamas and ";
+  case 2:
+    prize += "a four piece furniture set.";
+    break;
+  case 3:
+    prize += "a smartwatch and ";
+  default:
+    prize += "tickets to the circus.";
+}
+
+console.log("You've won " + prize);
+```
+
+## 1.4 循环
+
+
+
+## 1.5 函数
+
 入门
 		
-	数据类型和变量
-		数值
-		字符串
-			+
-			索引
-			转义
-			比较
-			方法
-				replace
-		Boolean
-		特殊
-			null
-				value of nothing
-			undefined
-				absence of value
-			NaN
-		隐式类型转换
-			===
-	条件语句
-		if语句
-			逻辑运算
-				AND
-				OR
-				NOT
-			真值
-				true
-				-42
-				"pizza"
-				{}
-				[]
-			假值
-				false
-				null
-				undefined
-				0
-				NaN
-				""
-			特殊形式
-				三元运算
-		switch语句
-			fall through 问题
+	
+	
 	循环
 		while
 		for
