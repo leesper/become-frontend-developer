@@ -285,7 +285,123 @@ console.log("You've won " + prize);
 
 ## 1.4 循环
 
+循环语句重复一定次数地执行特定的操作。JS的循环有两种：while循环和for循环。当你掌握了循环，程序设计的三种基本结构就配齐了：顺序，条件和循环。任何循环都具有以下三大部分：
 
+1. **何时开始：**设置循环的代码 — 例如定义某个变量的起始值。
+2. **何时停止：**测试循环是否继续的逻辑条件。
+3. **如何转到下一项：** 递增或递减步骤 — 例如，`x = x * 3` 或 `x = x - 1`
+
+### 1.4.1 while循环
+
+举例：
+
+```javascript
+var start = 0; // 何时开始
+while (start < 10) { // 何时停止
+  console.log(start);
+  start = start + 2; // 如何进入下一项
+}
+```
+
+> **输出：**
+> *0*
+> *2*
+> *4*
+> *6*
+> *8*
+
+循环可以和上面介绍的条件语句一起使用，一个满足以下要求的 `while` 循环：
+
+- 从数字 1 循环访问到 20
+- 如果数字可以被 3 整除，则输出 “Julia”
+- 如果可以被 5 整除，则输出 “James”
+- 如果可以同时被 3 和 5 整除，则输出 “JuliaJames”
+- 如果不能被 3 或 5 整除，则输出该数字
+
+可以这么写：
+
+```javascript
+var x = 1;
+
+while (x <= 20) {
+    // check divisibility
+    // print Julia, James, or JuliaJames
+    // increment x
+    if (x % 3 === 0 && x % 5 === 0) {
+        console.log('JuliaJames');
+    } else if (x % 3 === 0) {
+        console.log('Julia');
+    } else if (x % 5 === 0) {
+        console.log('James');
+    } else {
+        console.log(x);
+    }
+    x = x + 1;
+}
+```
+
+### 1.4.2 for循环
+
+for循环基本结构：
+
+```javascript
+for ( start; stop; step ) {
+  // code
+}
+```
+
+下面这个 for 循环输出了 0-5 的每个值：
+
+```javascript
+for (var i = 0; i < 6; i = i + 1) {
+  console.log("Printing out i = " + i);
+}
+```
+
+> *Printing out i = 0*
+> *Printing out i = 1*
+> *Printing out i = 2*
+> *Printing out i = 3*
+> *Printing out i = 4*
+> *Printing out i = 5*
+
+循环还可以嵌套：
+
+```javascript
+for (var x = 0; x < 5; x = x + 1) {
+  for (var y = 0; y < 3; y = y + 1) {
+    console.log(x + "," + y);
+  }
+}
+```
+
+> **输出**：
+> *0, 0*
+> *0, 1*
+> *0, 2*
+> *1, 0*
+> *1, 1*
+> *1, 2*
+> *2, 0*
+> *2, 1*
+> *2, 2*
+> *3, 0*
+> *3, 1*
+> *3, 2*
+> *4, 0*
+> *4, 1*
+> *4, 2*
+
+循环中可以使用类似C语言的自增自减运算符：
+
+```javascript
+x++ or ++x // 等同于 x = x + 1 
+x-- or --x // 等同于 x = x - 1
+x += 3 // 等同于 x = x + 3
+x -= 6 // 等同于 x = x - 6
+x *= 2 // 等同于 x = x * 2
+x /= 5 // 等同于 x = x / 5
+```
 
 ## 1.5 函数
 
