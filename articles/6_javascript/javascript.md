@@ -548,35 +548,176 @@ movies(function displayFavorite(movieName) {
 
 当你不需要重复使用该函数时，这么定义是最方便的。
 
+## 1.6 数组
 
+数组是一种非常常见的顺序存储结构。这节会介绍数组如何创建和访问，并介绍它的一些常用的方法。
 
+### 1.6.1 数组的创建和访问
 
+定义新数组的方法是列出各个值，用逗号分隔然后放在方括号`[]`里。
 
-	
-	
-	数组
-		创建
-			数组字面量
-		访问
-			索引
-		特殊对象
-			属性
-				length
-			方法
-				push
-				pop
-				splice
-				forEach
-				map
-		多维数组
-	对象
-		创建
-			对象字面量
-				键值对
-			封装
-				不同数据类型
-		命名
-			camelCase
+```javascript
+// 用三个字符串创建一个 `donuts` 数组
+var donuts = ["glazed", "powdered", "jelly"];
+```
+
+作为弱类型语言，还可以混搭：
+
+```javascript
+var mixedData = ["abcd", 1, true, undefined, null, "all the things"];
+```
+
+还可以嵌套：
+
+```javascript
+var arraysInArrays = [
+  [1, 2, 3], 
+  ["Julia", "James"], 
+  [true, false, true, false]
+];
+```
+
+数组的访问使用索引来实现，索引从0开始，如果数组长度为n，那么最后一个元素的索引为n-1。
+
+```javascript
+var donuts = ["glazed", "powdered", "sprinkled"];
+console.log(donuts[0]); 
+```
+
+如果访问了不存在的元素，JS将返回undefined，其他语言会报下标越界错误。
+
+```javascript
+// `donuts` 数组中的第四个元素不存在！
+console.log(donuts[3]); 
+```
+
+### 1.6.2 数组作为对象
+
+数组作为特殊的**对象**，提供了大量实用的属性和方法。Array.length属性可用于了解数组长度：
+
+```javascript
+var donuts = ["glazed", "powdered", "sprinkled"];
+console.log(donuts.length);
+```
+
+> 输出结果：3
+
+注意，字符串也有length属性，同样可以`"James".length`进行访问。
+
+如果想修改数组，可以使用push()和pop()方法。push()方法在数组的末尾添加元素：
+
+```javascript
+var donuts = ["glazed", "chocolate frosted", "Boston creme", "glazed cruller", "cinnamon sugar", "sprinkled"];
+donuts.push("powdered"); 
+```
+
+> **返回：**7
+> **donuts 数组：**["glazed", "chocolate frosted", "Boston creme", "glazed cruller", "cinnamon sugar", "sprinkled", "powdered"]
+
+pop()方法从数组末尾删除元素，并返回已经被删除的元素：
+
+```javascript
+var donuts = ["glazed", "chocolate frosted", "Boston creme", "glazed cruller", "cinnamon sugar", "sprinkled", "powdered"];
+
+donuts.pop(); // 从 "donuts" 数组的末尾弹出 "powdered"
+donuts.pop(); // 从 "donuts" 数组的末尾弹出 "sprinkled"
+donuts.pop(); // 从 "donuts" 数组的末尾弹出 "cinnamon sugar"
+```
+
+splice()函数可以向数组的任意位置添加和删除元素，第1个参数表示要从哪个索引开始更改数组，第2个参数表示要删除的元素数量 ，剩下的参数表示要添加的元素：
+
+```javascript
+var donuts = ["glazed", "chocolate frosted", "Boston creme", "glazed cruller"];
+// 删除索引1处的 "chocolate frosted" ，并从索引1开始添加 "chocolate cruller" 和 "creme de leche"
+donuts.splice(1, 1, "chocolate cruller", "creme de leche"); 
+```
+
+还可以使用负索引倒着修改数组：
+
+```javascript
+var donuts = ["cookies", "cinnamon sugar", "creme de leche"];
+
+// ["cookies", "chocolate frosted", "glazed", "cinnamon sugar", "creme de leche"]
+donuts.splice(-2, 0, "chocolate frosted", "glazed");
+```
+
+可以查阅[MDN文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array)来查阅数组的所有内置方法。
+
+可以对数组进行循环，循环的方式有三种：基本for循环，forEach循环和map。基本for循环就是for循环结合length来遍历数组：
+
+```javascript
+var donuts = ["jelly donut", "chocolate donut", "glazed donut"];
+
+// 变量 `i` 用来遍历数组中的每个元素
+for (var i = 0; i < donuts.length; i++) {
+    donuts[i] += " hole";
+    donuts[i] = donuts[i].toUpperCase();
+}
+```
+
+还可以用forEach()方法来遍历数组，它的参数是一个内联函数表达式，该函数表达式接受3个参数：element，index，array。第1个参数表示数组中的元素，第2个参数表示该元素在数组中的索引，第3个参数表示目标数组，但后两个参数是可以省略的：
+
+```javascript
+var donuts = ["jelly donut", "chocolate donut", "glazed donut"];
+
+donuts.forEach(function(donut) {
+  donut += " hole";
+  donut = donut.toUpperCase();
+  console.log(donut);
+});
+```
+
+> **输出：**
+> *JELLY DONUT HOLE*
+> *CHOCOLATE DONUT HOLE*
+> *GLAZED DONUT HOLE*
+
+如果需要得到遍历修改过的新数组，那么不能用forEach()，因为它的返回值为undefined，但是可以使用更强大的map()方法 通过现有数组创建一个新数组，该方法是从函数式编程思想中得来的：
+
+```javascript
+var donuts = ["jelly donut", "chocolate donut", "glazed donut"];
+
+var improvedDonuts = donuts.map(function(donut) {
+  donut += " hole";
+  donut = donut.toUpperCase();
+  return donut;
+});
+```
+
+> **donuts 数组：**["jelly donut", "chocolate donut", "glazed donut"]
+> **improvedDonuts 数组：**["JELLY DONUT HOLE", "CHOCOLATE DONUT HOLE", "GLAZED DONUT HOLE"]
+
+如果在数组中存储了数组，就成了多维数组。
+
+```javascript
+var donutBox = [
+  ["glazed", "chocolate glazed", "cinnamon"],
+  ["powdered", "sprinkled", "glazed cruller"],
+  ["chocolate cruller", "Boston creme", "creme de leche"]
+];
+```
+
+使用多重循环来遍历数组：
+
+```javascript
+for (var row = 0; row < donutBox.length; row++) {
+  // 这里，donutBox[row].length 指的是当前被循环的甜甜圈(donut)数组的长度
+  for (var column = 0; column < donutBox[row].length; column++) {
+    console.log(donutBox[row][column]);
+  }
+}
+```
+
+## 1.7 对象
+
+对象
+	创建
+		对象字面量
+			键值对
+		封装
+			不同数据类型
+	命名
+		camelCase
 
 # 二. jQuery入门
 
