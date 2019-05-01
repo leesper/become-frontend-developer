@@ -405,42 +405,155 @@ x /= 5 // 等同于 x = x / 5
 
 ## 1.5 函数
 
-入门
-		
+函数是用来封装重复代码块的基本结构。随着代码越写越长，有些代码会出现越来越多的重复，这个时候我们就需要把重复的代码抽象出来封装成函数，通过调用函数来实现对应的功能。如果需求有变动，修改一处总比到处修改要好，这也是提高代码健壮性的一种策略。
+
+### 1.5.1 参数和返回值
+
+函数将一段代码封装起来，并在程序中使用。函数可以具有一个参数，表示该函数的输入：
+
+```javascript
+function reverseString(reverseMe) {
+  // 反转一个字符串的代码！
+}
+```
+
+多个参数用逗号分隔开：
+
+```javascript
+function doubleGreeting(name, otherName) {
+  // 向两人问好的代码！
+}
+```
+
+函数也可以没有任何参数。直接封装代码并执行某项功能，直接把小括号留空就行了：
+
+```javascript
+function sayHello() {
+  var message = "Hello!";
+  console.log(message);
+}
+```
+
+如果没有返回值，函数的输出结果就是undefined。如果需要返回结果，那么就要使用return语句：
+
+```javascript
+function sayHello() {
+  var message = "Hello!";
+  return message; // 返回message而不是打印message
+}
+```
+
+注意区分parameter和argument的概念。parameter是形参，出现在函数声明中，相反argument是值，它出现在函数的调用代码中。
+
+### 1.5.2 作用域
+
+一旦引入函数，就会存在作用域的问题。在任何编程语言中，作用域都是一个容易出现微妙错误，难以debug的基础概念。它的内涵是表示某个标识符(变量或函数名)在部分程序片段中是否可见或可被访问。
+
+JS中有三种不同类型的作用域：全局作用域，函数作用域和ES6要引入的块作用域。在所有函数之外定义的标识符具有**全局作用域**，可以在程序的任何位置使用，程序中所有函数的内部都能访问到它。如果标识符是在函数内部定义的，那么该变量具有**函数作用域**，该函数内部任何位置都能访问到它，包括该函数内部定义的其他函数。
+
+JS引擎在查找标识符时遵循从内向外的查找模式。它首先查看该标识符是否在当前函数中定义，如果找到了则到此为止；如果没找到就查看外面一层，一直持续到达全局作用域。如果仍然找不到，就会返回错误。如果函数内部出现了与全局标识符同名的标识符，则会在函数内发生作用域覆盖，只能访问到函数内定义的那个标识符。
+
+在任何编程语言中都是不推荐使用全局变量的，一来全局变量会跟其他相同名字的变量产生 冲突，二来在多线程环境下，全局变量的读写容易产生bug。
+
+JS中海油一个叫"**提升(hoisting)**"的特性也会导致比较微妙的错误。在执行任何代码前，所有的函数声明都被提升到当前作用域的顶部。比如下面这个函数：
+
+```javascript
+findAverage(5, 9);
+function findAverage(x, y) {
+  var answer = (x + y) / 2;
+  return answer;
+}
+```
+
+JS引擎在解析这行代码时，会将函数的定义提升到当前作用域的顶部，因此先调用函数后定义函数是被允许的。提升还会发生在**变量的声明**上，比如下面这段代码：
+
+```javascript
+function sayGreeting() {
+  console.log(greeting);
+  var greeting = "hello";
+}
+```
+
+> **输出**：undefined
+
+输出的结果居然是undefined，怎么回事？原因是提升仅对变量的声明起作用，也就是说上面这段代码相当于：
+
+```javascript
+function sayGreeting() {
+  var greeting;
+  console.log(greeting);
+  greeting = "hello";
+}
+```
+
+声明虽然提升到了函数作用域的顶部，但赋值语句还停留在原地，这就是输出undefined的原因。最佳实践是在脚本顶部声明函数和变量，这样代码的外观和执行方式就保持一致了。
+
+### 1.5.3 函数表达式
+
+函数表达式，顾名思义，将函数作为表达式来使用：
+
+```javascript
+var meow = function(max) {
+  var catMessage = "";
+  for (var i = 0; i < max; i++) {
+    catMessage += "meow";
+  }
+  return catMessage;
+}
+```
+
+函数可以赋值给一个变量，之后就可以用这个变量来调用函数。函数表达式有三种模式。**函数可以作为参数**，此时作为参数的函数有一个专门的名字叫**回调(callback)**：
+
+```javascript
+// 函数表达式 catSays
+var catSays = function(max) {
+  var catMessage = "";
+  for (var i = 0; i < max; i++) {
+    catMessage += "meow ";
+  }
+  return catMessage;
+};
+
+// 函数声明 helloCat 接受一个回调
+function helloCat(callbackFunc) {
+  return "Hello " + callbackFunc(3);
+}
+
+// catSays 作为回调函数传入
+helloCat(catSays);
+```
+
+函数表达式可以有名称，称为**命名函数表达式**，直接使用变量名而不是函数名来调用它：
+
+```javascript
+var favoriteMovie = function movie() {
+  return "the fountain";
+}
+
+favouriteMovie();
+```
+
+如果尝试使用函数名调用它，会返回引用错误。最后一种模式被称为内联函数表达式，即就地定义函数：
+
+```javascript
+function movies(messageFunction, name) {
+  messageFunction(name);
+}
+
+// 调用 movies 函数，传入一个函数和电影名称
+movies(function displayFavorite(movieName) {
+  console.log("My favorite movie is " + movieName);
+}, "Finding Nemo");
+```
+
+当你不需要重复使用该函数时，这么定义是最方便的。
+
+
+
+
+
 	
 	
-	循环
-		while
-		for
-			for..in
-			forEach
-	函数
-		用途
-			封装重复代码
-		参数
-			parameter
-				变量
-			argument
-				值
-		返回值
-			return
-		作用域
-			全局
-			函数
-			从内向外
-				覆盖
-			var关键字
-			提升
-				函数声明
-					但函数赋值不会提升
-				变量声明
-					但变量赋值不会提升
-				最佳实践
-					在脚本顶部声明函数和变量
-		一等公民
-			高阶函数
-				函数作为参数
-			匿名函数
 	数组
 		创建
 			数组字面量
