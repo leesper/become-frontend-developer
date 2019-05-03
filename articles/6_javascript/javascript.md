@@ -751,68 +751,314 @@ var sister = {
 
 # 二. jQuery入门
 
-​	操纵DOM的利器
-​		write less, do more
-​		兼容浏览器
-​	引入
-​	选择器
-​		tag
-​		.class
+jQuery是JavaScript库，它通过选择器操纵DOM（文档对象模型），jQuery存在的原因是纯JS操作DOM其实并不方便，比如我想给id为parent的元素添加一个子元素div，原生的JS写法如下：
 
-​        `#id`
+```javascript
+var div = document.createNode('div');
+div.innerHTML = "hello udacity";
+var parent = document.querySelector('#parent');
+parent.appendChild(div);
+```
 
-​		...
-​		一次选中多个元素
-​			`$("#topContacts, #footerContacts").append(…);`
-​	常用
-​		遍历
-​			parent
-​			parents
-​			children
-​			find
-​			siblings
-​		操作
-​			addClass
-​			toggleClass
-​			next
-​			attr
-​			css
-​			内容
-​				html
-​				text
-​				val
-​			remove
-​			添加
-​				append
-​				prepend
-​				insertBefore
-​				insertAfter
-​			each
-​			构建DOM完成后执行
-​				$(function)
-​	事件监听
-​		三要素
-​			target
-​			event
-​				convenient 方法
-​			action
-​		event对象
-​			target
-​				事件目标页面元素
-​			preventDefault
-​			keyCode
-​			坐标
-​				pageX
-​				pageY
-​			type
-​		事件代理
-​			原理
-​				event propagation(bubbling up)
-​				向上传递
-​			通过父节点监听任意后代节点事件
-​			优点
-​				能响应新创建的元素
-​				合并listener数量
+但如果使用jQuery，一行就搞定了，可以说是"write less, do more"：
+
+```javascript
+$('parent').append('<div>hello udacity</div>');
+```
+
+jQuery解决了各种浏览器兼容问题，所以开发人员只需要关注要实现的功能即可。jQuery一大特点就是反复出现的美元符号`$`，在jQuery中它代表一个指向与之前相同的JavaScript对象的指针。`$`返回一个类数组的对象，称为jQuery collection，通过它调用jQuery各种功能。
+
+## 2.1 文档对象模型和选择器
+
+DOM是一种树形结构，全称是"文档对象模型(Document Object Model)"。我们编写的HTML代码最终会被浏览器解析成一棵被称为DOM的树型数据结构，jQuery通过选择并操作DOM中的元素来为网页增加动态效果。
+
+### 2.1.1 jQuery的引入
+
+jQuery的引入通过script标签实现，有三种方式：
+
+```html
+<!-- 本地 -->
+<script src='js/jquery.min.js'></script>
+<!-- jQuery官方 -->
+<script src='//code.jquery.com/jquery-1.11.1.min.js'></script>
+<!-- 通过CDN(推荐做法) -->
+<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+```
+
+### 2.1.2 jQuery的套路
+
+用jQuery操作网页的套路就是"先选择器选择，然后调用函数实现功能"。只要把握好这个方法，一切都迎刃而解了。如果传递的参数为字符串，jQuery对象就会为我们选择对应的元素，就像CSS那样：
+
+```javascript
+// 标签选择
+$('tag')
+// 类选择
+$('.class')
+// id选择
+$('#id')
+```
+
+所有能在CSS中使用的选择器都能在jQuery中使用，举个例子：
+
+```javascript
+// select all the li elements
+var listElements = $('li');
+// select all elements of class green
+var articleItems = $('.article-item');
+// select an element with id nav
+var nav = $('#nav');
+// select multiple elements at a time
+$("#topContacts, #footerContacts").append(…);
+```
+
+## 2.2 使用jQuery动态修改网页
+
+jQuery本质上还是一个JavaScript的库，它提供了很多很强大的功能。通过它我们可以动态地操作DOM，添加删除元素，修改元素的属性和内容，在各种特殊点上执行某个函数。都说HTML用来表现网页的信息结构，CSS用来渲染网页的外观，那么JavaScript正是通过动态操作DOM来为网页添加功能，这是它起作用的根本原因。不管是用jQuery也好，还是用React，Vue和AngularJS这些库也好，它们最根本的本质还是通过操作DOM来修改网页的表现形式从而实现交互式网页。
+
+### 2.2.1 用jQuery遍历DOM
+
+jQuery提供了一系列的函数，可以实现更复杂的操作，比如在DOM中遍历各个元素。学过数据结构的同学对这些函数的名字肯定不陌生。
+
+parent()方法可以选择直接父元素（只向上回溯一层）；如果要选择任一父元素，可以使用parents()函数，参数为父元素的名称，就可以遍历所有的父元素；children()方法能够返回所有的直接子元素，只向下遍历了一层；同样地，如果需要选择任一子元素，就需要find()方法；最后，siblings()方法能够返回当前元素的所有兄弟元素。
+
+### 2.2.2 用jQuery修改类和CSS属性
+
+addClass()函数可以为选中的元素添加一个类属性，比如`$('#item').addClass('blue')`为id为item的元素添加类"blue"。
+
+toggleClass()函数可以根据元素的状态决定增加或者移除class属性，比如移除Article #2的featured类属性。
+
+```javascript
+featured = $('.featured');
+featured.toggleClass('featured');
+```
+
+next()函数返回元素后面的直接兄弟元素，比如为Article #3添加featured类名。
+
+```javascript
+var article2 = $('.featured');
+var article3 = article2.next();
+article2.toggleClass('featured');
+article3.toggleClass('featured');
+```
+
+可以使用attr()函数来修改元素的属性值，它有两种签名：attr(attributeName)用于读取属性值，attr(attributeName, value)用于设置属性值，比如为第一个a元素增加href属性值。
+
+```javascript
+var navList = $('.nav-list');
+var firstItem = navList.children().first();
+var link = firstItem.find('a');
+link.attr('href', '#1');
+```
+
+还可以使用css()来轻松地获取和修改CSS代码。要注意，使用JS来修改CSS实际上是添加了内嵌的CSS，即修改元素的style属性。实际开发过程中还是要权衡一下是否有必要这么做，还是说可以通过CSS解决问题。css(propertyName)可以获取CSS属性值，css(propertyName, value)可以设置属性值。比如将article-items的 字号设置为20px。
+
+```javascript
+articleItems = $('.article-item');
+articleItems.css('font-size', '20px');
+```
+
+### 2.2.3 用jQuery修改元素内容
+
+除了可以遍历DOM，读写DOM元素的属性，我们还可以使用jQuery来修改元素的内容，有两种方法可以获取标签中的数据：html()和text()函数。html()会返回目标元素下所有子元素的内容，包括标签在内，但text()函数返回的内容会去掉所有的标签。比如想要实现把文本输入框内容设置为h1标题的内容，就可以这么写：
+
+```javascript
+$('#input').on('change', function() {
+  var val, h1;
+  val = $('#input').val();
+  h1 = $('.articles').children('h1');
+  h1.text(val);
+})
+```
+
+当id为input的元素内容发生改变时将回调该匿名内嵌函数，该函数从input元素中取出内容，然后将它设置到h1元素中。val()函数获取所匹配元素集合中第一个元素的值，或者也可以设置所有匹配到的元素的值。
+
+### 2.2.4 用jQuery修改网页元素
+
+使用jQuery还可以动态地添加和删除DOM中的元素。我们先来看看如何使用remove()函数删除元素，举个例子，将Article #1中的无序列表移除：
+
+```javascript
+var articleItems, ul;
+articleItems = $('.article-item');
+ul = articleItems.find('ul');
+ul.remove();
+```
+
+jQuery还可以一行代码实现创建新的DOM节点并把它们添加到DOM，有4种常见的方法：append()，prepend()，insertBefore()和insertAfter()。
+
+append()和preprend()可以为元素增加子元素，前者将子元素作为最后一个元素添加，后者将子元素作为第一个元素添加：
+
+```javascript
+var firstArticleItem;
+firstArticleItem = $('.article-item').first();
+firstArticleItem.append('<img src="http://placepuppy.it/200/300"');
+firstArticleItem.prepend('<img src="http://placepuppy.it/200/300"');
+```
+
+insertBefore()和insertAfter()为元素添加兄弟元素，也是一个添加到前面，一个添加到后面。
+
+### 2.2.5 用jQuery实现迭代访问
+
+each()方法能够用来循环访问jQuery集合，对集合中的每个元素执行一个回调函数。在回调函数中如果想对一个传入的DOM元素调用任意的jQuery方法，需要使用`$(this)`来获取循环中的当前元素。举个例子，为网页中所有的p元素增加字数统计：
+
+```javascript
+$('p').each(function() {
+  var text = $(this).text();
+  $(this).text(text + ' ' + text.length);
+});
+```
+
+这种回调函数的使用模式还会在前后端的各种库和框架中看到。比如jQuery还有一个功能是传递一个函数给jQuery对象，也就是美元符号，来实现在DOM构建完成之后的document.ready上立即执行这个回调函数。
+
+这么做有什么意义呢？文档的head标签中外部JS文件会先于body加载并立即执行，如果这段JS语言想要操作页面上的一些DOM元素，会因为这些DOM元素还没出现而不进行任何操作。我们可以在body的底部包含脚本，但这意味着页面的渲染可能会因为下载并加载JS导致延迟。
+
+也就是说在这个场景下我们需要对一个函数进行延迟调用，解决的方法就是向jQuery对象传递一个函数，这个函数会在构建完DOM后调用：
+
+```javascript
+$(function(){
+    // 做有趣的事情
+});
+```
+
+下一节要介绍的内容会大量涉及到回调函数这一主题。
+
+## 2.3 jQuery的事件监听机制
+
+事件监听机制让我们可以对用户浏览网页时的行为进行自动响应。通过监听事件并作出响应（回调函数）来实现交互式网页。这一节将介绍的浏览器事件对理解jQuery乃至于后面更高级的前端框架有很大帮助。**事件**是指发生在特定时间的特定动作，在浏览器渲染出来的页面上，你每移动一次鼠标，点击一次页面，按一下按钮或者拖动一个元素，都会产生可能不止一个事件。比如就拿按钮来打个比方，我将鼠标移动到按钮上，按下按钮，再移开，至少会触发以下事件：
+
+1. 鼠标进入按钮控件
+2. 鼠标悬停
+3. 鼠标按下
+4. 鼠标单击
+5. 鼠标释放
+6. 鼠标离开按钮控件
+
+我们可以给每个事件塞一个回调函数，让这个事件触发时自动执行这个函数来实现我们想要的功能。Chrome浏览器提供了一个只能在控制台中使用的函数monitorEvents()，只要给这个函数传递一个元素，就能在控制台看到这个元素触发了哪些事件。具体可以参考[monitorEvents()文档](https://developers.google.com/web/tools/chrome-devtools/console/events)。事件通常可以分为以下几个类别：
+
+1. 资源事件
+2. 网络事件
+3. Websocket事件
+4. 会话历史事件
+5. CSS动画事件
+6. CSS过渡事件
+7. 表单事件
+8. 打印事件
+9. 文本写作事件
+10. 视图事件
+11. ……
+
+你想得到的想不到的各种事件，浏览器已经全部准备好了。[这里](https://developer.mozilla.org/zh-CN/docs/Web/Events#Categories)有一份完整的事件列表可供参考。
+
+### 2.3.1 jQuery事件监听要素
+
+在jQuery中使用三个要素来监听和响应事件：
+
+1. 要监听的目标对象；
+2. 要响应的事件；
+3. 要采取的动作；
+
+比如下面这行代码就包含了这三个要素，my-input就是要监听的目标对象，keypress是要响应的事件，而这里定义的回调函数就是我们要采取的动作：
+
+```javascript
+$('#my-input').on('keypress', function() {
+  $('body').css('background-color', '#2727FF');
+});
+```
+
+我们在回调函数中对事件作出响应通常需要对事件本身进行处理，所以这里的回调函数实际上带了一个参数：事件对象。这个对象包括了很多可在函数中使用的信息，常被引用为e，evt或者event。event对象中的target属性就代表了发生该事件的目标元素，它很有用，比如我们设置当artcle元素 被点击时背景色变为红色，就可以这样写了：
+
+```javascript
+$( 'article' ).on( 'click', function( evt ) {
+    $( evt.target ).css( 'background', 'red' );
+});
+```
+
+此时只有那个被点击的元素才会改变颜色。另一个比较有用的是preventDefault()方法。比如我有一个叫myAnchor的链接，我只想在点击时将日志记录到控制台，而不想定向到新的页面，就可以用这个方法阻止默认操作：
+
+```javascript
+$( '#myAnchor' ).on( 'click', function( evt ) {
+    evt.preventDefault();
+    console.log( 'You clicked a link!' );
+});
+```
+
+其他用途包括：
+
+- `event.keyCode` ：了解按下了哪个键；
+- `event.pageX` 和 `event.pageY` ：了解在页面上的哪个位置进行了单击， 用于分析跟踪；
+- `event.type` ：在侦听目标的多个事件时非常有用；
+
+更多有关事件对象的内容，请查阅以下文档：
+
+- [jQuery 的事件 对象](https://api.jquery.com/category/events/event-object/)
+- [event.target 属性](https://api.jquery.com/event.target/)
+- [DOM 级别 3 事件](http://www.w3.org/TR/DOM-Level-3-Events/)
+
+on()函数是个万精油函数，只要传递进事件名称就能监听特定的事件，但jQuery还提供了大量的便捷方法可供使用：
+
+```javascript
+// 按键事件
+$('input').keypress(function() {});
+// 单击事件
+$('input').click(function() {});
+// 内容发生改变事件
+$('input').change(function() {});
+```
+
+详细的便捷方法列表，可查阅[官方文档](http://api.jquery.com/category/events/)了解。
+
+### 2.3.2 高级用法：事件代理
+
+**事件代理**的原理是一种事件的向上传播机制，通过父元素监听任意子孙元素事件。在什么时候我们会用到事件代理呢？主要有两种场景：1. 要监听的目标对象在设置监听时还不存在；2. 有大量的监听对象需要设置监听器。
+
+下面这段代码属于第一种情况：
+
+```javascript
+$( 'article' ).on( 'click', function() {
+  $( 'body' ).addClass( 'selected' );   
+});
+
+$( 'body' ).append( '<article> <h1>新文章的附加文章</h1> <p>内容 </p> </article>' );
+```
+
+click事件监听器设置在前，body中添加article在后。事件监听器在设置的时候页面上如果还没有article元素，那么这次设置就会扑个空：在还没出现的元素上设置了click监听器，因此是无效的，没有设置上。但如果我们使用事件代理，将监听器设置在目标元素的父元素上，就可以顺利实现了，我们向on()方法额外传递一个参数，表示检查单击事件发生时目标是否为某元素：
+
+```javascript
+$( '.container' ).on( 'click', 'article', function() { … });
+```
+
+该代码使得 jQuery 关注 `.container` 元素的单击次数，如果单击事件发生，则检查单击事件的目标是否为 `article` 元素。
+
+另一种情况是，如果页面上有1000个列表项：
+
+```html
+<ul id="rooms">
+    <li>Room 1</li>
+    <li>Room 2</li>
+            .
+            .
+            .
+    <li>Room 999</li>
+    <li>Room 1000</li>
+</ul>
+```
+
+如果我们要给这1000个列表项设置监听器，那就会产生1000个事件监听器：
+
+```javascript
+$( '#rooms li' ).on( 'click', function() {
+    ...
+});
+```
+
+更好的做法是在一个元素上设置事件代理监听器，当事件发生时检查元素是否为列表项：
+
+```javascript
+$( '#rooms' ).on( 'click', 'li', function() {
+    ...
+});
+```
+
+事件代理的优点就在于能响应新创建的元素并能合并监听器数量。
 
 # 三. 面向对象的JavaScript
 
