@@ -1058,7 +1058,7 @@ $( '#rooms' ).on( 'click', 'li', function() {
 });
 ```
 
-事件代理的优点就在于能响应新创建的元素并能合并监听器数量。
+事件代理的优点就在于能响应新创建的元素并能合并监听器数量，更多信息请查阅[官方文档](https://learn.jquery.com/events/event-delegation/)。
 
 # 三. 面向对象的JavaScript
 
