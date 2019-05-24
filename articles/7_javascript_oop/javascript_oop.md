@@ -209,40 +209,101 @@ sagas[0]();
 
 ![](./closure17.png)
 
-只要能把握**解释器会在原来定义它的执行上下文中创建新的执行上下文**这个核心，就能理解闭包这个概念。​
+只要能把握"**解释器会在原来定义它的执行上下文中创建新的执行上下文**"这个核心，就能理解闭包这个概念。​
 
-### 1.1.3this关键字
+### 1.1.3 this关键字
 
+每一个面向对象的编程语言都有一种方式来指定一个变量来表示当前对象。和很多编程语言一样，JavaScript使用this关键字来表示当前对象；和很多编程语言不一样，JavaScript的this关键字是一个很容易被误解的概念。把握一个关键概念this关键字绑定问题就好理解了：调用时确定。即**直到调用的那一刻（位置）才确定**，下面我们通过一个例子来看this绑定的7种规则。示例代码如下：
 
+```javascript
+var fn = function(one, two) {
+  log(this, one, two);
+};
+var r={}, g={}, b={};
+```
 
-​			把握关键
-​				调用时
-​					直到调用的那一刻（位置）才确定
-​			绑定规则
-​				规则一
-​					调用时的对象——"the left of dot" rule
-​						the object found to the left of the dot where the containing function is called
-​				规则二
-​					直接调用
-​						global
-​						strict mode
-​							undefined
-​				规则三
-​					fn.call(r, g, b)
-​						this <-- r
-​				规则四
-​					作为callback
-​						global
-​				规则五
-​					new r.method(g, b)
-​						后台自动创建的新object
-​				规则六
-​					fn.bind()
-​						创建新函数，this将永久地被绑定到了bind的第一个参数
-​				规则七
-​					箭头函数
-​						根据当前上下文继承this
-​	1.2 面向对象
+#### 1.1.3.1 规则一："the left of dot" rule
+
+如果函数作为成员方法通过`obj.fn(x, y)`的方式调用，那么this关键字将绑定为obj对象。举例：
+
+```javascript
+r.method = fn;
+r.method(g, b); // 此时this关键字被绑定为对象r
+```
+
+#### 1.1.3.2 规则二：直接调用
+
+如果是下面这种情况就有意思了：
+
+```javascript
+fn(g, b);
+```
+
+答案是：this将被绑定为全局对象`<global>`，但如果是strict模式，则为`undefined`。
+
+#### 1.1.3.3 规则三：fn.call(r, g, b)
+
+如果对象r并没有叫fn的属性，我们是不能通过`r.fn()`的方式去访问的，这个时候可以使用`fn.call()`的形式，`call()`会重写调用规则，以下两种形式中this关键字的绑定规则都会被改写：
+
+```javascript
+fn.call(r, g, b); // this --> r
+r.method.call(y, g, b); // this --> y
+```
+
+#### 1.1.3.4 函数作为回调传递给其他函数
+
+如果将fn传递给`setTimeout()`函数又会怎么样呢：
+
+```javascript
+setTimeout(fn, 1000);
+```
+
+从这行代码仍然是看不出来的，我们的原则还是要从函数调用的那一刻进行判断，所以这里需要查看`setTimeout()`的源代码。
+
+```javascript
+var setTimeout = function(cb, ms) { // 这里只是setTimeout的模拟代码
+  waitSomehow(ms);
+  cb();
+}
+```
+
+直接作为回调函数调用的话`one`和`two`没有绑定任何变量，所以是`undefined`。此时this关键字将被绑定为全局对象`<global>`。下面再看一种比较tricky的情况：
+
+```javascript
+setTimeout(r.method, 1000);
+```
+
+可能有人会觉得`method`方法是`r`对象的属性，这样传参this参数会不会和`r`有什么关系？答案是否定的，因为关键还是在函数被调用的那一刻来判断this的绑定，因此这里仍然是`<global>`全局对象，而且这里的参数`one`和`two`仍然被绑定为undefined，正确的做法应该是再增加一个函数对象，并在函数对象中进行方法调用：
+
+```javascript
+setTimeout(function() {
+  r.method(g, b);
+}, 1000);
+```
+
+此时this关键字绑定为`r`，`one`绑定为`g`，`two`绑定为`b`。而下面这种在全局作用域直接访问this关键字的行为，this将被绑定为`undefined`：
+
+```javascript
+log(this);
+```
+
+#### 1.1.3.5 规则五：new r.method(g, b)
+
+```javascript
+new r.method(g, b);
+```
+
+此时this关键字将因为`new`的作用而被绑定到一个后台自动创建的匿名对象上，因为每一次new都会生成新对象。
+
+#### 1.1.3.6 规则六
+fn.bind()创建新函数，this将永久地被绑定到了bind的第一个参数
+
+#### 1.1.3.7 规则七
+
+箭头函数根据当前上下文继承this
+​	
+
+1.2 面向对象
 ​		把握关键
 ​			everything is an **OBJECT**
 ​			function is a special **OBJECT**
