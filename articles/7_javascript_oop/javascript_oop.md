@@ -301,12 +301,223 @@ fn.bind()创建新函数，this将永久地被绑定到了bind的第一个参数
 #### 1.1.3.7 规则七
 
 箭头函数根据当前上下文继承this
-​	
 
-1.2 面向对象
-​		把握关键
-​			everything is an **OBJECT**
-​			function is a special **OBJECT**
+## 1.2 面向对象
+
+其实你早就在JavaScript中用上对象了，只是你一直都没感觉到而已。JS这个编程语言和Python很像，都是**万物皆对象**的语言，甚至**函数本身也是一个特殊的对象**。我们将从面向对象的三大特性：封装，继承和多态来学习一下在JS中进行面向对象编程的各种方式以及它们的优劣。
+
+### 1.2.1 封装
+
+封装的本质其实是将数据和它们的访问者绑定到一起，形成一个类。这个类相当于一个模板，我们可以照着这个模板来创建一系列的实例，称为**对象**。在JavaScript中有6种类的封装模式：**对象修饰器**，**函数类**，**构造器模式**，**原型模式**，**原型类**和**伪类**。
+
+#### 1.2.1.1 对象修饰器
+
+我们先来看一种最简单和最直观的对象创建模式：**对象修饰器(object decorator)**。以一个小游戏为例，这个游戏中有很多车辆，玩家需要避开这些行驶中的车辆。这个游戏系统需要记录很多运动实体的数据。我们可以从游戏中的车辆入手进行代码编写。
+
+```javascript
+var amy = {loc: 1};
+amy.loc++;
+var ben = {loc: 9};
+ben.loc++;
+```
+
+这么写代码可能会比较累，如果我们要创建很多对象，而这些对象看起来都差不多怎么办？不管用什么语言编写代码，我们一定要注意尽量**避免重复的代码**，一旦发现代码中出现重复的痕迹，就要及时着手重构：
+
+```javascript
+var move = function(car) {
+  car.loc++;
+};
+
+var amy = {loc: 1};
+move(amy);
+var ben = {loc: 9};
+move(ben);
+```
+
+看上去重构并没有什么明显的效果，我们虽然把重复的代码提取到一个函数中，但代码量似乎还增加了。这种提取重复代码的重构是不是没有意义呢？其实不是，它至少有两点好处。首先，如果你在开发的是一款真实的游戏，可能`move()`函数不会有这么简单，如果它很复杂怎么办？
+
+```javascript
+var move = function(car) {
+  removeCarFromScreen(car.loc);
+  addDustSwirlToScreen(car.loc);
+  car.loc++;
+  addCarToScreen(car.loc);
+};
+```
+
+你不想每次都为汽车对象重复敲一遍上面的代码对吧；其次，如果你需要修改汽车移动的代码，那么只改一个地方是最好的了，如果代码散步在各个角落，你只要改漏一个地方，程序就可能会出bug。所以还是把重复代码提取到一个地方比较好。
+
+除了`move()`函数，汽车对象的创建也是重复的代码，可以提取到一个我们称为修饰器的函数中。这里的`carlike()`函数传入两个参数，`obj`表示被修饰的对象，`loc`表示要修饰的内容，这个函数为obj对象添加了一个loc属性然后返回，相当于obj对象被"装饰"了一个新属性。
+
+```javascript
+var carlike = function(obj, loc) {
+  obj.loc = loc;
+  return obj;
+};
+
+var move = function(car) {
+  car.loc++;
+};
+
+var amy = carlike({}, 1);
+move(amy);
+var ben = carlike({}, 9);
+move(ben);
+```
+
+函数其实也是属性的一种，如果我们想用方法调用`amy.move()`的方式来调用`move()`函数，那么结合之前我们讨论过的this关键字绑定，上面的代码就还需要进一步重构。
+
+```javascript
+var carlike = function(obj, loc) {
+  obj.loc = loc;
+  obj.move = move
+  return obj;
+};
+
+var move = function() {
+  this.loc++;
+};
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+注意，这里的`move`是一个函数对象，它作为属性被赋值给多个对象的move属性，在函数被调用的那一刻，this关键字会被绑定到不同的对象上。所以多个对象实际上共用一个move函数对象。但是，把一个函数成员定义在全局作用域而不是对象里面，多多少少看起来有些奇怪。看上去代码应该重构成下面这个样子比较好：
+
+```javascript
+var carlike = function(obj, loc) {
+  obj.loc = loc;
+  obj.move = function() {
+    obj.loc++;
+  };
+  return obj;
+};
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+但这么写代码会有一个乍一看不太容易发现的问题。原来我们是在全局作用域定义一个`move()`函数，然后把它赋值给对象修饰函数，所以被修饰过的对象都共用同一个函数对象，但现在我们把函数对象的定义放到了对象修饰函数中，这就会导致一个问题：每次我们通过调用`carlike()`函数去修饰对象时，都会在该函数作用域中创建一个新的函数对象。请注意，函数也是一种特殊对象，因此每次修饰得到的对象虽然`move()`方法是相同的，但在内存中却是不同的对象，如果创建了大量的汽车对象就会占用一些不必要的内存空间，是一种资源浪费。对于这个问题，对象修饰模式无法有效解决，我们还要想其他的办法。
+
+#### 1.2.1.2 函数类
+
+**函数（functional class）**类是一种可用于创建大量相似对象的强大函数，它是对上面讨论的对象修饰器的一种拓展，它使用函数将方法应用到任何对象身上。对象修饰模式是通过传入对象进行修饰实现的，函数类则自行创建对象，这样的函数被称为构造函数，通常以大写的形式表示，它创建的对象被称为实例。
+
+```javascript
+var Car = function(loc) {
+  var obj = {loc: loc};
+  obj.move = function() {
+    obj.loc++;
+  };
+  return obj;
+};
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+单纯的函数类并没有解决重复创建函数对象的问题，解决方法是将函数定义移到外面去，我们称它为**函数共享模式(functional shared pattern)**，其实上面已经见过这个方法了。
+
+```javasc
+var Car = function(loc) {
+  var obj = {loc: loc};
+  obj.move = move;
+  return obj;
+};
+
+var move = function() {
+    this.loc++;
+};
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+这样写有个不好的地方就是每次定义新的函数，就先得在下面定义好函数体，然后再修改上面的构造函数，如果函数很多的话很容易忘记，比如下面这样的：
+
+```javascript
+var Car = function(loc) {
+  var obj = {loc: loc};
+  obj.move = move;
+  obj.on = on;
+  obj.off = off;
+  return obj;
+};
+
+var move = function() {
+    this.loc++;
+};
+
+var on = function() { /*...*/ }
+var off = function() { /*...*/ }
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+有一种办法可以解决，就是将所有的函数定义放到`methods`对象中，然后使用`extend()`函数。这样每次添加新函数时只需要修改`methods`对象就可以了。
+
+```javascript
+var Car = function(loc) {
+  var obj = {loc: loc};
+ 	extend(obj, methods);
+  return obj;
+};
+
+var methods = {
+  move: function() {
+    this.loc++;
+  }
+};
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+但是把`methods`对象定义到全局作用域并不是一种很好的做法，况且不熟悉代码的人并不知道这里的methods到底要绑定给哪个对象。还记得前面说过，函数也是一种特殊的对象吗？这里我们可以把methods作为函数对象的属性进行存储，问题就解决了：
+
+```javascript
+var Car = function(loc) {
+  var obj = {loc: loc};
+ 	extend(obj, methods);
+  return obj;
+};
+
+Car.methods = {
+  move: function() {
+    this.loc++;
+  }
+};
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+
+
+
+
+
+
+
+
+
+
+
 ​		三大特性
 ​			封装
 ​				本质
