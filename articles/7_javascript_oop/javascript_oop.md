@@ -348,7 +348,7 @@ log(rose.z); // 3
 
 ### 1.2.2 对象修饰器
 
-我们先来看一种最简单和最直观的对象创建模式：**对象修饰器(object decorator)**。以一个小游戏为例，这个游戏中有很多车辆，玩家需要避开这些行驶中的车辆。这个游戏系统需要记录很多运动实体的数据。我们可以从游戏中的车辆入手进行代码编写。
+**对象修饰器(object decorator)**是一种最简单和最直观的对象创建模式。以一个小游戏为例，这个游戏中有很多车辆，玩家需要避开这些行驶中的车辆。这个游戏系统需要记录很多运动实体的数据。我们可以从游戏中的车辆入手进行代码编写。
 
 ```javascript
 var amy = {loc: 1};
@@ -527,7 +527,7 @@ ben.move();
 ```javascript
 var Car = function(loc) {
   var obj = {loc: loc};
- 	extend(obj, methods);
+ 	extend(obj, Car.methods);
   return obj;
 };
 
@@ -543,7 +543,49 @@ var ben = carlike({}, 9);
 ben.move();
 ```
 
+### 1.2.4 原型类
 
+上面这种函数共享模式的实现方式在性能上还可以进一步提高。我们使用了`extend()`函数，它本质上是一种复制粘贴，我们可以使用原型链来进一步提高性能，还记得吗，原型链使得对象的属性访问可以委托给其他的对象，所以原型对象需要存储所有的共享方法。
+
+```javascript
+var Car = function(loc) {
+  var obj = Object.create(Car.methods); // 委派给Car.methods
+  obj.loc = loc;
+  return obj;
+};
+
+Car.methods = {
+  move: function() {
+    this.loc++;
+  }
+};
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+建立一个包含各种方法的对象然后把它作为属性绑定到构造函数这种模式普遍存在，所以JS语言干脆对它提供特别的支持，即**原型类（prototype class）**。任何时候当创建一个函数对象时，它都会自动附加一个对象属性作为存储方法的容器，它的名字叫`.prototype`。
+
+```javascript
+var Car = function(loc) {
+  var obj = Object.create(Car.prototype); // 委派给Car.methods
+  obj.loc = loc;
+  return obj;
+};
+
+Car.prototype.move = function() {
+  this.loc++;
+};
+
+var amy = carlike({}, 1);
+amy.move();
+var ben = carlike({}, 9);
+ben.move();
+```
+
+每个`.prototype`对象都拥有一个`.constructor`属性，该属性指向它所附属的函数，在这里就是`Car()`函数了。所有使用`Car()`函数创建的对象，其`.constructor`属性都指向`Car()`函数，比如`amy.constructor`。另外，`instanceof`运算符的工作原理就是判断右侧对象的.prototype对象属性是否能在左侧对象的原型链中出现。比如`log(amy instanceof Car)`会判断`Car.prototype`是否出现在`amy`对象的原型链中。
 
 
 
