@@ -791,42 +791,211 @@ Van.prototype.constructor = Van;
 Van.prototype.move = function() { /*...*/ };
 ```
 
-这就介绍完了JavaScript面向对象的各种特性了，函数类和原型类还是比较容易的，最难的是伪类模式，稍微不注意就容易出错，似乎在JS中进行面向对象编程要比在其他语言中更困难一些呢，但其实不然。这门语言本身也在不断的发展和进化，后来当ES6语法出现之后，定义类变得比以前要容易很多了！从ES6开始，JavaScript语言引入了大量的新语法糖，使得面向对象编程像其他语言那样简洁优美，不用考虑太多内部实现。这也是下一部分要介绍的内容。
-
-天不生ES6，万古如长夜。
+这就介绍完了JavaScript面向对象的各种特性了，函数类和原型类还是比较容易的，最难的是伪类模式，稍微不注意就容易出错，似乎在JS中进行面向对象编程要比在其他语言中更困难一些呢，但别担心，这门语言本身也在不断的发展和进化，后来当ES6语法出现之后，定义类变得比以前要容易很多了！从ES6开始，JavaScript语言引入了大量的新语法糖，使得面向对象编程像其他语言那样简洁优美，不用考虑太多内部实现。这也是下一部分要介绍的内容。
 
 # 二. ECMAScript 6
 
-​	ES6语法
-​		声明变量
-​			var
-​				存在hoisting
-​					全局作用域
-​					函数作用域
-​				不再使用
-​			let/const
-​				{}块作用域
-​				let
-​					可以再次赋值
-​					不可再次声明
-​				const
-​					不可再次赋值
-​					不可再次声明
-​		模板字面量
-​			举例
-​				let greetings = `Hello, my name is ${name}`;
-​			换行符也被当做字面量一部分
-​			${}强大功能
-​				运算
-​				调用函数
-​				使用循环
-​		解构
-​			其实就是模式匹配
-​			数组
-​				const [x, y, z] = point;
-​					可选择性忽略
-​			对象
-​				const {type, color, karat} = gemstone;
+天不生ES6，万古如长夜。
+
+ECMAScript 6对JavaScript语言做出了很多重大的更新，添加了很多甜甜的语法糖，让你的编程更顺心。从这里开始我们将介绍ES6语法的3个内容：**语法**，**函数**和**内置功能**。掌握ES6语法是理解现代JavaScript编程的核心。
+
+## 2.1 ES6语法
+### 2.1.1 声明变量的新方式
+
+在原来，我们只能使用`var`关键字来声明变量，但这种声明方式会存在被称为`hoisting`的问题，即变量的声明会被提升到头部——如果是全局作用域，则是作用域头部；如果是函数作用域，则是函数头部。如果声明的时候不小心进行了赋值，就会出现微妙的不易被察觉的bug，举个例子：
+
+```javascript
+function getClothing(isCold) {
+  if (isCold) {
+    var freezing = "Grab a jacket!";
+  } else {
+    var hot = "It's a shorts kind of day.";
+    console.log(freezing);
+  }
+}
+```
+
+上面这个函数，如果以`getClothing(false)`的方式调用，`freezing`变量会输出`undefined`，而不是"Grab a jacket"。这段代码会存在被称为"提升"的现象，解释器会这样解读这段代码：
+
+```javascript
+function getClothing(isCold) {
+  var freezing, hot;
+  if (isCold) {
+    freezing = "Grab a jacket!";
+  } else {
+    hot = "It's a shorts kind of day.";
+    console.log(freezing);
+  }
+}
+```
+
+这就是输出`undefined`的真正原因。ES6引入了`let`和`const`来分别声明变量和常量：
+
+```javascript
+function getClothing(isCold) {
+  if (isCold) {
+    let freezing = "Grab a jacket!";
+  } else {
+    let hot = "It's a shorts kind of day.";
+    console.log(freezing);
+  }
+}
+```
+
+解释器在运行时会报错`ReferenceError:freezing is not defined`。因为在`else`代码块中并没有定义`freezing`这个变量。关于`let`和`const`还有一些其他规则：
+
+* 使用`let`声明的变量可以重新赋值但不能在同一作用域内重新声明；
+* 使用`const`声明的常量必须赋值，它们不能在同一作用域内重新声明，也不能重新赋值。
+
+`const`是声明变量最严格的方式，一旦赋值不能被改变，最佳实践是一直使用`const`声明变量，这样就知道该变量在整个生命周期内都不会发生改变，如果需要更新，改成`let`就可以了。
+
+### 2.1.2 模板字面量
+
+使用`+`来拼接字符串是一种很麻烦的方式，特别是连接多个字符串的时候很容易晕。ES6针对这个问题引入了**模板字面量**，可以在字符串字面量中嵌入表达式，字面量使用反引号表示，使用`${expression}`嵌入表达式，事实上表达式不仅仅可以用来引用变量。你可以在嵌入式表达式中进行运算、调用函数和使用循环。举例：
+
+```javascript
+const student = {
+  name: 'Richard Kalehoff',
+  guardian: 'Mr. Kalehoff'
+};
+
+const teacher = {
+  name: 'Mrs. Wilson',
+  room: 'N231'
+}
+
+let message = `${student.name} please see ${teacher.name} in ${teacher.room} to pick up your report card.`;
+```
+
+模板字面量的真正强大之处是进行多行现实，反引号中的换行都会被原封不动的保留，换行符也是字符串的一部分：
+
+```javascript
+var note = `${teacher.name},
+
+	Please execute ${student.name}.
+	He is recovering from the flu.
+
+	Thank you,
+	${student.guardian}`;
+```
+
+### 2.1.3 解构
+
+ES6中支持从数组和对象中提取值然后赋给单独的变量，在其他编程语言中又被称为**模式匹配**。例如下面这段代码是从数组中提取值：
+
+```javascript
+const point = [10, 25, -34];
+
+const x = point[0];
+const y = point[1];
+const z = point[2];
+
+console.log(x, y, z);
+```
+
+而这段代码则是从对象中提取值：
+
+```javascript
+const gemstone = {
+  type: 'quartz',
+  color: 'rose',
+  karat: 21.29
+};
+
+const type = gemstone.type;
+const color = gemstone.color;
+const karat = gemstone.karat;
+
+console.log(type, color, karat);
+```
+
+如果使用解构，代码看起来就要清爽的多，代码量也会更小，下面这段代码演示了数组解构：
+
+```javascript
+const point = [10, 25, -34];
+
+const [x, y, z] = point;
+
+console.log(x, y, z);
+```
+
+方括号 `[]` 表示被解构的数组，`x`、`y` 和 `z` 表示要将数组中的值存储在其中的变量。在解构数组时，还可以忽略值。例如，`const [x, , z] = point;` *忽略了* `y` 坐标。可以像这样结构对象的值：
+
+```javascript
+const gemstone = {
+  type: 'quartz',
+  color: 'rose',
+  karat: 21.29
+};
+
+const {type, color, karat} = gemstone;
+
+console.log(type, color, karat);
+```
+
+其中花括号`{}`表示解构对象，`type`，`color`和`karat`表示要将对象中的属性存储到哪个变量。也可以指定某个值而忽略其他的值，比如`let {color} = gemstone `。
+
+### 2.1.4 简写
+
+定义对象时，如果对象的属性和变量同名，那么可能省略掉重复的变量名称，例如下面的代码：
+
+```javascript
+let type = 'quartz';
+let color = 'rose';
+let carat = 21.29;
+
+const gemstone = {
+  type: type,
+  color: color,
+  carat: carat
+};
+
+console.log(gemstone);
+```
+
+可以简写成：
+
+```javascript
+let type = 'quartz';
+let color = 'rose';
+let carat = 21.29;
+
+const gemstone = { type, color, carat };
+
+console.log(gemstone);
+```
+
+对象中添加方法也可以简写，例如：
+
+```javascript
+let type = 'quartz';
+let color = 'rose';
+let carat = 21.29;
+
+const gemstone = {
+  type,
+  color,
+  carat,
+  calculateWorth: function() {
+    // 将根据类型(type)，颜色(color)和克拉(carat)计算宝石(gemstone)的价值
+  }
+};
+```
+
+`function`关键字是多余的，可以直接写成这样：
+
+```javascript
+let gemstone = {
+  type,
+  color,
+  carat,
+  calculateWorth() { ... }
+};
+```
+
+
+
+
 ​		对象字面量简写
 ​			同名变量不必重复写
 ​			function关键字可省略
@@ -845,7 +1014,8 @@ Van.prototype.move = function() { /*...*/ };
 ​			剩余参数
 ​				将不定数量的元素表示为数组
 ​				可变参数函数
-​	ES6函数
+
+# 2.2 ES6函数
 ​		箭头函数表达式
 ​			简练主体语法
 ​			块体语法
@@ -867,7 +1037,8 @@ Van.prototype.move = function() { /*...*/ };
 ​				super
 ​					既可当函数
 ​					又可当对象
-​	ES6内置功能
+
+## 2.3 ES6内置功能
 ​		符号类型
 ​			唯一标识符
 ​			常用于
