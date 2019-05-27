@@ -614,76 +614,186 @@ ben.move();
 
 ### 1.2.6 超类和子类
 
+**子类(subclassing)**是一种代码共享的高级方式，运用这种方式类被整理成了树状的层次结构，熟悉其他语言的同学马上就能反应过来，这里其实在讨论的是面向对象中的**继承**。我们先来看看，如果不用继承会怎么样。还是上面那个例子，现在我们要在游戏中增加新的车型——警车（Cop），区别于原来的货车(Van)，它们分别都有自己独有的方法`grab()`和`call()`，也有一些共同的方法，于是代码就被重构成下面这个样子：
+
+```javascript
+var Van = function(loc) {
+  var obj = {loc: loc};
+  obj.move() = function() {
+    obj.loc++;
+  };
+  obj.grab = function() { /*...*/ };
+  return obj;
+};
+
+var Cop = function(loc) {
+  var obj = {loc: loc};
+  obj.move = function() {
+    obj.loc++;
+  };
+  obj.call = function() { /*...*/ };
+  return obj;
+};
+
+var amy = Van(1);
+amy.move();
+var ben = Van(9);
+ben.move();
+var cal = Cop(2);
+cal.move();
+cal.call();
+```
+
+除了各自特有的函数，其他的全是重复代码，要重构这些不断重复出现的代码，就需要使用子类这种重要的特性，把共同的属性抽取出来放到超类，然后从超类派生子类。
+
+```javascript
+var Car = function(loc) {
+  var obj = {loc: loc};
+  obj.move = function() {
+    obj.loc++;
+  };
+  return obj;
+};
+
+var Van = function(loc) {
+  var obj = Car(loc);
+  obj.grab = function() { /*...*/ };
+  return obj;
+};
+
+var Cop = function(loc) {
+  var obj = Car(loc);
+  obj.call = function() { /*...*/ };
+  return obj;
+};
+
+var amy = Van(1);
+amy.move();
+var ben = Van(9);
+ben.move();
+var cal = Cop(2);
+cal.move();
+cal.call();
+```
+
 ### 1.2.7 伪类子类
 
+以functional class的方式编写的类要实现超类和子类其实挺容易的，但就如前面描述的，这样的实现方式会重复创建函数对象，效率不高。我们还是要考虑以伪类模式实现。为伪类模式添加超类和子类，要复杂一些。下面让我们来探索下如何在伪类模式上实现继承关系。还是沿用上面的例子，不过这了我们使用一些新的示例代码：
 
+```javascript
+var zed = new Car(3);
+zed.move();
 
+var amy = new Van(9);
+amy.move();
+amy.grab();
+```
 
+我们先来实现`Car`基类：
 
+```javascript
+var Car = function(loc) {
+  this.loc = loc;
+};
 
+Car.prototype.move = function() {
+  this.loc++;
+};
+```
 
+现在，我们要来实现`Van`这个子类，现在先来看一些错误的示例，第一种错误示例就是简单的复制粘贴：
 
-​		三大特性
-​			封装
-​				本质
-​					bundling of data and their accessors
-​				机制
-​					原始方式
-​						要创建多个对象怎么办？
-​							通过函数
-​								
-​								constructor pattern
-​									new运算符
-​									解释器构造
-​										this = Object.create(Class.prototype);
-​										return this;
-​								prototype pattern
-​									constructor func.prototype
-​								prototype class
-​									组合
-​										functional class
-​										prototype pattern
-​								pseudo class
-​									constructor pattern
-​									prototype pattern
-​			继承
-​				本质
-​					effective code reuse
-​				机制
-​					prototype chain
-​						Object.create(obj)
-​							create an empty object whose .prototype === obj
-​						对象之间建立“链”式关联
-​							顶层对象
-​								Object.prototype
-​									提供所有对象共享属性和方法
-​									constructor
-​							数组原型
-​								Array.prototype
-​				实现
-​					functional class
-​						抽取公共代码
-​					pseudo class
-​						构造子类
-​							继承属性
-​								.call()
-​									calls a function with a given **this**
-​									相当于其他语言中的Super()
-​							继承方法
-​								原型委托
-​									Sub.prototype = Object.create(Super.prototype);
-​							恢复子类构造函数
-​								.prototype.constructor
-​									Sub.prototype.constructor = Sub;
-​							定义自己特有的方法
-​			多态
-​				本质
-​					same interface but different implementaions
-​				机制
-​					prototype lookup
-​						链式向上查找
-​						一旦找到即停止回溯
-​						instanceof运算符
+```javascript
+var Car = function(loc) {
+  this.loc = loc;
+};
+
+Car.prototype.move = function() {
+  this.loc++;
+};
+
+var Van = function(loc) {
+  this.loc = loc; // *bad practice*
+};
+```
+
+这么写，既出现了重复代码，又在内存中出现了大量拷贝，这不是我们想要的实现方式。另外一种错误写法是：
+
+```javascript
+var Car = function(loc) {
+  this.loc = loc;
+};
+
+Car.prototype.move = function() {
+  this.loc++;
+};
+
+var Van = function(loc) {
+  // this = Object.create(Van.prototype);
+  new Car(loc); // *bad practice*
+  // return this;
+};
+```
+
+这么写问题更严重。回忆一下，一旦使用`new`关键字就会以构造模式运行，`new Car(loc)`返回的对象会被立即丢弃掉，然后上面注释中解释器生成的代码会返回，然而这个对象绝对不会带上`loc`属性。有人会觉得，那么下面这样写总可以了吧：
+
+```javascript
+var Van = function(loc) {
+  this = new Car(loc); // *bad practice*
+};
+```
+
+可惜的是，JS不允许像这样给this赋值，所以如果这么写就直接报错了。那如果不加`new`关键字行不行呢：
+
+```javascript
+var Van = function(loc) {
+  Car(loc); // *bad practice*
+};
+```
+
+答案是：还是不行。如果像这样写代码，在`Car()`函数中的this会被绑定到全局对象`<global>`。回顾一下上面我们罗列的各种`this`关键字的绑定规则，其实答案就在第三条规则上：使用`.call()`调用，改变this关键字的绑定方式：
+
+```javascript
+var Car = function(loc) {
+  this.loc = loc;
+};
+
+Car.prototype.move = function() {
+  this.loc++;
+};
+
+var Van = function(loc) {
+  Car.call(this, loc);
+};
+```
+
+但是当运行`amy.move()`的时候仍然会报错，因为这个方法仅仅在`Car.prototype`上可用。`amy`这个对象并没有委托到`Car.prototype`上。是的，它的确委托到了`Van.prototype`，但`Van.prototype`自己委托到了`Object.prototype`原型对象上，与`Car.prototype`毫无关系。
+
+前面我们指出，类的定义其实包含了两个部分，一个是所有类都相似的部分，一个是类的对象区别于其他对象的部分。现在后者已经建立了联系，子类`Van`的构造函数会调用到基类`Car`的构造函数，而前者的联系还没有建立，我们还需要将子类原型与父类的原型建立联系，使得子类继承父类原型中定义的方法。但是下面的这种写法却是错误的：
+
+```javascript
+Van.prototype = Car.prototype;
+```
+
+JS是个"一切皆对象"的语言，这样的赋值只能使得两个类的`.prototype`属性指向同一个对象，这样一来加在`Car`上的方法一定会存在于`Van`中，反之亦然。这就错了，子类的方法出现在了父类中。正确的做法应该是这样：
+
+```javascript
+Van.prototype = Object.create(Car.prototype);
+// 定义子类特有的函数
+Van.prototype.move = function() { /*...*/ };
+```
+
+但是这里有一个微妙的问题，光是这样还不够，当我们重新给`Van.prototype`赋值后，它原有的`.constructor`，就没有了，这里还需要重新赋值回来，所以正确做法应该是这样：
+
+```javascript
+Van.prototype = Object.create(Car.prototype);
+Van.prototype.constructor = Van;
+Van.prototype.move = function() { /*...*/ };
+```
+
+这就介绍完了JavaScript面向对象的各种特性了，函数类和原型类还是比较容易的，最难的是伪类模式，稍微不注意就容易出错，似乎在JS中进行面向对象编程要比在其他语言中更困难一些呢，但其实不然。这门语言本身也在不断的发展和进化，后来当ES6语法出现之后，定义类变得比以前要容易很多了！从ES6开始，JavaScript语言引入了大量的新语法糖，使得面向对象编程像其他语言那样简洁优美，不用考虑太多内部实现。这也是下一部分要介绍的内容。
+
+天不生ES6，万古如长夜。
 
 # 二. ECMAScript 6
 
