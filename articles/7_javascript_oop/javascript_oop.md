@@ -1492,88 +1492,373 @@ myMaple.changeSeason('spring');
 ```
 
 ## 2.3 ES6内置功能
-​		符号类型
-​			唯一标识符
-​			常用于
-​				唯一标识对象属性
-​		迭代协议
-​			iterable
-​				自定义迭代行为
-​				用于for..of
-​				[Symbol.iterator]
-​					返回
-​						iterator
-​			iterator
-​				实现了next()函数的对象
-​					0参
-​					返回一个对象
-​						done
-​						value
-​		Set
-​			创建
-​				new Set()
-​			修改
-​				add()
-​				delete()
-​				clear()
-​			检查
-​				has()
-​				size
-​			迭代
-​				for..of
-​				values()
-​					SetIterator
-​			WeakSet
-​				只能包含对象
-​				无法迭代
-​				没有clear()
-​				垃圾回收时自动删除
-​		Map
-​			创建
-​				new Map()
-​			修改
-​				set()
-​				delete()
-​				clear()
-​			检查
-​				has()
-​			迭代
-​				MapIterator
-​					keys()
-​					values()
-​				for..of
-​				forEach()
-​			WeakMap
-​				只能以对象为键
-​				无法迭代
-​				没有clear()方法
-​				垃圾回收时自动删除
-​		Promise
-​			异步执行的任务
-​				状态
-​					pending
-​						fulfilled
-​						rejected
-​			执行完成通知
-​				成功
-​					resolve()
-​				失败
-​					reject()
-​				执行回调
-​					then()
-​		Proxy
-​			一个对象代表另一个对象
-​				处理另一个对象所有交互
-​			创建
-​				new Proxy(被代理的对象, 处理程序)
-​			处理程序
-​				由各种trap组成
-​		生成器
-​			可暂停的函数
-​				yield
-​					向外面发送
-​					从外面接收
-​			function*
+### 2.3.1 符号类型
+
+符号类型是一种新加入的基本数据类型，是不可变的，常用来标识对象属性。用`Symbol()`加上一个可选的字符串描述来定义：
+
+```javasc
+const sym1 = Symbol('apple');
+console.log(sym1);
+```
+
+> 输出：*Symbol(apple)*
+
+标识符每次都会新创建，就算描述相同也不会相等：
+
+```javascript
+const sym2 = Symbol('banana');
+const sym3 = Symbol('banana');
+console.log(sym2 === sym3); // false
+```
+
+用来标识对象属性的时候能够标识相同的对象而不会相互覆盖：
+
+```javascript
+const bowl = {
+  [Symbol('apple')]: { color: 'red', weight: 136.078 },
+  [Symbol('banana')]: { color: 'yellow', weight: 183.15 },
+  [Symbol('orange')]: { color: 'orange', weight: 170.097 },
+  [Symbol('banana')]: { color: 'yellow', weight: 176.845 }
+};
+console.log(bowl);
+```
+
+> 输出：*Object {Symbol(apple): Object, Symbol(banana): Object, Symbol(orange): Object, Symbol(banana): Object}*
+
+符号类型可以用在可迭代协议和迭代器协议中。它类似于其他语言中的接口，只要你自定义的对象中提供了相应的方法，你就可以控制它们的迭代方式，有一种设计模式就叫"迭代器模式"。前面我们提到，满足可迭代协议的对象可以使用`for..of`进行遍历：
+
+```javascript
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+for (const digit of digits) {
+  console.log(digit);
+}
+```
+
+`digits`是Array对象，Array对象实现了**可迭代接口(Iterable Protocol)**，也就是定义了迭代器方法，这个方法定义对象如何被迭代。迭代器方法可通过`[Symbol.iterator]`获得，它被定义为一个无参数函数，它返回一个迭代器对象，迭代器对象遵守**迭代器协议**。
+
+迭代器协议定义对象生成一系列值的标准方式，通过调用`next()`方法来完成这个流程。可迭代的对象访问`[Symbol.iterator]`中定义的迭代器方法获得一个迭代器对象。该迭代器对象执行`next()`方法，该方法每次返回包含两个属性的对象：
+
+1. `value`：表示对象内值序列的下个值的数据
+2. `done`：表示迭代器是否已循环访问完值序列的布尔值
+   * 如果 done 为 *true*，则迭代器已到达值序列的末尾处，`value`可省略
+   * 如果 done 为 *false*，则迭代器能够生成值序列中的下一个值
+
+```javascript
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const arrayIterator = digits[Symbol.iterator]();
+
+console.log(arrayIterator.next());
+console.log(arrayIterator.next());
+console.log(arrayIterator.next());
+```
+
+> ```javascript
+> Object {value: 0, done: false}
+> Object {value: 1, done: false}
+> Object {value: 2, done: false}
+> ```
+
+再看一个给自定义对象编写迭代器的例子：
+
+```javascript
+const james = {
+    name: 'James',
+    height: `5'10"`,
+    weight: 185
+};
+
+james[Symbol.iterator] = function() {
+    return {
+        next: function() {
+            const keys = Object.keys(james);
+            const i = this.index++;
+            return {value: james[keys[i]], key: keys[i], done: this.index === keys.length}
+        },
+        index: 0
+    };
+};
+
+const iterator = james[Symbol.iterator]();
+
+console.log(iterator.next().value); // 'James'
+console.log(iterator.next().value); // `5'10`
+console.log(iterator.next().value); // 185
+```
+
+### 2.3.2 Set类型
+
+Set类型和数学意义上的集合相同，它不基于索引，不能通过索引位置来访问单个元素，但是它可以不重复地存储基本类型或者对象。可以创建一个空的集合也可以在创建时添加默认值：
+
+```javascript
+const games = new Set();
+console.log(games); // 输出：Set {}
+
+const games = new Set(['Super Mario Bros.', 'Banjo-Kazooie', 'Mario Kart', 'Super Mario Bros.']);
+console.log(games); // 输出：Set {'Super Mario Bros.', 'Banjo-Kazooie', 'Mario Kart'}
+```
+
+可以使用`add()`和`delete()`方法修改Set，增加或者删除条目：
+
+```javascript
+const games = new Set(['Super Mario Bros.', 'Banjo-Kazooie', 'Mario Kart', 'Super Mario Bros.']);
+
+games.add('Banjo-Tooie');
+games.add('Age of Empires');
+games.delete('Super Mario Bros.');
+
+console.log(games); // 输出：Set {'Banjo-Kazooie', 'Mario Kart', 'Banjo-Tooie', 'Age of Empires'}
+
+// 删除所有条目
+games.clear()
+```
+
+可以查看集合的元素个数，检查是否存在某个条目，或者检索所有值：
+
+```javascript
+const months = new Set(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']);
+// 输出：12
+console.log(months.size);
+
+// 输出：true
+console.log(months.has('September'));
+
+// 输出：SetIterator {'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'}
+console.log(months.values());
+```
+
+Set类型是内置的可迭代类型，可以使用默认迭代器访问Set中每一项，也可以使用`for..of`来循环访问每一项：
+
+```javascript
+const iterator = months.values();
+// Object {value: 'January', done: false}
+iterator.next();
+// Object {value: 'February', done: false}
+iterator.next();
+
+// 循环遍历
+const colors = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'violet', 'brown', 'black']);
+for (const color of colors) {
+  console.log(color);
+}
+```
+
+### 2.3.3 WeakSet类型
+
+WeakSet是一种特殊的集合类型，它只能包含对象，不提供迭代访问的机制，也不能用`clear()`方法清空。使用WeakSet构造函数创建：
+
+```javascript
+const student1 = { name: 'James', age: 26, gender: 'male' };
+const student2 = { name: 'Julia', age: 27, gender: 'female' };
+const student3 = { name: 'Richard', age: 31, gender: 'male' };
+
+const roster = new WeakSet([student1, student2, student3]);
+console.log(roster);
+```
+
+JavaScript是带GC的语言，不再被需要的值会被自动回收内存。这里的WeakSet和下面的WeakMap一样，对存储的对象使用的是一种弱类型的引用，当对象被GC释放掉内存时，它在WeakSet中自动消失，不会出现"引用一个已经被释放内存的对象"这样的错误。可以看到`student3`被自动从WeakSet中删除了。
+
+```javascript
+student3 = null;
+console.log(roster);
+```
+
+> *WeakSet {Object {name: 'Julia', age: 27, gender: 'female'}, Object {name: 'James', age: 26, gender: 'male'}}*
+
+### 2.3.4 Map类型
+
+Map是用于存储键值对的对象，在Python语言中它被称为字典。Map的创建可以使用其构造函数：
+
+```javascript
+const employees = new Map();
+// 输出：Map {}
+console.log(employees);
+```
+
+使用`set()`方法向`Map`中添加键值：
+
+```javascript
+const employees = new Map();
+
+employees.set('james.parkes@udacity.com', { 
+    firstName: 'James',
+    lastName: 'Parkes',
+    role: 'Content Developer' 
+});
+employees.set('julia@udacity.com', {
+    firstName: 'Julia',
+    lastName: 'Van Cleve',
+    role: 'Content Developer'
+});
+employees.set('richard@udacity.com', {
+    firstName: 'Richard',
+    lastName: 'Kalehoff',
+    role: 'Content Developer'
+});
+
+// 输出：Map {'james.parkes@udacity.com' => Object {...}, 'julia@udacity.com' => Object {...}, 'richard@udacity.com' => Object {...}}
+console.log(employees);
+```
+
+要移除键值对，只需要使用`delete()`方法：
+
+```javascript
+employees.delete('julia@udacity.com');
+employees.delete('richard@udacity.com');
+// 输出：Map {'james.parkes@udacity.com' => Object {firstName: 'James', lastName: 'Parkes', role: 'Course Developer'}}
+console.log(employees);
+```
+
+使用`clear()`方法可以从`Map`中删掉全部的键值对：
+
+```javascript
+employees.clear()
+// 输出：Map {}
+console.log(employees);
+```
+
+可以使用`has()`方法来检查某个键值对是否存在，也可以使用`get()`方法来获取某个键对应的值：
+
+```javascript
+const members = new Map();
+
+members.set('Evelyn', 75.68);
+members.set('Liam', 20.16);
+members.set('Sophia', 0);
+members.set('Marcus', 10.25);
+
+// false
+console.log(members.has('Xavier'));
+// true
+console.log(members.has('Marcus'));
+
+// 75.68
+console.log(members.get('Evelyn'));
+```
+
+有三种方式可以迭代访问`Map`中的键值对，因为`Map`也是内置支持可迭代协议的类型，可以使用`MapIterator`来访问，`.keys()`返回键的迭代器，`.values()`返回值的迭代器：
+
+```javascript
+let iteratorObjForKeys = members.keys();
+// Object {value: 'Evelyn', done: false}
+iteratorObjForKeys.next();
+// Object {value: 'Liam', done: false}
+iteratorObjForKeys.next();
+// Object {value: 'Sophia', done: false}
+iteratorObjForKeys.next();
+
+let iteratorObjForValues = members.values();
+// Object {value: 75.68, done: false}
+iteratorObjForValues.next();
+```
+
+使用`for..of`循环：
+
+```javascript
+for (const member of members) {
+  console.log(member);
+}
+```
+
+> 输出：
+>
+> ```javascript
+> ['Evelyn', 75.68]
+> ['Liam', 20.16]
+> ['Sophia', 0]
+> ['Marcus', 10.25]
+> ```
+
+最后是通过`forEach()`方法，传入回调函数实现：
+
+```javascript
+members.forEach((value, key) => console.log(value, key));
+```
+
+> 输出：
+>
+> ```
+> 'Evelyn' 75.68
+> 'Liam' 20.16
+> 'Sophia' 0
+> 'Marcus' 10.25
+> ```
+
+	### 2.3.5 WeakMap类型
+
+同样地，`WeakMap`类型存在诸多使用上的限制：
+
+1. 只能以对象为键
+2. 无法迭代
+3. 没有clear()方法
+
+使用`WeakMap`构造函数来创建对象：
+
+```javascript
+const book1 = { title: 'Pride and Prejudice', author: 'Jane Austen' };
+const book2 = { title: 'The Catcher in the Rye', author: 'J.D. Salinger' };
+const book3 = { title: 'Gulliver's Travels', author: 'Jonathan Swift' };
+
+const library = new WeakMap();
+library.set(book1, true);
+library.set(book2, false);
+library.set(book3, true);
+
+console.log(library);
+```
+
+> 输出：
+>
+> *WeakMap {Object {title: 'Pride and Prejudice', author: 'Jane Austen'} => true, Object {title: 'The Catcher in the Rye', author: 'J.D. Salinger'} => false, Object {title: 'Gulliver's Travels', author: 'Jonathan Swift'} => true}*
+
+和`WeakSet`一样，`WeakMap`与其存储的对象之间是一种弱引用模式，一旦对象被垃圾回收掉，它就会自动从`WeakMap`中删除。不会因为长期持有键值对导致对象无法回收。
+
+### 2.3.6 使用Promise异步执行任务
+
+Promise
+			异步执行的任务
+				状态
+					pending
+						fulfilled
+						rejected
+			执行完成通知
+				成功
+					resolve()
+				失败
+					reject()
+				执行回调
+					then()
+
+### 2.3.5 使用Proxy代理对象
+
+Proxy
+			一个对象代表另一个对象
+				处理另一个对象所有交互
+			创建
+				new Proxy(被代理的对象, 处理程序)
+			处理程序
+				由各种trap组成
+		生成器
+			可暂停的函数
+				yield
+					向外面发送
+					从外面接收
+			function*
+
+
+
+
+
+
+
+
+
+
+
+
+​		
+​		
+​		
+​		
 ​	ES6专业开发者
 ​		Polyfill
 ​			修补功能，为浏览器提供支持
