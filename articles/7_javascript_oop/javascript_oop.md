@@ -993,27 +993,170 @@ let gemstone = {
 };
 ```
 
+### 2.1.5 迭代
 
+在编程中，逐个获取项的过程被称为迭代。之前我们用for循环遍历数组就是一种迭代：
 
+```javascript 
+const years = ['1999', '2001', '2013', '2016'];
+for (let i = 0; i < years.length; i++) {
+  console.log(years[i]);
+}
+```
 
-​		对象字面量简写
-​			同名变量不必重复写
-​			function关键字可省略
-​		迭代
-​			for..of循环
-​				iterable protocol
-​					String
-​					Array
-​					Map
-​					Set
-​		...运算符
-​			展开运算
-​				将Array和Set展开成单个元素
-​					拼接数组
-​						[...fruits, ...vegetables]
-​			剩余参数
-​				将不定数量的元素表示为数组
-​				可变参数函数
+ES6新增了一个被称作[iterable protocol](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols)的新接口，允许自定义对象的迭代方式。任何定义了该接口的对象就可以使用`for..of`的方式来迭代。String，Array，Map和Set都实现了该接口。原来的`for..in`循环有一个很大的缺陷：如果向数组中添加了额外的方法(或另一对象)，这些属性也会出现在循环中，这是很可怕的：
+
+```javascript
+Array.prototype.decimalfy = function() {
+  for (let i = 0; i < this.length; i++) {
+    this[i] = this[i].toFixed(2);
+  }
+};
+
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+for (const index in digits) {
+  console.log(digits[index]);
+}
+```
+
+> 打印：
+>
+> *0*
+> *1*
+> *2*
+> *3*
+> *4*
+> *5*
+> *6*
+> *7*
+> *8*
+> *9*
+> *function() {*
+>  *for (let i = 0; i < this.length; i++) {*
+>   *this[i] = this[i].toFixed(2);*
+>  *}*
+>
+> *}*
+
+所以循环访问数组时并不建议使用`for..in`循环。强大的`for..of`循环用于循环访问任何可迭代数据类型：
+
+```javascript
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+for (const digit of digits) {
+  console.log(digit);
+}
+```
+
+> 打印
+>
+> *0*
+> *1*
+> *2*
+> *3*
+> *4*
+> *5*
+> *6*
+> *7*
+> *8*
+> *9*
+
+使用`for..of`可以随时停止或退出循环：
+
+```javascript
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+for (const digit of digits) {
+  if (digit % 2 === 0) {
+    continue;
+  }
+  console.log(digit);
+}
+```
+
+> 打印：
+>
+> *1*
+> *3*
+> *5*
+> *7*
+> *9*
+
+可以向对象中添加新的属性，`for..of`循环只访问对象中的值。
+
+```javascript
+Array.prototype.decimalfy = function() {
+  for (i = 0; i < this.length; i++) {
+    this[i] = this[i].toFixed(2);
+  }
+};
+
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+for (const digit of digits) {
+  console.log(digit);
+}
+```
+
+> 打印：
+>
+> *0*
+> *1*
+> *2*
+> *3*
+> *4*
+> *5*
+> *6*
+> *7*
+> *8*
+> *9*
+
+### 2.1.6 …运算符
+
+展开运算用三个连续的点表示，可以将数组或集合之类的展开为多个元素。举个例子，如果我们要将多个数组连接在一起，原先要使用`Array`的`concat()`方法：
+
+```javascript
+const fruits = ["apples", "bananas", "pears"];
+const vegetables = ["corn", "potatoes", "carrots"];
+const produce = fruits.concat(vegetables);
+console.log(produce);
+```
+
+使用展开运算符：
+
+```javascript
+const fruits = ["apples", "bananas", "pears"];
+const vegetables = ["corn", "potatoes", "carrots"];
+const produce = [...fruits, ...vegetables];
+console.log(produce);
+```
+
+`…`运算符还可以作为**剩余参数**，将多个不定数量的元素绑定为数组。第一种情形是结合上面讨论的解构做变量赋值的时候：
+
+```javascript
+const order = [20.17, 18.67, 1.50, "cheese", "eggs", "milk", "bread"];
+const [total, subtotal, tax, ...items] = order;
+console.log(total, subtotal, tax, items);
+```
+
+> 打印：*20.17 18.67 1.5 ["cheese", "eggs", "milk", "bread"]*
+
+第二种情形是定义可变参数函数的时候，比如一个接受任意长度参数的`sum()`函数，无论传入多少个值都应该返回累加的总和：
+
+```javascript
+function sum(...nums) {
+  let total = 0;  
+  for(const num of nums) {
+    total += num;
+  }
+  return total;
+}
+
+sum(1, 2);
+sum(10, 36, 7, 84, 90, 110);
+sum(-23, 3000, 575000);
+```
 
 # 2.2 ES6函数
 ​		箭头函数表达式
