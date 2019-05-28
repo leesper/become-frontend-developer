@@ -224,7 +224,7 @@ var r={}, g={}, b={};
 
 #### 1.1.3.1 规则一："the left of dot" rule
 
-如果函数作为成员方法通过`obj.fn(x, y)`的方式调用，那么this关键字将绑定为obj对象。举例：
+如果函数作为对象成员方法通过`obj.fn(x, y)`的方式调用，那么this关键字将绑定为obj对象。举例：
 
 ```javascript
 r.method = fn;
@@ -241,13 +241,27 @@ fn(g, b);
 
 答案是：this将被绑定为全局对象`<global>`，但如果是strict模式，则为`undefined`。
 
-#### 1.1.3.3 规则三：fn.call(r, g, b)
+#### 1.1.3.3 规则三：call()/apply()
 
 如果对象r并没有叫fn的属性，我们是不能通过`r.fn()`的方式去访问的，这个时候可以使用`fn.call()`的形式，`call()`会重写调用规则，以下两种形式中this关键字的绑定规则都会被改写：
 
 ```javascript
 fn.call(r, g, b); // this --> r
 r.method.call(y, g, b); // this --> y
+```
+
+比如下面定义的这两个函数，可以使用`.call()`方法：
+
+```javascript
+var product = function(num, b) {
+  return num * b;
+};
+
+var double = function() {
+  return product(this, 2);
+};
+
+double.call(3); // 3 --> this
 ```
 
 #### 1.1.3.4 函数作为回调传递给其他函数
@@ -296,11 +310,92 @@ new r.method(g, b);
 此时this关键字将因为`new`的作用而被绑定到一个后台自动创建的匿名对象上，因为每一次new都会生成新对象。
 
 #### 1.1.3.6 规则六
-fn.bind()创建新函数，this将永久地被绑定到了bind的第一个参数
+fn.bind()创建新函数，this将永久地被绑定到了bind的第一个参数。
 
-#### 1.1.3.7 规则七
+#### 1.1.3.7 规则七：箭头函数
 
-箭头函数根据当前上下文继承this
+箭头函数表达式中`this`关键字的绑定取决于这个函数在代码中的位置，它会根据当前上下文继承this。先看一个普通函数的例子：
+
+```javascript
+// 构造函数
+function IceCream() {
+  this.scoops = 0;
+}
+
+// 为 IceCream 添加 addScoop 方法
+IceCream.prototype.addScoop = function() {
+  setTimeout(function() {
+    this.scoops++;
+    console.log('scoop added!');
+  }, 500);
+};
+
+const dessert = new IceCream();
+dessert.addScoop();
+```
+
+这段代码执行后，dessert.scoops的值并不是1，而是0。为什么呢？因为半毫秒后`setTimeout()`回调的函数中，this绑定的是全局对象，所以实际上创建了一个`scoops`变量，默认值为`undefined`，`++`之后变为`NaN`。解决这个问题的方法之一是使用闭包：
+
+```javascript
+// 构造函数
+function IceCream() {
+  this.scoops = 0;
+}
+
+// 为 IceCream 添加 addScoop 方法
+IceCream.prototype.addScoop = function() {
+  const cone = this; // 设置this给cone变量
+  setTimeout(function() {
+    cone.scoops++; // 引用cone变量
+    console.log('scoop added!');
+  }, 0.5);
+};
+
+const dessert = new IceCream();
+dessert.addScoop();
+```
+
+这里`dessert.addScoop()`在调用时`this`绑定为`dessert`，我们在`addScoop()`成员函数中将其赋值给cone。而传递给`setTimeout()`函数的回调是一个闭包，因此`scoops`成员变量得到正确的自增。使用箭头函数表达式，能一步到位解决这个问题，因为箭头函数会根据它在代码中的位置自动绑定this，箭头函数内和箭头函数外的this是一样的：
+
+```javascript
+// 构造函数
+function IceCream() {
+  this.scoops = 0;
+}
+
+// 为 IceCream 添加 addScoop 方法
+IceCream.prototype.addScoop = function() {
+  setTimeout(() => { // 一个箭头函数被传递给setTimeout
+    this.scoops++;
+    console.log('scoop added!');
+  }, 0.5);
+};
+
+const dessert = new IceCream();
+dessert.addScoop();
+```
+
+这里传递给`setTimeout()`函数的是一个箭头函数，它从周围上下文中继承的this关键字绑定了dessert对象，因此可行。但如果我们将 `addScoop()` 方法改为箭头函数就不可行了：
+
+```javascript
+// 构造函数
+function IceCream() {
+    this.scoops = 0;
+}
+
+// 为 IceCream 添加 addScoop 方法
+IceCream.prototype.addScoop = () => { // addScoop 现在是一个箭头函数
+  setTimeout(() => {
+    this.scoops++;
+    console.log('scoop added!');
+  }, 0.5);
+};
+
+const dessert = new IceCream();
+dessert.addScoop();
+```
+
+这里的箭头函数从周围上下文继承到的this绑定给了全局对象，传递给`setTimeout()`的函数中的`this`也成了全局对象。
 
 ## 1.2 面向对象
 
@@ -1159,27 +1254,242 @@ sum(-23, 3000, 575000);
 ```
 
 # 2.2 ES6函数
-​		箭头函数表达式
-​			简练主体语法
-​			块体语法
-​			this关键字
-​				取决于这个函数在代码中的位置
-​				从周围上下文继承了this值
-​		默认参数函数
-​			解构
-​				数组
-​					function createGrid([width = 5, height = 5] = [])
-​				对象
-​					function createSundae({scoops = 1, toppings = ['Hot Fudge']} = {})
-​		类
-​			语法糖
-​				函数
-​				原型继承
-​			继承关系
-​				extends
-​				super
-​					既可当函数
-​					又可当对象
+### 2.2.1 箭头函数表达式
+
+箭头函数其实就是其他编程语言中大名鼎鼎的lambda表达式，是一种可以就地定义的匿名函数。请对比一下使用普通函数和使用箭头函数将数组内容转为大写的写法：
+
+```javascript
+// 使用普通函数
+const upperizedNames = ['Farrin', 'Kagure', 'Asser'].map(function(name) { 
+  return name.toUpperCase();
+});
+
+// 使用箭头函数
+const upperizedNames = ['Farrin', 'Kagure', 'Asser'].map(
+  name => name.toUpperCase()
+);
+```
+
+如果箭头函数表达式有0个或多个参数，就需要使用圆括号把参数括起来：
+
+```javascript
+// 空参数列表需要括号
+const sayHi = () => console.log('Hello Udacity Student!');
+sayHi();
+
+// 多个参数需要括号
+const orderIceCream = (flavor, cone) => console.log(`Here's your ${flavor} ice cream in a ${cone} cone.`);
+orderIceCream('chocolate', 'waffle');
+```
+
+如果箭头函数主体只有一行，那么可以将其写成表达式形式并省略`return`，称为**简写主体语法**，函数主体周围没有花括号，自动返回表达式；否则如果主体有多行代码，可以使用**常规主体语法**，函数主体放在花括号内并使用`return`语句返回内容。
+
+```javascript
+const upperizedNames = ['Farrin', 'Kagure', 'Asser'].map( name => {
+  name = name.toUpperCase();
+  return `${name} has ${name.length} characters in their name`;
+});
+```
+
+### 2.2.2 默认参数函数
+
+ES6中定义函数参数可以指定参数的默认值：
+
+```javascript
+function greet(name = 'Student', greeting = 'Welcome') {
+  return `${greeting} ${name}!`;
+}
+
+greet(); // Welcome Student!
+greet('James'); // Welcome James!
+greet('Richard', 'Howdy'); // Howdy Richard!
+```
+
+默认参数可以和解构结合在一起创建函数，一种是解构数组，另一种是解构对象，但仍然有一些微妙的问题需要注意。首先，可以向下面这样解构数组：
+
+```javascript
+function createGrid([width = 5, height = 5]) {
+  return `Generates a ${width} x ${height} grid`;
+}
+
+createGrid([]); // Generates a 5 x 5 grid
+createGrid([2]); // Generates a 2 x 5 grid
+createGrid([2, 3]); // Generates a 2 x 3 grid
+createGrid([undefined, 3]); // Generates a 5 x 3 grid
+```
+
+但我们却不能`createGrid()`这样去调用该函数，因为该函数需要传入数组进行结构，但我们却没有传参，需要对整个数组参数提供默认值：
+
+```javascript
+function createGrid([width = 5, height = 5] = []) {
+  return `Generating a grid of ${width} by ${height}`;
+}
+```
+
+解构对象的时候也存在同样的问题：
+
+```javascript
+function createSundae({scoops = 1, toppings = ['Hot Fudge']} = {}) {
+  const scoopText = scoops === 1 ? 'scoop' : 'scoops';
+  return `Your sundae has ${scoops} ${scoopText} with ${toppings.join(' and ')} toppings.`;
+}
+
+createSundae(); // Your sundae has 1 scoop with Hot Fudge toppings.
+createSundae({}); // Your sundae has 1 scoop with Hot Fudge toppings.
+createSundae({scoops: 2}); // Your sundae has 2 scoops with Hot Fudge toppings.
+createSundae({scoops: 2, toppings: ['Sprinkles']}); // Your sundae has 2 scoops with Sprinkles toppings.
+createSundae({toppings: ['Cookie Dough']}); // Your sundae has 1 scoop with Cookie Dough toppings.
+```
+
+**优先使用对象默认值进行对象解构**，因为它可以选择性地忽略某些项，比如下面这段代码，如果我想使用`scoops`的默认值但是更改`toppings`，就只需要使用`toppings`传入一个对象：
+
+```javascript
+function createSundae({scoops = 1, toppings = ['Hot Fudge']} = {}) { … }
+
+createSundae({toppings: ['Hot Fudge', 'Sprinkles', 'Caramel']});
+```
+
+如果使用数组默认值进行解构，则需要以一种奇怪的方式进行调用，因为数组是基于位置的：
+
+```javascript
+function createSundae([scoops = 1, toppings = ['Hot Fudge']] = []) { … }
+
+createSundae([undefined, ['Hot Fudge', 'Sprinkles', 'Caramel']]);
+```
+
+### 2.2.3 类
+
+ES6提供了一些新的关键字，使得我们可以用一种更简洁清晰的方式进行面向对象的编程，但一定要记住，JS内核的底层机制仍然没有任何变化。在语法糖的背后仍然是以函数+原型继承的方式来实现的。ES5中实现一个类，我们要这么写：
+
+```javascript
+function Plane(numEngines) {
+  this.numEngines = numEngines;
+  this.enginesActive = false;
+}
+
+// 由所有实例 "继承" 的方法
+Plane.prototype.startEngines = function () {
+  console.log('starting engines...');
+  this.enginesActive = true;
+};
+
+const richardsPlane = new Plane(1);
+richardsPlane.startEngines();
+
+const jamesPlane = new Plane(4);
+jamesPlane.startEngines();
+```
+
+使用ES6，抹上一层薄薄的语法糖：
+
+```javascript
+class Plane {
+  constructor(numEngines) {
+    this.numEngines = numEngines;
+    this.enginesActive = false;
+  }
+
+  startEngines() {
+    console.log('starting engines…');
+    this.enginesActive = true;
+  }
+  
+  static badWeather(planes) {
+    for (plane of planes) {
+      plane.enginesActive = false;
+    }
+  }
+}
+```
+
+上面的代码还演示了类的静态方法的使用，可以直接在`Plane`类中直接访问`badWeather()`方法：
+
+```javascript
+Plane.badWeather([plane1, plane2, plane3]);
+```
+
+在ES5中定义类的继承关系要写一大段代码且很容易漏掉一些细节导致出错：
+
+```javascript
+function Tree(size, leaves) {
+  this.size = size || 10;
+  this.leaves = leaves || {spring: 'green', summer: 'green', fall: 'orange', winter: null};
+  this.leafColor;
+}
+
+Tree.prototype.changeSeason = function(season) {
+  this.leafColor = this.leaves[season];
+  if (season === 'spring') {
+    this.size += 1;
+  }
+}
+
+function Maple (syrupQty, size, leaves) {
+  Tree.call(this, size, leaves);
+  this.syrupQty = syrupQty || 15;
+}
+
+Maple.prototype = Object.create(Tree.prototype);
+Maple.prototype.constructor = Maple; // 容易忘记
+
+Maple.prototype.changeSeason = function(season) {
+  Tree.prototype.changeSeason.call(this, season);
+  if (season === 'spring') {
+    this.syrupQty += 1;
+  }
+}
+
+Maple.prototype.gatherSyrup = function() {
+  this.syrupQty -= 3;
+}
+
+const myMaple = new Maple(15, 5);
+myMaple.changeSeason('fall');
+myMaple.gatherSyrup();
+myMaple.changeSeason('spring');
+```
+
+使用ES6，就简洁的多了：
+
+```javascript
+class Tree {
+  constructor(size = '10', leaves = {spring: 'green', summer: 'green', fall: 'orange', winter: null}) {
+    this.size = size;
+    this.leaves = leaves;
+    this.leafColor = null;
+  }
+
+  changeSeason(season) {
+    this.leafColor = this.leaves[season];
+    if (season === 'spring') {
+      this.size += 1;
+    }
+  }
+}
+
+class Maple extends Tree {
+  constructor(syrupQty = 15, size, leaves) {
+    super(size, leaves); // super必须在this之前被调用
+    this.syrupQty = syrupQty;
+  }
+
+  changeSeason(season) {
+    super.changeSeason(season);
+    if (season === 'spring') {
+      this.syrupQty += 1;
+    }
+  }
+
+  gatherSyrup() {
+    this.syrupQty -= 3;
+  }
+}
+
+const myMaple = new Maple(15, 5);
+myMaple.changeSeason('fall');
+myMaple.gatherSyrup();
+myMaple.changeSeason('spring');
+```
 
 ## 2.3 ES6内置功能
 ​		符号类型
