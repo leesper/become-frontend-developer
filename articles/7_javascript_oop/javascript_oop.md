@@ -1812,41 +1812,185 @@ console.log(library);
 
 和`WeakSet`一样，`WeakMap`与其存储的对象之间是一种弱引用模式，一旦对象被垃圾回收掉，它就会自动从`WeakMap`中删除。不会因为长期持有键值对导致对象无法回收。
 
-### 2.3.6 使用Promise异步执行任务
+### 2.3.6 使用Proxy代理对象
 
-Promise
-			异步执行的任务
-				状态
-					pending
-						fulfilled
-						rejected
-			执行完成通知
-				成功
-					resolve()
-				失败
-					reject()
-				执行回调
-					then()
+ES6提供代理机制，可以编写代码用一个对象代表另一个对象（目标）。在代理对象上访问的目标对象的属性或者方法都会先被代理对象的`trap`拦着然后处理，只有在没定义对应`trap`的情况下才会让目标对象直接处理。创建代理对象使用构造函数`Proxy()`，传入两个参数，第一个参数表示要代理的目标对象`target`，第二个参数表示所有要被代理的方法构成的处理器`handler`。以下是一个`get trap`的例子：
 
-### 2.3.5 使用Proxy代理对象
+```javascript
+const richard = {status: 'looking for work'};
+const handler = {
+    get(target, propName) {
+        console.log(target);
+        console.log(propName);
+        return target[propName];
+    }
+};
+const agent = new Proxy(richard, handler);
+agent.status; //  (1)打印 richard 对象，(2)打印被访问的​​属性，(3)返回 richard.status 中的文本
+```
 
-Proxy
-			一个对象代表另一个对象
-				处理另一个对象所有交互
-			创建
-				new Proxy(被代理的对象, 处理程序)
-			处理程序
-				由各种trap组成
-		生成器
-			可暂停的函数
-				yield
-					向外面发送
-					从外面接收
-			function*
+在最后一行运行时，因为有`get trap`，代理对象会拦截该调用，输出目标对象`target`和被请求的`status`属性，最后返回目标对象上对应的属性值`target[propName]`。`set trap`会截获更改属性的代码，它的`set()`函数有三个参数：目标对象`target`，要修改的属性`propName`和新值`value`：
 
+```javascript
+const richard = {status: 'looking for work'};
+const handler = {
+    set(target, propName, value) {
+        if (propName === 'payRate') { // 如果工资正在确定，则需要15%作为佣金。
+            value = value * 0.85;
+        }
+        target[propName] = value;
+    }
+};
+const agent = new Proxy(richard, handler);
+agent.payRate = 1000; // 将演员的工资设置为 1,000美元
+agent.payRate; // 850美元是演员的实际工资
+```
 
+总共有13种`trap`可供选择：
 
+1. [get trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/get) - 使 proxy 能处理对属性访问权的调用
+2. [set trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/set) - 使 proxy 能将属性设为新值
+3. [apply trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/apply) - 使 proxy 能被调用（被代理的对象是函数）
+4. [has trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/has) - 使 proxy 能使用 `in` 运算符
+5. [deleteProperty trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/deleteProperty) - 使 proxy 能确定属性是否被删除
+6. [ownKeys trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/ownKeys) - 使 proxy 能处理当所有键被请求时的情况
+7. [construct trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/construct) - 使 proxy 能处理 proxy 与 `new` 关键字一起使用当做构造函数的情形
+8. [defineProperty trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/defineProperty) - 使 proxy 能处理当 defineProperty 被用于创建新的对象属性的情形
+9. [getOwnPropertyDescriptor trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/getOwnPropertyDescriptor) - 使 proxy 能获得属性的描述符
+10. [preventExtenions trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/preventExtensions) - 使 proxy 能对 proxy 对象调用 `Object.preventExtensions()`
+11. [isExtensible trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/isExtensible) - 使 proxy 能对 proxy 对象调用 `Object.isExtensible`
+12. [getPrototypeOf trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/getPrototypeOf) - 使 proxy 能对 proxy 对象调用 `Object.getPrototypeOf`
+13. [setPrototypeOf trap](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/setPrototypeOf) - 使 proxy 能对 proxy 对象调用 `Object.setPrototypeOf`
 
+### 2.3.7 生成器
+
+普通的函数在执行时都会从第一行运行到最后一行，无法中途停止。生成器是一类特殊的函数，它可以提供中途暂停运行，在需要的时候恢复执行的功能。生成器函数的定义是在function关键字的后面加上一个`*`，暂停的功能要配合`yield`关键字来实现。生成器函数的执行只要碰到`yield`就会暂停执行：
+
+```javascript
+function* getEmployee() {
+    console.log('the function has started');
+
+    const names = ['Amanda', 'Diego', 'Farrin', 'James', 'Kagure', 'Kavita', 'Orit', 'Richard'];
+
+    for (const name of names) {
+        console.log(name);
+        yield;
+    }
+
+    console.log('the function has ended');
+}
+
+const generatorIterator = getEmployee();
+// 输出并暂停：
+// the function has started
+// Amanda
+generatorIterator.next();
+// 输出并暂停：
+// Diego
+generatorIterator.next();
+```
+
+`yield`关键字还可以向生成器函数外面返回数据，这也就是"生成器"这个名字的由来。下面我们稍微修改下代码，不向控制台输出姓名并暂停，而是让代码返回姓名并暂停：
+
+```javascript
+function* getEmployee() {
+    console.log('the function has started');
+
+    const names = ['Amanda', 'Diego', 'Farrin', 'James', 'Kagure', 'Kavita', 'Orit', 'Richard'];
+
+    for (const name of names) {
+        yield name;
+    }
+
+    console.log('the function has ended');
+}
+
+const generatorIterator = getEmployee();
+let result = generatorIterator.next();
+result.value // 是 "Amanda"
+
+generatorIterator.next().value // 是 "Diego"
+generatorIterator.next().value // 是 "Farrin"
+```
+
+反过来，使用`next()`函数可以向生成器发送数据：
+
+```javascript
+function* displayResponse() {
+    const response = yield;
+    console.log(`Your response is "${response}"!`);
+}
+
+const iterator = displayResponse();
+
+iterator.next(); // 开始运行生成器函数
+iterator.next('Hello Udacity Student'); // 将数据发送到生成器中
+// 上面的一行打印到控制台：你的响应是 "Hello Udacity Student"！
+```
+
+第一次调用`next()`函数，会执行到`yield`关键字然后生成器函数暂停，当第二次调用`next()`函数传入参数时，生成器从上次暂停的位置恢复执行，并将`yield`关键字替换为传入的参数。分析生成器函数的代码一定要抓住"**`yield`关键字会导致生成器函数暂停**"这个关键点，下面来看一个更复杂一点的例子：
+
+```javascript
+function* getEmployee() {
+    const names = ['Amanda', 'Diego', 'Farrin', 'James', 'Kagure', 'Kavita', 'Orit', 'Richard'];
+    const facts = [];
+
+    for (const name of names) {
+        // yield *出* 每个名称并将返回的数据存储到 facts 数组中
+        facts.push(yield name); 
+    }
+
+    return facts;
+}
+
+const generatorIterator = getEmployee();
+
+// 从生成器中获取第一个名称
+let name = generatorIterator.next().value;
+
+// 将数据传入 *并* 获取下一个名称
+name = generatorIterator.next(`${name} is cool!`).value; 
+
+// 将数据传入 *并* 获取下一个名称
+name = generatorIterator.next(`${name} is awesome!`).value; 
+
+// 将数据传入 *并* 获取下一个名称
+name = generatorIterator.next(`${name} is stupendous!`).value; 
+
+// 你懂的
+name = generatorIterator.next(`${name} is rad!`).value; 
+name = generatorIterator.next(`${name} is impressive!`).value;
+name = generatorIterator.next(`${name} is stunning!`).value;
+name = generatorIterator.next(`${name} is awe-inspiring!`).value;
+
+// 传递最后一个数据，生成器结束并返回数组
+const positions = generatorIterator.next(`${name} is magnificent!`).value; 
+
+// 在自己的行上显示每个名称及其描述
+positions.join('\n');
+```
+
+生成器函数很容易写错，请看下面这个例子：
+
+```javascript
+function* createSundae() {
+    const toppings = [];
+
+    toppings.push(yield);
+    toppings.push(yield);
+    toppings.push(yield);
+
+    return toppings;
+}
+
+var it = createSundae();
+it.next('hot fudge');
+it.next('sprinkles');
+it.next('whipped cream');
+it.next();
+```
+
+`it.next('hot fudge')`运行时触发第一个`yield`关键字然后暂停，然后在`it.next('sprinkles')`运行时恢复，`yield`被替换为“sprinkles”并放入数组，然后触发第二个`yield`关键字暂停，当运行`it.next('whipped cream')`时恢复执行并将`yield`关键字替换为"whipped cream"，然后再次触发`yield`关键字暂停，当最后一次运行`it.next()`时从暂停状态返回，然而此时没有传入任何值，所以`undefined`被放入数组，最后打印出来的是`['sprinkles', 'whipped creasm', undefined]`。
 
 
 
