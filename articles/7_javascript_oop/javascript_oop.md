@@ -2000,38 +2000,61 @@ it.next();
 
 这一部分首先将介绍Promise机制，看看JavaScript是怎么处理不可预测任务的。然后我们会专门讨论AJAX这个主题，毕竟对于前端开发而言，最常见的不可预测任务就是网络请求了，我们会讨论三种网络请求的方法：XHR，jQuery和fetch。
 
-## 3.1 Promise
+## 3.1 处理异步任务的利器：Promise
+
+通过回调（callback）的方式处理异步操作是很常见的用法。回调是一种函数，它将传递给其他的高阶函数，高阶函数完成异步操作后将回调这个函数。但实际问题不会是这么简单的，总有各种各样的情况需要考虑，比如：
+
+1. 如何处理错误？
+2. 如何按步骤执行一系列异步操作？
+
+Promise机制很好地考虑了这些细节。它类似于其他语言中的`try..catch`包装器，专门针对一类不可预测的延迟（deferred）或异步（asynchronous）计算任务。Promise有四种状态：
+
+1. fulfilled(resolved)：顺利执行与Promise有关的操作；
+2. rejected：与Promise有关的操作执行失败；
+3. pending：Promise尚未执行完，还需要等待；
+4. settled：Promise要么成功（resolved），要么失败（rejected）；
+
+与普通的事件监听器`Event Listener`不同的是，如果在事件发生后才启动监听器进行监听，事件无法得到处理。但使用Promise，即便Promise已经执行完毕，仍然可以对已发生的事件进行处理，不会丢失信息。但Promise的状态只能被确定一次，第二次将被忽略：
+
+```javascript
+new Promise(function(resolve, reject) {
+  resolve('hi'); // works
+  resolve('bye'); // can't happen a second time
+});
+```
+
+Promise是在主线程中执行的，如果操作很繁琐仍然会阻塞线程导致停止响应。所以Promise并不是用于执行费时操作的神器，它的作用是解析异步操作得到的结果并作出相应动作。
+
+### 3.1.1 Promise的基本使用
+
+通过向Promise的构造函数传递一个函数来包装异步任务。该函数带有两个参数：`resolve`和`reject`，都是回调函数，其中`reject`可以省略。这两个回调函数用来说明当异步任务正确执行完毕或出现错误时要传递的值。举个例子：
+
+```javascript
+new Promise(function(resolve, reject) {
+  let value = doSomething();
+  if (thingsWorked) {
+    resolve(value);
+  } else if (somethingWrong) {
+    reject();
+  }
+})
+.then(function(value) {
+  // success
+  return nextThing(value);
+})
+.catch(rejectFunction);
+```
+
+如果执行成功，`resolve()`函数会将`value`值传递给`then()`函数中的回调；如果执行失败，reject()同样会将值传递给`catch()`函数中的回调`rejectFunction`。当然如果什么都不传，那么相应的参数就是`undefined`。如果传递给Promise的函数某处出错了，也会触发`catch()`函数。第三种情况是如果传递的值本身是一个Promise，那么它将首先被执行，然后根据它执行的结果将可能的值传递给`then()`或者`catch()`函数。
+
+### 3.1.2 Promise的高级用法
+
+
 
 Promise
-		用途
-			try..catch wrapper for
-				unpredictable task
-					asynchronous
-					deferred
-		状态
-			pending
-				settled ONCE
-					fulfilled
-					rejected
-		使用
-			wrapping
-				封装异步任务
-					主线程执行
-						阻塞
-				new Promise(func)
-					func
-						resolve param
-						reject param
-			thening
-				fulfilled
-					resolve()
-				回调
-					action
-			catching
-				rejected
-					reject()
-				回调
-					recovering
+		
+
+
 
 
 
@@ -2045,7 +2068,6 @@ Promise
 ## 3.2 AJAX
 
 ​	
-
 
 ​	AJAX
 ​		用途
@@ -2073,3 +2095,8 @@ Promise
 ​				load()
 ​		通过fetch
 ​			基于Promise
+
+# 四. 参考文献
+
+1. Udacity前端开发纳米学位
+2. [JavaScript Promises](https://developers.google.cn/web/fundamentals/primers/promises)
