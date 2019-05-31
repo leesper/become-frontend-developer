@@ -309,8 +309,25 @@ new r.method(g, b);
 
 此时this关键字将因为`new`的作用而被绑定到一个后台自动创建的匿名对象上，因为每一次new都会生成新对象。
 
-#### 1.1.3.6 规则六
-fn.bind()创建新函数，this将永久地被绑定到了bind的第一个参数。
+#### 1.1.3.6 规则六：fn.bind()
+fn.bind()创建新函数，this将永久地被绑定到了bind的第一个参数：
+
+```javascript
+var module = {
+  x: 42,
+  getX: function() {
+    return this.x;
+  }
+}
+
+var unboundGetX = module.getX;
+console.log(unboundGetX()); // The function gets invoked at the global scope
+// expected output: undefined
+
+var boundGetX = unboundGetX.bind(module);
+console.log(boundGetX());
+// expected output: 42
+```
 
 #### 1.1.3.7 规则七：箭头函数
 
@@ -2326,38 +2343,101 @@ jQuery 具有很多用来发出异步调用的便捷方法。这些方法是：
 
 ### 3.2.3 fetch方式
 
+fetch是发送网络请求的新方式。前两种方式各有利弊，使用XHR太繁琐，要写一堆代码；使用jQuery需要加载第三方JavaScript库，需要消耗流量并花时间。有没有更好的，原生支持的方式呢？答案就是fetch API！它让资源请求(主要是通过网络)变得更简单，而且从上面的讨论已经知道，fetch底层是由Promise实现的。来看两个fetch发送请求的示例：
 
+```javascript
+fetch(
+  'https://api.unsplash.com/search/photos?page=1&query=${searchedForText}',
+  {
+    headers: {
+      Authorization: 'Client-ID abc123'
+    },
+    method: 'POST'
+  }
+);
 
-​	
+////////////////////////////
+const requestHeaders = new Headers();
+requestHeaders.append('Authorization', 'Client-ID abc123');
 
-​	AJAX
-​		用途
-​			异步获取数据
-​				XML
-​				JSON
-​				HTML
-​			无需更新全部页面
-​		通过XHR
-​			请求
-​				new XMLHttpRequest()
-​				.open()
-​				.onload
-​				.onerror
-​				.send()
-​			响应
-​				.responseText
-​		通过jQuery
-​			.ajax()
-​			便利方法
-​				get()
-​				getJSON()
-​				getScript()
-​				post()
-​				load()
-​		通过fetch
-​			基于Promise
+fetch(
+  'https://api.unsplash.com/search/photos?page=1&query=${searchedForText}',
+  {
+    headers: requestHeaders,
+    method: 'POST'
+  }
+);
+```
+
+它将返回一个Promise，处理响应等同于处理这个Promise：
+
+```javascript
+fetch(`https://api.unsplash.com/search/photos?page=1&query=${searchedForText}`, {
+    headers: {
+        Authorization: 'Client-ID abc123'
+    }
+}).then(function(response) {
+    debugger; // 使用返回的response
+});
+```
+
+返回的响应是`Response`类型，当fetch请求resolve的时候就会返回该对象。该对象包含关于响应本身的信息，要获取数据则需要访问响应的主体，如果API返回的数据是JSON格式，我们就要调用`json()`：
+
+```javascript
+fetch(`https://api.unsplash.com/search/photos?page=1&query=${searchedForText}`, {
+    headers: {
+        Authorization: 'Client-ID abc123'
+    }
+}).then(function(response) {
+    return response.json();
+}).then(addImage);
+
+function addImage(data) {
+    let htmlContent = '';
+    const firstImage = data.results[0];
+
+    if (firstImage) {
+        htmlContent = `<figure>
+            <img src="${firstImage.urls.small}" alt="${searchedForText}">
+            <figcaption>${searchedForText} by ${firstImage.user.name}</figcaption>
+        </figure>`;
+    } else {
+        htmlContent = 'Unfortunately, no image was returned for your search.'
+    }
+
+    responseContainer.insertAdjacentHTML('afterbegin', htmlContent);
+}
+```
+
+`Response`对象上有很多方法，如果请求的是图片，则可以使用`.blob()`方法。如果使用ES6的箭头函数，还能写的更简洁：
+
+```javascript
+fetch(`https://api.unsplash.com/search/photos?page=1&query=${searchedForText}`, {
+    headers: {
+        Authorization: 'Client-ID abc123'
+    }
+}).then(response => response.json())
+.then(addImage);
+```
+
+因为返回的是一个Promise，因此处理错误使用`catch()`也是再明显不过的事情了，`catch()`中的回调函数有一个表示错误对象的参数：
+
+```javascript
+fetch(`https://api.unsplash.com/search/photos?page=1&query=${searchedForText}`, {
+    headers: {
+        Authorization: 'Client-ID abc123'
+    }
+}).then(response => response.json())
+.then(addImage)
+.catch(e => requestError(e, 'image'));
+
+function requestError(e, part) {
+    console.log(e);
+    responseContainer.insertAdjacentHTML('beforeend', `<p class="network-warning">Oh no! There was an error making a request for the ${part}.</p>`);
+}	
+```
 
 # 四. 参考文献
 
-1. Udacity前端开发纳米学位
+1. [Udacity前端开发纳米学位](https://cn.udacity.com/fend)
 2. [JavaScript Promises](https://developers.google.cn/web/fundamentals/primers/promises)
