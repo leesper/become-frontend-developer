@@ -2291,6 +2291,39 @@ asyncRequestObject.onload = handleSuccess;
 
 ### 3.2.2 jQuery方式
 
+我们又和老朋友jQuery见面了，jQuery提供了一个强大的`ajax()`方法来处理所有的异步请求。`ajax()`方法使用方式比较灵活多样：
+
+```javascript
+$.ajax(<url-to-fetch>, <a-configuration-object>);
+
+// 或
+
+$.ajax(<just a configuration object>);
+```
+
+使用配置对象是一种常用的方式，设置好一切信息就可以了，通过`done()`方法来完成对响应的处理，如果是JSON，将自动转换成JavaScript对象：
+
+```javascript
+function handleResponse(data) {
+    console.log('the ajax request has finished!');
+    console.log(data);
+}
+
+$.ajax({
+    url: 'https://swapi.co/api/people/1/'
+}).done(handleResponse);
+```
+
+jQuery 具有很多用来发出异步调用的便捷方法。这些方法是：
+
+- [.get()](http://api.jquery.com/jQuery.get/)
+- [.getJSON()](http://api.jquery.com/jQuery.getJSON/)
+- [.getScript()](http://api.jquery.com/jQuery.getScript/)
+- [.post()](http://api.jquery.com/jQuery.post/)
+- [.load()](http://api.jquery.com/load/)
+
+每个方法都会调用 jQuery 的主方法 `.ajax()`。这些方法对请求进行默认的配置，然后再调用 `.ajax()`。
+
 ### 3.2.3 fetch方式
 
 
