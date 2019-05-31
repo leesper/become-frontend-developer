@@ -14,6 +14,8 @@
 
 ## 5. [CSS布局与响应式设计](./articles/5_responsive_design/responsive_design.md)
 
+## 6. [现代JavaScript语言](./articles/7_javascript_oop/javascript_oop.md)
+
 # 完成的前端开发入门项目
 
 ## 1. [培养开发者思维](https://github.com/leesper/become-frontend-developer/tree/master/P0_WebDeveloperMindset)
