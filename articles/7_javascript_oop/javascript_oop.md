@@ -2049,6 +2049,174 @@ new Promise(function(resolve, reject) {
 
 ### 3.1.2 Promise的高级用法
 
+Promise可以被链式调用，编写代码时我们可以在每一个`then()`函数中一次处理一个小问题，然后一直`then()`下去，直到所有的问题都被解决。这在网络请求中会非常的有用。`fetch()`函数现在得到了很多浏览器的原生支持，它用来向后端发起网络请求获取数据。`fetch()`函数就是建立在原生Promise基础上构建的：
+
+```javascript
+fetch('/some/url', {
+  method: 'get'
+}).then(function(response) {
+  // handling response
+}).catch(function(err) {
+  // handling error
+});
+```
+
+以下是使用`fetch()`函数发起GET请求并在此基础上解析JSON字符串的示例：
+
+```javascript
+function get(url) {
+  return fetch(url, {
+    method: 'get'
+  })
+};
+
+function getJSON(url) {
+  return get(url).then(function(response) {
+    return response.json();
+  });
+};
+```
+
+然后就可以使用这个函数请求服务端加载缩略图并添加搜索头部信息：
+
+```javascript
+getJSON('xxx/yyy/zzz/data.json')
+.then(function(response) {
+  addSearchHeader(response.query);
+  return getJSON(response.results[0]);
+})
+.catch(function() {
+  throw Error('Search Request Error');
+})
+.then(function(data) {
+  createPlanetThumb(data);
+})
+.catch(function(e) {
+  addSearchHeader('unknown');
+  console.log(e);
+});
+```
+
+首先`getJSON()`会发起请求并获得结果，如果成功则调用第一个`then()`函数，该函数传入的回调带有参数`response`，表示请求得到的结果，回调函数中将`response.query`添加到搜索头然后再次返回`getJSON(response.results[0])`的结果，这是另一个url。如果失败则第一个`catch()`函数会触发，然后在回调函数中抛出错误。第二次请求成功后得到的数据会传递给第二个`then()`函数中的回调函数，该回调函数调用`createPlanetThumb()`处理数据并加载缩略图。同样地，如果刚才失败了，第二个`catch()`函数会被触发，添加unknown搜索头信息，然后控制台打印错误。
+
+除了上述这样的`then-catch`调用链形式，我们还可以写的更紧凑，对比一下下面两种写法：
+
+```javascript
+get('example.json')
+.then(resolveFunc)
+.catch(rejectFunc);
+
+// 紧凑形式
+get('example.json')
+.then(resolveFunc)
+.then(undefined, rejectFunc);
+```
+
+`then()`函数的完整签名如下：
+
+```javascript
+get('example.json').then(resolveFunc, rejectFunc).then(...);
+```
+
+任何Promise失败都会调用rejectFunc，如果完成则调用resolveFunc，但如果没有传入resolveFunc，这个`then()`就会跳过然后调用下一个`then()`。最佳实践还是使用`then()`和`catch()`分开的形式，因为这样看的要清楚些。另外，这两种形式还有一些细微差别。`then-catch`调用链形式在`then()`回调发生错误时会在紧跟着的`catch()`函数中处理错误。而紧凑形式则需要在下一个`then()`或者`then-catch`调用链中处理。
+
+Promise可以以串行或者并行的方式执行多个请求。在某些场景下，我们需要按顺序请求数据并加载，这个时候就需要按一定的顺序请求数据，加载页面，然后再请求下一个；在另一些场景下，我们可以并行的执行多个网络请求，谁先返回就先加载谁：
+
+```javascript
+// 串行模式
+getJSON('xxx/yyy/zzz.json')
+.then(function(response){
+  let sequence = Promise.resolve(); //得到resolve的返回值，也是一个Promise
+  response.results.forEach(function(url) {
+    sequence = sequence.then(function() { // 用新的Promise覆盖旧的，达到串行执行的目的
+      return getJSON(url);
+    })
+    .then(createPlanetThumb);
+  });
+})
+.catch(function(e) {
+  console.log(e);
+});
+
+// 并行模式
+getJSON('xxx/yyy/zzz.json')
+.then(function(response){
+  let sequence = Promise.resolve(); //得到resolve的返回值，也是一个Promise
+  response.results.forEach(function(url) {
+    sequence.then(function() { // 利用这个sequence不断的并发请求数据
+      return getJSON(url);
+    })
+    .then(createPlanetThumb);
+  });
+})
+.catch(function(e) {
+  console.log(e);
+});
+```
+
+还有一种形式的并行请求就是利用数组的`map()`函数：
+
+```javascript
+getJSON('xxx/yyy/zzz.json')
+.then(function(response){
+  response.results.map(function(url) {
+    getJSON(url).then(createPlanetThumb);
+  });
+});
+```
+
+Promise还有一个`all()`方法，参数为Promise的数组，表示只有当这里面全部的Promise执行成功才算成功，它的返回值是一个与原始Promise顺序相同的值数组。只要有一个Promise失败，整个调用会立即返回，而不会理会其他的Promise。如果全部成功了，链接的`then()`函数中传入的回调就能以值的数组作为参数：
+
+```javascript
+Promise.all(arrayOfPromises)
+.then(function(arrayOfValues) { // arrayOfValues is same order as arrayOfPromises
+  ...
+})
+```
+
+让我们来重构一下上面的并行请求代码，使用`all()`：
+
+```javascript
+getJSON('xxx/yyy/zzz.json')
+.then(function(response){
+  let arrayOfPromises = response.results.map(function(url) {
+    getJSON(url);
+  });
+  return Promise.all(arrayOfPromises);
+})
+.then(function(arrayOfPlanetData) {
+  arrayOfPlanetData.forEach(function(planet) {
+    createPlanetThumb(planet);
+  })
+})
+.catch(function(error) {
+  console.log(error);
+});
+```
+
+写的再简洁些：
+
+```javascript
+getJSON('xxx/yyy/zzz.json')
+.then(function(response){
+  return Promise.all(response.results.map(getJSON));
+})
+.then(function(arrayOfPlanetData) {
+  arrayOfPlanetData.forEach(function(planet) {
+    createPlanetThumb(planet);
+  })
+})
+.catch(function(error) {
+  console.log(error);
+});
+```
+
+
+
+
+
+
+
 
 
 Promise
