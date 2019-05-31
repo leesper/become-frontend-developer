@@ -1992,75 +1992,61 @@ it.next();
 
 `it.next('hot fudge')`运行时触发第一个`yield`关键字然后暂停，然后在`it.next('sprinkles')`运行时恢复，`yield`被替换为“sprinkles”并放入数组，然后触发第二个`yield`关键字暂停，当运行`it.next('whipped cream')`时恢复执行并将`yield`关键字替换为"whipped cream"，然后再次触发`yield`关键字暂停，当最后一次运行`it.next()`时从暂停状态返回，然而此时没有传入任何值，所以`undefined`被放入数组，最后打印出来的是`['sprinkles', 'whipped creasm', undefined]`。
 
-
-
-
-
-
-
-
-​		
-​		
-​		
-​		
-​	ES6专业开发者
-​		Polyfill
-​			修补功能，为浏览器提供支持
-​				SVG
-​				Canvas
-​				网络存储
-​					本地存储
-​					会话存储
-​				视频
-​				HTML5 元素
-​				无障碍功能
-​				Web Sockets
-​		Babel
-​			转译器（transpiler）
-
-HTML Canvas
-	基础
-	从像素到动画
-		requestAnimationFrame
+以上就是有关于ES6新特性的一些讨论，当然我们在这里不可能把所有的内容都讨论完，但以上几个点已经能够让你感觉到它的强大了！JS这门语言还在不断的发展，还会有有更多更强大的特性出现。事实上在今天JS已经渗透到了各个领域，后端开发和嵌入式开发现在也能用上它了。下一个部分，我们将集中讨论一下JavaScript的异步特性，毕竟前端是需要通过网络请求与后端进行数据交换的，怎样做到简单高效低延迟，是我们要关注的中心内容。
 
 # 三. 异步的JavaScript
 
-​	Promise
-​		用途
-​			try..catch wrapper for
-​				unpredictable task
-​					asynchronous
-​					deferred
-​		状态
-​			pending
-​				settled ONCE
-​					fulfilled
-​					rejected
-​		使用
-​			wrapping
-​				封装异步任务
-​					主线程执行
-​						阻塞
-​				new Promise(func)
-​					func
-​						resolve param
-​						reject param
-​			thening
-​				fulfilled
-​					resolve()
-​				回调
-​					action
-​			catching
-​				rejected
-​					reject()
-​				回调
-​					recovering
+要理解异步的JavaScript，我们先要认识什么是**异步**。要认识什么是异步，我们得先知道什么是**同步**。当你解决可预测问题的时候，编写的代码往往是同步的，比如给数组里的20个数字排序；但是当你解决的问题是**不可预测**的时候，就需要编写异步的代码，比如数组是空的，你需要先向服务器请求并返回20个数字。这里所说的不可预测是指你发出了一个指令或执行了一个动作，但并不会马上得到结果，这个结果会在未来的某个时间发生，你并不知道一个精确的时间，只知道它未来一定会给你一个**结果**，要么是好的结果要么是坏的结果。
+
+这一部分首先将介绍Promise机制，看看JavaScript是怎么处理不可预测任务的。然后我们会专门讨论AJAX这个主题，毕竟对于前端开发而言，最常见的不可预测任务就是网络请求了，我们会讨论三种网络请求的方法：XHR，jQuery和fetch。
+
+## 3.1 Promise
+
+Promise
+		用途
+			try..catch wrapper for
+				unpredictable task
+					asynchronous
+					deferred
+		状态
+			pending
+				settled ONCE
+					fulfilled
+					rejected
+		使用
+			wrapping
+				封装异步任务
+					主线程执行
+						阻塞
+				new Promise(func)
+					func
+						resolve param
+						reject param
+			thening
+				fulfilled
+					resolve()
+				回调
+					action
+			catching
+				rejected
+					reject()
+				回调
+					recovering
+
+
+
 ​			链式调用
 ​				promises
 ​					forEach
 ​					map
 ​				Promise.all()
 ​					全部执行成功才算成功
+
+## 3.2 AJAX
+
+​	
+
+
 ​	AJAX
 ​		用途
 ​			异步获取数据
