@@ -2211,29 +2211,89 @@ getJSON('xxx/yyy/zzz.json')
 });
 ```
 
-
-
-
-
-
-
-
-
-Promise
-		
-
-
-
-
-
-​			链式调用
-​				promises
-​					forEach
-​					map
-​				Promise.all()
-​					全部执行成功才算成功
-
 ## 3.2 AJAX
+
+AJAX的全称，是异步的JavaScript和XML(**A**synchronous **J**avaScript **A**nd **X**ML)，它是一种异步请求数据的概念，其核心理念很简单：异步的通过JavaScript发送请求，然后前端继续完成其他的任务，等数据返回再进行处理。这些请求和返回会在其他线程执行，不会阻塞主线程导致页面卡顿。AJAX可以在不重新加载整个页面的情况下检索并显示检索结果。发送AJAX请求有几种方式，有些需要API Key，有些需要使用OAuth机制，有些可以直接访问，无需任何验证。返回的数据也有几种形式：XML，JSON和HTML。
+
+我们使用**API**与各种数据源交互，API全称为应用编程接口(Application Programming Interface)，由服务端负责提供。比如一些知名网站以API的形式向外提供天气服务，可以查询天气预报数据。可以查阅[API数据库](http://www.programmableweb.com/apis/directory)查找自己感兴趣的内容。
+
+我们首先来看看使用XHR的方式，然后学习jQuery如何生成AJAX请求，最后了解使用fetch API生成异步请求的新方法。
+
+### 3.2.1 XHR方式
+
+JavaScript引擎除了提供`document`，还提供发出异步HTTP请求的方式，即使用`XMLHttpRequest`对象。然后使用`open()`函数打开。它有很多参数，最重要的是前两个参数：
+
+1. HTTP方法
+2. 要发送请求的URL
+
+要实际发送请求，需要使用`send()`方法：
+
+```javascript
+const asyncRequestObject = new XMLHttpRequest();
+asyncRequestObject.open('GET', 'https://unsplash.com');
+asyncRequestObject.send();
+```
+
+要处理成功的请求，我们还需要给xhr对象的`onload`属性设为处理它的函数，如果没有设置`onload`，则请求的确会返回，但是它什么也不会发生：
+
+```javascript
+function handleSuccess() {
+  console.log(this.responseText);
+}
+
+asyncRequestObject.onload = handleSuccess;
+```
+
+要处理错误则需要使用`onerror`属性：
+
+```javascript
+function handleError () {
+    // 在这个函数中，`this` 值是 XHR 对象
+    console.log( '出现错误 😞' );
+}
+
+asyncRequestObject.onerror = handleError;
+
+```
+
+如果`onerror`没有设置，那么出现任何错误都不会有提示。你的代码将不知道发生了什么问题，也不知道如何恢复。完整的代码应该这样写：
+
+```javascript
+function handleSuccess () { 
+  console.log( this.responseText ); 
+  // https://unsplash.com/ 的 HTML
+}
+
+function handleError () { 
+  console.log( '出现错误 😭' );
+}
+const asyncRequestObject = new XMLHttpRequest();
+asyncRequestObject.open('GET', 'https://unsplash.com');
+asyncRequestObject.onload = handleSuccess;
+asyncRequestObject.onerror = handleError;
+// 对某些请求而言，需要设置请求头
+// asyncRequestObject.setRequestHeader('Authorization', 'Client-ID <你的客户端id>');
+asyncRequestObject.send();
+```
+
+一般来说，我们不会直接请求HTML代码，因为不容易解析。时至今日互联网上最流行的数据交换格式就是JSON了，如果我们需要解析JSON数据，可以使用`JSON.parse()`：
+
+```javascript
+function handleSuccess () {
+   const data = JSON.parse( this.responseText ); // 将数据从 JSON 转换为 JavaScript对象
+   console.log( data );
+}
+
+asyncRequestObject.onload = handleSuccess;
+```
+
+使用XHR意味着要写一堆代码，但下面要介绍的两种方式，却能让我们写更少的代码来实现同样的功能。
+
+### 3.2.2 jQuery方式
+
+### 3.2.3 fetch方式
+
+
 
 ​	
 
