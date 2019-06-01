@@ -14,7 +14,9 @@
 
 ## 5. [CSS布局与响应式设计](./articles/5_responsive_design/responsive_design.md)
 
-## 6. [现代JavaScript语言](./articles/7_javascript_oop/javascript_oop.md)
+## 6. [JavaScript编程基础](./articles/6_javascript_basic/javascript_oop.md)
+
+## 7. 6. [现代JavaScript语言](./articles/7_javascript_oop/javascript_oop.md)
 
 # 完成的前端开发入门项目
 
